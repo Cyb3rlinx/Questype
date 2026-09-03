@@ -1,0 +1,1331 @@
+{
+  "sample_data": true,
+  "profile": {
+    "id": "10000000-0000-4000-8000-000000000001",
+    "created_at": "2026-09-03T00:00:00.000Z",
+    "content_hash": "63829cc7b55387a3ea519dd6f46f7138b3b372f5f1d10929766a03810f73192e",
+    "user": {
+      "name": "Sample Traveler",
+      "character_gender": "woman"
+    },
+    "journey": {
+      "id": "archetype-journey",
+      "journey_version": "1.0",
+      "scoring_version": "1.0",
+      "answers": [
+        {
+          "scene_id": "scene_01",
+          "choice_id": "scene_01_choice_a"
+        },
+        {
+          "scene_id": "scene_02",
+          "choice_id": "scene_02_choice_a"
+        },
+        {
+          "scene_id": "scene_03",
+          "choice_id": "scene_03_choice_c"
+        },
+        {
+          "scene_id": "scene_04",
+          "choice_id": "scene_04_choice_b"
+        },
+        {
+          "scene_id": "scene_05",
+          "choice_id": "scene_05_choice_c"
+        },
+        {
+          "scene_id": "scene_06",
+          "choice_id": "scene_06_choice_d"
+        },
+        {
+          "scene_id": "scene_07",
+          "choice_id": "scene_07_choice_b"
+        },
+        {
+          "scene_id": "scene_08",
+          "choice_id": "scene_08_choice_c"
+        },
+        {
+          "scene_id": "scene_09",
+          "choice_id": "scene_09_choice_d"
+        },
+        {
+          "scene_id": "scene_10",
+          "choice_id": "scene_10_choice_c"
+        },
+        {
+          "scene_id": "scene_11",
+          "choice_id": "scene_11_choice_d"
+        },
+        {
+          "scene_id": "scene_12",
+          "choice_id": "scene_12_choice_b"
+        },
+        {
+          "scene_id": "scene_13",
+          "choice_id": "scene_13_choice_a"
+        },
+        {
+          "scene_id": "scene_14",
+          "choice_id": "scene_14_choice_b"
+        },
+        {
+          "scene_id": "scene_15",
+          "choice_id": "scene_15_choice_a"
+        }
+      ]
+    },
+    "archetypes": {
+      "primary": {
+        "slug": "magician",
+        "name": "Magician",
+        "raw_score": 17,
+        "calibrated_score": 4.281149877639086,
+        "proportion": 0.7190295499136184,
+        "normalized_percentage": 72
+      },
+      "secondary": {
+        "slug": "creator",
+        "name": "Creator",
+        "raw_score": 12,
+        "calibrated_score": 2.6726124191242437,
+        "proportion": 0.1439354588956399,
+        "normalized_percentage": 15
+      },
+      "tertiary": {
+        "slug": "outlaw",
+        "name": "Outlaw",
+        "raw_score": 10,
+        "calibrated_score": 1.9250668437592438,
+        "proportion": 0.06815737855572272,
+        "normalized_percentage": 7
+      },
+      "all": [
+        {
+          "slug": "magician",
+          "name": "Magician",
+          "raw_score": 17,
+          "calibrated_score": 4.281149877639086,
+          "proportion": 0.7190295499136184,
+          "normalized_percentage": 72
+        },
+        {
+          "slug": "creator",
+          "name": "Creator",
+          "raw_score": 12,
+          "calibrated_score": 2.6726124191242437,
+          "proportion": 0.1439354588956399,
+          "normalized_percentage": 15
+        },
+        {
+          "slug": "outlaw",
+          "name": "Outlaw",
+          "raw_score": 10,
+          "calibrated_score": 1.9250668437592438,
+          "proportion": 0.06815737855572272,
+          "normalized_percentage": 7
+        },
+        {
+          "slug": "explorer",
+          "name": "Explorer",
+          "raw_score": 9,
+          "calibrated_score": 1.3522468075656264,
+          "proportion": 0.038436186992216,
+          "normalized_percentage": 4
+        },
+        {
+          "slug": "sage",
+          "name": "Sage",
+          "raw_score": 6,
+          "calibrated_score": 0.16222142113076254,
+          "proportion": 0.011692808550185658,
+          "normalized_percentage": 1
+        },
+        {
+          "slug": "everyman",
+          "name": "Everyman",
+          "raw_score": 3,
+          "calibrated_score": -0.5773502691896257,
+          "proportion": 0.005581191637359515,
+          "normalized_percentage": 1
+        },
+        {
+          "slug": "jester",
+          "name": "Jester",
+          "raw_score": 1,
+          "calibrated_score": -1.0954451150103321,
+          "proportion": 0.0033244606913272762,
+          "normalized_percentage": 0
+        },
+        {
+          "slug": "ruler",
+          "name": "Ruler",
+          "raw_score": 1,
+          "calibrated_score": -1.3743685418725535,
+          "proportion": 0.0025152797651490596,
+          "normalized_percentage": 0
+        },
+        {
+          "slug": "lover",
+          "name": "Lover",
+          "raw_score": 0,
+          "calibrated_score": -1.632993161855452,
+          "proportion": 0.0019420797132417126,
+          "normalized_percentage": 0
+        },
+        {
+          "slug": "caregiver",
+          "name": "Caregiver",
+          "raw_score": 0,
+          "calibrated_score": -1.6431676725154982,
+          "proportion": 0.0019224201851328296,
+          "normalized_percentage": 0
+        },
+        {
+          "slug": "innocent",
+          "name": "Innocent",
+          "raw_score": 0,
+          "calibrated_score": -1.643989873053573,
+          "proportion": 0.0019208402198353737,
+          "normalized_percentage": 0
+        },
+        {
+          "slug": "hero",
+          "name": "Hero",
+          "raw_score": 0,
+          "calibrated_score": -1.863448669773839,
+          "proportion": 0.001542344880571685,
+          "normalized_percentage": 0
+        }
+      ],
+      "tied_primary": [
+        "magician"
+      ],
+      "shadow": {
+        "slug": "innocent",
+        "evidence": "supported",
+        "score": 7.074999999999999,
+        "dominant_axis": "avoidance",
+        "axes": {
+          "control": {
+            "positive": 1,
+            "pressure": 0,
+            "hits": 1,
+            "evidence_score": 0.3333333333333333,
+            "scene_ids": [
+              "scene_08"
+            ],
+            "pressure_scene_ids": []
+          },
+          "avoidance": {
+            "positive": 4,
+            "pressure": 3,
+            "hits": 2,
+            "evidence_score": 4.666666666666666,
+            "scene_ids": [
+              "scene_06",
+              "scene_12"
+            ],
+            "pressure_scene_ids": [
+              "scene_12"
+            ]
+          },
+          "self_sacrifice": {
+            "positive": 0,
+            "pressure": 0,
+            "hits": 0,
+            "evidence_score": 0,
+            "scene_ids": [],
+            "pressure_scene_ids": []
+          },
+          "rebellion": {
+            "positive": 3,
+            "pressure": 2,
+            "hits": 2,
+            "evidence_score": 3.333333333333333,
+            "scene_ids": [
+              "scene_04",
+              "scene_06"
+            ],
+            "pressure_scene_ids": [
+              "scene_04"
+            ]
+          },
+          "obsession": {
+            "positive": 4,
+            "pressure": 3,
+            "hits": 2,
+            "evidence_score": 4.666666666666666,
+            "scene_ids": [
+              "scene_10",
+              "scene_13"
+            ],
+            "pressure_scene_ids": [
+              "scene_13"
+            ]
+          },
+          "emotional_detachment": {
+            "positive": 1,
+            "pressure": 0,
+            "hits": 1,
+            "evidence_score": 0.3333333333333333,
+            "scene_ids": [
+              "scene_11"
+            ],
+            "pressure_scene_ids": []
+          }
+        },
+        "candidates": [
+          {
+            "slug": "innocent",
+            "score": 7.074999999999999
+          },
+          {
+            "slug": "jester",
+            "score": 6.101736566161975
+          },
+          {
+            "slug": "explorer",
+            "score": 5.133333333333333
+          },
+          {
+            "slug": "creator",
+            "score": 4.749999999999999
+          },
+          {
+            "slug": "outlaw",
+            "score": 4.266666666666667
+          },
+          {
+            "slug": "lover",
+            "score": 3.812503121254659
+          },
+          {
+            "slug": "magician",
+            "score": 3.4499999999999993
+          },
+          {
+            "slug": "sage",
+            "score": 3.3666666666666667
+          },
+          {
+            "slug": "everyman",
+            "score": 3.3095615412174384
+          },
+          {
+            "slug": "hero",
+            "score": 0.8435503692648992
+          },
+          {
+            "slug": "ruler",
+            "score": 0.6477966333994001
+          },
+          {
+            "slug": "caregiver",
+            "score": 0.14493121720121685
+          }
+        ]
+      }
+    },
+    "motivations": {
+      "power": 0,
+      "freedom": 47,
+      "connection": 9,
+      "creation": 93,
+      "knowledge": 36,
+      "protection": 0
+    },
+    "decision_style": {
+      "impulsive": 0,
+      "strategic": 30,
+      "intuitive": 58,
+      "rational": 23,
+      "protective": 0,
+      "dominant": 0
+    },
+    "shadow_axis": {
+      "control": 11,
+      "avoidance": 40,
+      "self_sacrifice": 0,
+      "rebellion": 38,
+      "obsession": 67,
+      "emotional_detachment": 50
+    },
+    "traits": {
+      "risk_tolerance": 0,
+      "autonomy": 50,
+      "curiosity": 80,
+      "empathy": 33,
+      "social_trust": 11,
+      "persistence": 0
+    },
+    "raw_scores": {
+      "archetypes": {
+        "innocent": 0,
+        "explorer": 9,
+        "sage": 6,
+        "hero": 0,
+        "outlaw": 10,
+        "magician": 17,
+        "lover": 0,
+        "creator": 12,
+        "caregiver": 0,
+        "jester": 1,
+        "ruler": 1,
+        "everyman": 3
+      },
+      "motivations": {
+        "power": 0,
+        "freedom": 9,
+        "connection": 2,
+        "creation": 13,
+        "knowledge": 5,
+        "protection": 0
+      },
+      "decision_styles": {
+        "impulsive": 0,
+        "strategic": 3,
+        "intuitive": 7,
+        "rational": 3,
+        "protective": 0,
+        "dominant": 0
+      },
+      "shadow": {
+        "control": 1,
+        "avoidance": 4,
+        "self_sacrifice": 0,
+        "rebellion": 3,
+        "obsession": 4,
+        "emotional_detachment": 1
+      },
+      "traits": {
+        "risk_tolerance": 0,
+        "autonomy": 2,
+        "curiosity": 4,
+        "empathy": 1,
+        "social_trust": 0,
+        "persistence": 0
+      }
+    },
+    "dimension_details": {
+      "motivations": {
+        "power": {
+          "raw_score": 0,
+          "normalized_value": 0,
+          "lower_bound": 0,
+          "upper_bound": 11,
+          "has_evidence": true,
+          "positive_observations": 0
+        },
+        "freedom": {
+          "raw_score": 9,
+          "normalized_value": 47,
+          "lower_bound": 0,
+          "upper_bound": 19,
+          "has_evidence": true,
+          "positive_observations": 5
+        },
+        "connection": {
+          "raw_score": 2,
+          "normalized_value": 9,
+          "lower_bound": 0,
+          "upper_bound": 22,
+          "has_evidence": true,
+          "positive_observations": 1
+        },
+        "creation": {
+          "raw_score": 13,
+          "normalized_value": 93,
+          "lower_bound": 0,
+          "upper_bound": 14,
+          "has_evidence": true,
+          "positive_observations": 7
+        },
+        "knowledge": {
+          "raw_score": 5,
+          "normalized_value": 36,
+          "lower_bound": 0,
+          "upper_bound": 14,
+          "has_evidence": true,
+          "positive_observations": 3
+        },
+        "protection": {
+          "raw_score": 0,
+          "normalized_value": 0,
+          "lower_bound": 0,
+          "upper_bound": 15,
+          "has_evidence": true,
+          "positive_observations": 0
+        }
+      },
+      "decision_styles": {
+        "impulsive": {
+          "raw_score": 0,
+          "normalized_value": 0,
+          "lower_bound": 0,
+          "upper_bound": 9,
+          "has_evidence": true,
+          "positive_observations": 0
+        },
+        "strategic": {
+          "raw_score": 3,
+          "normalized_value": 30,
+          "lower_bound": 0,
+          "upper_bound": 10,
+          "has_evidence": true,
+          "positive_observations": 3
+        },
+        "intuitive": {
+          "raw_score": 7,
+          "normalized_value": 58,
+          "lower_bound": 0,
+          "upper_bound": 12,
+          "has_evidence": true,
+          "positive_observations": 6
+        },
+        "rational": {
+          "raw_score": 3,
+          "normalized_value": 23,
+          "lower_bound": 0,
+          "upper_bound": 13,
+          "has_evidence": true,
+          "positive_observations": 2
+        },
+        "protective": {
+          "raw_score": 0,
+          "normalized_value": 0,
+          "lower_bound": 0,
+          "upper_bound": 9,
+          "has_evidence": true,
+          "positive_observations": 0
+        },
+        "dominant": {
+          "raw_score": 0,
+          "normalized_value": 0,
+          "lower_bound": 0,
+          "upper_bound": 7,
+          "has_evidence": true,
+          "positive_observations": 0
+        }
+      },
+      "shadow": {
+        "control": {
+          "raw_score": 1,
+          "normalized_value": 11,
+          "lower_bound": 0,
+          "upper_bound": 9,
+          "has_evidence": true,
+          "positive_observations": 1
+        },
+        "avoidance": {
+          "raw_score": 4,
+          "normalized_value": 40,
+          "lower_bound": 0,
+          "upper_bound": 10,
+          "has_evidence": true,
+          "positive_observations": 2
+        },
+        "self_sacrifice": {
+          "raw_score": 0,
+          "normalized_value": 0,
+          "lower_bound": 0,
+          "upper_bound": 7,
+          "has_evidence": true,
+          "positive_observations": 0
+        },
+        "rebellion": {
+          "raw_score": 3,
+          "normalized_value": 38,
+          "lower_bound": 0,
+          "upper_bound": 8,
+          "has_evidence": true,
+          "positive_observations": 2
+        },
+        "obsession": {
+          "raw_score": 4,
+          "normalized_value": 67,
+          "lower_bound": 0,
+          "upper_bound": 6,
+          "has_evidence": true,
+          "positive_observations": 2
+        },
+        "emotional_detachment": {
+          "raw_score": 1,
+          "normalized_value": 50,
+          "lower_bound": -2,
+          "upper_bound": 4,
+          "has_evidence": true,
+          "positive_observations": 1
+        }
+      },
+      "traits": {
+        "risk_tolerance": {
+          "raw_score": 0,
+          "normalized_value": 0,
+          "lower_bound": 0,
+          "upper_bound": 3,
+          "has_evidence": true,
+          "positive_observations": 0
+        },
+        "autonomy": {
+          "raw_score": 2,
+          "normalized_value": 50,
+          "lower_bound": -1,
+          "upper_bound": 5,
+          "has_evidence": true,
+          "positive_observations": 1
+        },
+        "curiosity": {
+          "raw_score": 4,
+          "normalized_value": 80,
+          "lower_bound": 0,
+          "upper_bound": 5,
+          "has_evidence": true,
+          "positive_observations": 3
+        },
+        "empathy": {
+          "raw_score": 1,
+          "normalized_value": 33,
+          "lower_bound": -1,
+          "upper_bound": 5,
+          "has_evidence": true,
+          "positive_observations": 1
+        },
+        "social_trust": {
+          "raw_score": 0,
+          "normalized_value": 11,
+          "lower_bound": -1,
+          "upper_bound": 8,
+          "has_evidence": true,
+          "positive_observations": 0
+        },
+        "persistence": {
+          "raw_score": 0,
+          "normalized_value": 0,
+          "lower_bound": 0,
+          "upper_bound": 3,
+          "has_evidence": true,
+          "positive_observations": 0
+        }
+      }
+    },
+    "character": {
+      "title": "The Inventive Magician",
+      "approved_candidates": [
+        "The Inventive Magician",
+        "The Inventive Alchemist",
+        "The Keeper of Possibilities",
+        "The Returning Magician"
+      ],
+      "dominant_motivation": "creation"
+    },
+    "registry_snapshot": [
+      {
+        "id": "innocent",
+        "slug": "innocent",
+        "name": "Innocent",
+        "short_description": "Finds possibility in trust, simplicity and a future worth tending.",
+        "core_desire": "To live with hope and a sense of safety",
+        "core_fear": "Losing trust in what makes life worthwhile",
+        "core_motivation": "Preserve the possibility of a good beginning",
+        "strengths": [
+          "Keeps hope available in uncertain situations",
+          "Makes complex goals feel approachable",
+          "Offers trust without making connection a transaction",
+          "Notices what is still working"
+        ],
+        "shadow_traits": [
+          "May overlook inconvenient evidence to preserve hope",
+          "May postpone necessary conflict",
+          "May expect reassurance before taking an unfamiliar step"
+        ],
+        "growth_direction": [
+          "Pair a hopeful expectation with a concrete contingency",
+          "Practice expressing disagreement without abandoning trust",
+          "Let complexity coexist with a simple next step"
+        ],
+        "decision_patterns": [
+          "Looks for a clear and constructive next move",
+          "Prefers plans that preserve continuity and trust"
+        ],
+        "relationship_patterns": [
+          "Brings warmth and a willingness to begin again",
+          "Benefits from naming needs before disappointment accumulates"
+        ],
+        "leadership_patterns": [
+          "Provides an accessible shared purpose",
+          "Needs partners who can challenge optimistic assumptions"
+        ],
+        "symbolic_keywords": [
+          "dawn",
+          "hearth",
+          "seed",
+          "open sky"
+        ]
+      },
+      {
+        "id": "explorer",
+        "slug": "explorer",
+        "name": "Explorer",
+        "short_description": "Learns through movement, discovery and room to choose an independent path.",
+        "core_desire": "Freedom to discover and become",
+        "core_fear": "Confinement and a life defined entirely by others",
+        "core_motivation": "Find possibilities beyond familiar boundaries",
+        "strengths": [
+          "Finds alternatives when the obvious route closes",
+          "Adapts to unfamiliar circumstances",
+          "Acts without needing every uncertainty resolved",
+          "Protects space for independent judgment"
+        ],
+        "shadow_traits": [
+          "May leave before a difficult commitment has matured",
+          "May confuse movement with meaningful change",
+          "May resist helpful structure because it feels restrictive"
+        ],
+        "growth_direction": [
+          "Choose one commitment worth carrying into uncertainty",
+          "Distinguish exploration from escape before changing course",
+          "Share intentions so independence does not become absence"
+        ],
+        "decision_patterns": [
+          "Tests possibilities through direct experience",
+          "Values autonomy when comparing alternatives"
+        ],
+        "relationship_patterns": [
+          "Connects through shared discoveries",
+          "Needs room to move alongside dependable communication"
+        ],
+        "leadership_patterns": [
+          "Opens new territory for a group",
+          "Benefits from explicit handoffs and follow-through"
+        ],
+        "symbolic_keywords": [
+          "horizon",
+          "compass",
+          "trail",
+          "wind"
+        ]
+      },
+      {
+        "id": "sage",
+        "slug": "sage",
+        "name": "Sage",
+        "short_description": "Seeks understanding through observation, evidence and careful questions.",
+        "core_desire": "To understand what is true and useful",
+        "core_fear": "Acting on illusion or unexamined assumptions",
+        "core_motivation": "Turn uncertainty into a more accurate understanding",
+        "strengths": [
+          "Separates observations from assumptions",
+          "Finds patterns in complicated information",
+          "Asks questions that improve a group decision",
+          "Makes knowledge available to others"
+        ],
+        "shadow_traits": [
+          "May keep researching beyond the point of usefulness",
+          "May retreat into analysis when emotional presence is needed",
+          "May underestimate knowledge gained through action"
+        ],
+        "growth_direction": [
+          "Set a decision deadline before beginning research",
+          "Name the feeling as well as the explanation",
+          "Run a small experiment when certainty is unavailable"
+        ],
+        "decision_patterns": [
+          "Examines evidence before committing",
+          "Revises a model when information changes"
+        ],
+        "relationship_patterns": [
+          "Offers attention through curiosity and thoughtful conversation",
+          "Benefits from expressing care without needing to solve everything"
+        ],
+        "leadership_patterns": [
+          "Clarifies the assumptions behind a plan",
+          "Must leave room for participation beyond expertise"
+        ],
+        "symbolic_keywords": [
+          "lantern",
+          "archive",
+          "lens",
+          "constellation"
+        ]
+      },
+      {
+        "id": "hero",
+        "slug": "hero",
+        "name": "Hero",
+        "short_description": "Meets a difficult task with courage, effort and a willingness to take responsibility.",
+        "core_desire": "To meet a meaningful challenge with capable action",
+        "core_fear": "Being unable to act when something important is at stake",
+        "core_motivation": "Build capability in service of a worthwhile task",
+        "strengths": [
+          "Acts when hesitation carries a cost",
+          "Persists through a demanding task",
+          "Makes responsibility visible through action",
+          "Encourages others by taking a first step"
+        ],
+        "shadow_traits": [
+          "May take on a challenge that belongs to someone else",
+          "May treat rest as something that must be earned",
+          "May turn disagreement into a test of resolve"
+        ],
+        "growth_direction": [
+          "Ask whether the task needs effort, help or a different approach",
+          "Include recovery in the plan",
+          "Invite another person to lead a part of the challenge"
+        ],
+        "decision_patterns": [
+          "Prioritizes a concrete response to immediate difficulty",
+          "Learns by testing capability against reality"
+        ],
+        "relationship_patterns": [
+          "Shows care through reliability and action",
+          "Benefits from sharing uncertainty before trying to fix it"
+        ],
+        "leadership_patterns": [
+          "Creates momentum under pressure",
+          "Needs to protect others from an unsustainable pace"
+        ],
+        "symbolic_keywords": [
+          "bridge",
+          "flame",
+          "shield",
+          "summit"
+        ]
+      },
+      {
+        "id": "outlaw",
+        "slug": "outlaw",
+        "name": "Outlaw",
+        "short_description": "Questions rules that have stopped serving people and opens space for change.",
+        "core_desire": "Freedom from constraints that no longer deserve consent",
+        "core_fear": "Being controlled by an unquestioned system",
+        "core_motivation": "Challenge the terms when accepted rules obscure alternatives",
+        "strengths": [
+          "Recognizes when a convention has become an obstacle",
+          "Voices an uncomfortable but useful challenge",
+          "Defends room for dissent",
+          "Imagines change beyond small adjustments"
+        ],
+        "shadow_traits": [
+          "May oppose a constraint before understanding its purpose",
+          "May define direction mainly through resistance",
+          "May leave repair to others after exposing a problem"
+        ],
+        "growth_direction": [
+          "Describe the alternative alongside the objection",
+          "Choose which limits protect what you value",
+          "Stay involved in the work of rebuilding"
+        ],
+        "decision_patterns": [
+          "Examines who benefits from the available choices",
+          "Will consider changing the rules of a dilemma"
+        ],
+        "relationship_patterns": [
+          "Values honesty and mutual freedom",
+          "Benefits from distinguishing disagreement from an attempt to control"
+        ],
+        "leadership_patterns": [
+          "Makes necessary dissent possible",
+          "Needs a constructive destination beyond disruption"
+        ],
+        "symbolic_keywords": [
+          "broken seal",
+          "wild road",
+          "spark",
+          "unbound knot"
+        ]
+      },
+      {
+        "id": "magician",
+        "slug": "magician",
+        "name": "Magician",
+        "short_description": "Notices hidden connections and experiments with ways a situation could transform.",
+        "core_desire": "To turn possibility into meaningful transformation",
+        "core_fear": "Being unable to influence a change that matters",
+        "core_motivation": "Connect insight and action to make something newly possible",
+        "strengths": [
+          "Reframes a stuck problem",
+          "Connects ideas across different domains",
+          "Helps others imagine a different outcome",
+          "Experiments with the system behind an event"
+        ],
+        "shadow_traits": [
+          "May become attached to an elegant explanation",
+          "May try to shape outcomes without enough shared understanding",
+          "May underestimate the ordinary work that change requires"
+        ],
+        "growth_direction": [
+          "Test the smallest useful version of a transformation",
+          "Explain the process so others can choose their involvement",
+          "Value maintenance as part of change"
+        ],
+        "decision_patterns": [
+          "Looks for an underlying pattern or a changeable assumption",
+          "Combines intuition with experiments"
+        ],
+        "relationship_patterns": [
+          "Connects through possibility and shared growth",
+          "Benefits from accepting a person without continually trying to transform the relationship"
+        ],
+        "leadership_patterns": [
+          "Offers a picture of what could become possible",
+          "Needs transparent steps and grounded feedback"
+        ],
+        "symbolic_keywords": [
+          "prism",
+          "threshold",
+          "resonance",
+          "unlit beacon"
+        ]
+      },
+      {
+        "id": "lover",
+        "slug": "lover",
+        "name": "Lover",
+        "short_description": "Pays attention to connection, meaning and the particular qualities of a person or moment.",
+        "core_desire": "To connect deeply with people and experiences",
+        "core_fear": "Losing a meaningful connection or feeling unseen",
+        "core_motivation": "Give attention to what makes connection worth sustaining",
+        "strengths": [
+          "Notices the emotional significance of a moment",
+          "Builds trust through attentive presence",
+          "Brings care to the quality of a shared experience",
+          "Recognizes value beyond efficiency"
+        ],
+        "shadow_traits": [
+          "May protect harmony at the expense of a clear need",
+          "May hold tightly to a connection when it needs space",
+          "May overextend to avoid disappointing someone"
+        ],
+        "growth_direction": [
+          "Name one need without apologizing for having it",
+          "Allow space without interpreting it as rejection",
+          "Keep personal commitments alongside shared ones"
+        ],
+        "decision_patterns": [
+          "Considers what a choice means for connection",
+          "Values depth of experience over breadth alone"
+        ],
+        "relationship_patterns": [
+          "Offers sustained attention and emotional investment",
+          "Benefits from direct communication about boundaries"
+        ],
+        "leadership_patterns": [
+          "Makes people feel seen in a shared task",
+          "Needs to balance particular relationships with fair group decisions"
+        ],
+        "symbolic_keywords": [
+          "thread",
+          "shared fire",
+          "song",
+          "mirror"
+        ]
+      },
+      {
+        "id": "creator",
+        "slug": "creator",
+        "name": "Creator",
+        "short_description": "Turns an imagined possibility into something tangible, expressive or useful.",
+        "core_desire": "To make something that carries meaning",
+        "core_fear": "Having no room to express or realize an idea",
+        "core_motivation": "Give form to an idea through experimentation and craft",
+        "strengths": [
+          "Finds new combinations in limited materials",
+          "Learns through prototypes",
+          "Brings a distinctive perspective to a shared problem",
+          "Improves a possibility by making it concrete"
+        ],
+        "shadow_traits": [
+          "May keep revising after the work is useful",
+          "May tie self-worth too closely to the finished work",
+          "May resist constraints that would help completion"
+        ],
+        "growth_direction": [
+          "Define what finished means before the next revision",
+          "Share an early version with someone it could help",
+          "Use one constraint as a creative prompt"
+        ],
+        "decision_patterns": [
+          "Looks for something that can be made or redesigned",
+          "Explores alternatives through hands-on iteration"
+        ],
+        "relationship_patterns": [
+          "Connects through shared projects and expression",
+          "Benefits from offering attention beyond the work itself"
+        ],
+        "leadership_patterns": [
+          "Makes experimentation available to a team",
+          "Needs a practical rhythm for finishing and sharing"
+        ],
+        "symbolic_keywords": [
+          "loom",
+          "lens",
+          "workshop",
+          "unfinished map"
+        ]
+      },
+      {
+        "id": "caregiver",
+        "slug": "caregiver",
+        "name": "Caregiver",
+        "short_description": "Recognizes what needs support and makes protection practical.",
+        "core_desire": "To help people and what matters remain supported",
+        "core_fear": "Overlooking a need when help could have mattered",
+        "core_motivation": "Sustain people and conditions that allow life to continue",
+        "strengths": [
+          "Notices needs that a fast-moving group can miss",
+          "Makes help practical and specific",
+          "Creates continuity during disruption",
+          "Remembers the human cost of a decision"
+        ],
+        "shadow_traits": [
+          "May carry responsibilities without checking consent or capacity",
+          "May put personal needs last for too long",
+          "May make it difficult for others to contribute by doing too much"
+        ],
+        "growth_direction": [
+          "Ask what support is wanted before offering it",
+          "Choose a clear limit for the help you can sustain",
+          "Let another person contribute without correcting the method"
+        ],
+        "decision_patterns": [
+          "Assesses who or what needs protection",
+          "Prioritizes a sustainable support structure"
+        ],
+        "relationship_patterns": [
+          "Expresses care through consistent support",
+          "Benefits from asking for help as directly as offering it"
+        ],
+        "leadership_patterns": [
+          "Protects the conditions in which people can work",
+          "Needs boundaries that prevent quiet overload"
+        ],
+        "symbolic_keywords": [
+          "shelter",
+          "water",
+          "root",
+          "hearth"
+        ]
+      },
+      {
+        "id": "jester",
+        "slug": "jester",
+        "name": "Jester",
+        "short_description": "Finds movement through play, perspective and attention to the present moment.",
+        "core_desire": "To experience aliveness and shared enjoyment",
+        "core_fear": "A life narrowed to duty without room for play",
+        "core_motivation": "Release a fixed perspective and make room for possibility now",
+        "strengths": [
+          "Releases tension without needing every problem solved",
+          "Invites participation through play",
+          "Spots an unexpected angle",
+          "Keeps a group connected to the present"
+        ],
+        "shadow_traits": [
+          "May use humor to move away from discomfort too quickly",
+          "May defer follow-through for a more appealing moment",
+          "May underestimate how seriously another person experiences a problem"
+        ],
+        "growth_direction": [
+          "Ask whether the moment needs lightness or listening",
+          "Finish one small commitment before improvising the next",
+          "Let an uncomfortable feeling remain without immediately reframing it"
+        ],
+        "decision_patterns": [
+          "Experiments with an unexpected or playful response",
+          "Looks for immediate opportunities to shift a stuck dynamic"
+        ],
+        "relationship_patterns": [
+          "Connects through shared moments and humor",
+          "Benefits from making room for conversations without a quick release"
+        ],
+        "leadership_patterns": [
+          "Lowers the cost of joining in",
+          "Needs explicit follow-through after a burst of energy"
+        ],
+        "symbolic_keywords": [
+          "bell",
+          "ribbon",
+          "dance",
+          "unexpected door"
+        ]
+      },
+      {
+        "id": "ruler",
+        "slug": "ruler",
+        "name": "Ruler",
+        "short_description": "Creates order, direction and reliable conditions for a shared undertaking.",
+        "core_desire": "To create a stable and effective shared order",
+        "core_fear": "A preventable breakdown without clear responsibility",
+        "core_motivation": "Coordinate resources and decisions toward a lasting result",
+        "strengths": [
+          "Clarifies responsibility when a group is uncertain",
+          "Connects immediate tasks to a longer plan",
+          "Makes resources and trade-offs visible",
+          "Builds systems that can support continuity"
+        ],
+        "shadow_traits": [
+          "May tighten control when shared understanding would help",
+          "May treat another method as a threat to reliability",
+          "May keep decisions centralized longer than necessary"
+        ],
+        "growth_direction": [
+          "Delegate an outcome and allow a different method",
+          "Ask whose knowledge is missing from the plan",
+          "Make one rule easy to question and revise"
+        ],
+        "decision_patterns": [
+          "Compares options through resources, roles and consequences",
+          "Seeks explicit commitments before coordination"
+        ],
+        "relationship_patterns": [
+          "Shows care through reliability and planning",
+          "Benefits from sharing uncertainty without immediately organizing it"
+        ],
+        "leadership_patterns": [
+          "Creates clear conditions for coordinated work",
+          "Needs feedback channels that do not depend on permission"
+        ],
+        "symbolic_keywords": [
+          "beacon",
+          "circle",
+          "keystone",
+          "council table"
+        ]
+      },
+      {
+        "id": "everyman",
+        "slug": "everyman",
+        "name": "Everyman",
+        "short_description": "Builds belonging through participation, practical cooperation and shared ground.",
+        "core_desire": "To belong and contribute alongside others",
+        "core_fear": "Being excluded or separated from ordinary shared life",
+        "core_motivation": "Make participation possible without requiring exceptional status",
+        "strengths": [
+          "Finds common ground among different people",
+          "Makes a contribution feel accessible",
+          "Shares practical responsibility",
+          "Notices when someone is being left outside a group"
+        ],
+        "shadow_traits": [
+          "May mute a useful difference to preserve belonging",
+          "May accept a familiar group norm without examining it",
+          "May wait for agreement when a personal choice is needed"
+        ],
+        "growth_direction": [
+          "State a preference before seeking consensus",
+          "Make room for belonging that includes disagreement",
+          "Take one useful action without waiting for everyone to join"
+        ],
+        "decision_patterns": [
+          "Looks for a workable shared approach",
+          "Values participation and practical fairness"
+        ],
+        "relationship_patterns": [
+          "Connects through steady presence and shared routines",
+          "Benefits from letting personal differences be visible"
+        ],
+        "leadership_patterns": [
+          "Invites ownership throughout a group",
+          "Needs a clear way to decide when consensus is unavailable"
+        ],
+        "symbolic_keywords": [
+          "common road",
+          "table",
+          "relay",
+          "woven circle"
+        ]
+      }
+    ]
+  },
+  "interpretation": {
+    "provider": "deterministic",
+    "model": "registry-1.0",
+    "prompt_version": "fallback.v1",
+    "interpretation": {
+      "character_title": "The Inventive Magician",
+      "summary": "Your journey most strongly aligns with the Magician archetype, with the Creator also shaping the pattern. Your choices suggest that you may be drawn to to turn possibility into meaningful transformation. This does not describe every part of you: it reflects the strategies you selected in a particular imagined setting. Across the road, you had opportunities to act, investigate, cooperate and reconsider. The combination suggests a useful tension between connect insight and action to make something newly possible and give form to an idea through experimentation and craft. Neither approach has to win in every situation. You may find it useful to notice when your familiar response helps and when another response would create more room. Treat the result as an invitation to compare the story with your own experience, keeping what resonates and questioning what does not.",
+      "strengths": [
+        {
+          "title": "Strength 1",
+          "description": "Your choices suggest a capacity that reframes a stuck problem."
+        },
+        {
+          "title": "Strength 2",
+          "description": "Your choices suggest a capacity that connects ideas across different domains."
+        },
+        {
+          "title": "Strength 3",
+          "description": "Your choices suggest a capacity that helps others imagine a different outcome."
+        },
+        {
+          "title": "Strength 4",
+          "description": "Your choices suggest a capacity that experiments with the system behind an event."
+        }
+      ],
+      "blind_spots": [
+        {
+          "title": "Pattern to notice 1",
+          "description": "Under pressure, you may become attached to an elegant explanation."
+        },
+        {
+          "title": "Pattern to notice 2",
+          "description": "Under pressure, you may try to shape outcomes without enough shared understanding."
+        },
+        {
+          "title": "Pattern to notice 3",
+          "description": "Under pressure, you may underestimate the ordinary work that change requires."
+        }
+      ],
+      "decision_style": "In uncertainty, your choices suggest this approach: Looks for an underlying pattern or a changeable assumption; Combines intuition with experiments. With risk, consider what a smaller experiment could reveal. In conflict, ask what another strategy protects. With complexity, alternate understanding and action. In leadership, Offers a picture of what could become possible; Needs transparent steps and grounded feedback.",
+      "relationships": "Your choices suggest that you may connect in these ways: Connects through possibility and shared growth; Benefits from accepting a person without continually trying to transform the relationship. A secondary influence adds another possibility: Connects through shared projects and expression. Trust, independence and emotional communication can all change with the situation.",
+      "motivation_analysis": "The strongest content-relative motivation index is creation. It may be useful to ask how this motive supports your current commitments, and which other motives need space. These indices describe this journey, not population percentiles.",
+      "shadow_analysis": "Several choices under pressure contributed to the Innocent pattern. May overlook inconvenient evidence to preserve hope. This is a contextual tendency to reflect on, not a fixed identity or a clinical finding.",
+      "growth_path": [
+        {
+          "title": "Practice 1",
+          "description": "Test the smallest useful version of a transformation"
+        },
+        {
+          "title": "Practice 2",
+          "description": "Explain the process so others can choose their involvement"
+        },
+        {
+          "title": "Practice 3",
+          "description": "Value maintenance as part of change"
+        }
+      ],
+      "ideal_environment": "You may find it useful to seek an environment that leaves room to connect insight and action to make something newly possible, while inviting feedback from people whose approaches differ from yours.",
+      "final_reflection": "Think of a recent choice that felt like this journey. What did your familiar strategy protect, and what might a different strategy have made possible?",
+      "social": {
+        "instagram_caption": "My journey revealed The Inventive Magician: Magician with Creator. A story to reflect on, and a road still open to change.",
+        "linkedin_caption": "I completed an interactive self-discovery journey about decisions and motivation. My strongest alignment was Magician, followed by Creator. I am reflecting on how these approaches influence my work and collaboration.",
+        "x_caption": "My journey revealed The Inventive Magician. Magician 72% · Creator 15%. Discover the road your choices reveal.",
+        "quote": "The road you choose can teach you something. It does not have to define every road ahead."
+      }
+    }
+  },
+  "report_data": {
+    "template_version": "report.v1",
+    "result_id": "10000000-0000-4000-8000-000000000001",
+    "cover": {
+      "user_name": "Sample Traveler",
+      "character_title": "The Inventive Magician",
+      "character_image_url": null,
+      "date": "2026-09-03T00:00:00.000Z",
+      "branding": "The Unwritten Road"
+    },
+    "sections": [
+      {
+        "number": 1,
+        "title": "Your Main Result",
+        "paragraphs": [
+          "Your journey most strongly aligns with the Magician archetype, with the Creator also shaping the pattern. Your choices suggest that you may be drawn to to turn possibility into meaningful transformation. This does not describe every part of you: it reflects the strategies you selected in a particular imagined setting. Across the road, you had opportunities to act, investigate, cooperate and reconsider. The combination suggests a useful tension between connect insight and action to make something newly possible and give form to an idea through experimentation and craft. Neither approach has to win in every situation. You may find it useful to notice when your familiar response helps and when another response would create more room. Treat the result as an invitation to compare the story with your own experience, keeping what resonates and questioning what does not."
+        ]
+      },
+      {
+        "number": 2,
+        "title": "Your Dominant Archetypes",
+        "paragraphs": [
+          "Magician: 72% narrative alignment",
+          "Creator: 15% narrative alignment",
+          "Outlaw: 7% narrative alignment",
+          "Explorer: 4% narrative alignment",
+          "Sage: 1% narrative alignment",
+          "Everyman: 1% narrative alignment",
+          "Jester: 0% narrative alignment",
+          "Ruler: 0% narrative alignment",
+          "Lover: 0% narrative alignment",
+          "Caregiver: 0% narrative alignment",
+          "Innocent: 0% narrative alignment",
+          "Hero: 0% narrative alignment"
+        ]
+      },
+      {
+        "number": 3,
+        "title": "Your Shadow Energy",
+        "paragraphs": [
+          "Several choices under pressure contributed to the Innocent pattern. May overlook inconvenient evidence to preserve hope. This is a contextual tendency to reflect on, not a fixed identity or a clinical finding."
+        ]
+      },
+      {
+        "number": 4,
+        "title": "How You Face Challenges",
+        "paragraphs": [
+          "In uncertainty, your choices suggest this approach: Looks for an underlying pattern or a changeable assumption; Combines intuition with experiments. With risk, consider what a smaller experiment could reveal. In conflict, ask what another strategy protects. With complexity, alternate understanding and action. In leadership, Offers a picture of what could become possible; Needs transparent steps and grounded feedback.",
+          "Consider the situation, your resources and the cost of each available strategy before deciding which pattern serves you here."
+        ]
+      },
+      {
+        "number": 5,
+        "title": "How You Make Decisions",
+        "paragraphs": [
+          "In uncertainty, your choices suggest this approach: Looks for an underlying pattern or a changeable assumption; Combines intuition with experiments. With risk, consider what a smaller experiment could reveal. In conflict, ask what another strategy protects. With complexity, alternate understanding and action. In leadership, Offers a picture of what could become possible; Needs transparent steps and grounded feedback."
+        ]
+      },
+      {
+        "number": 6,
+        "title": "What Motivates You",
+        "paragraphs": [
+          "The strongest content-relative motivation index is creation. It may be useful to ask how this motive supports your current commitments, and which other motives need space. These indices describe this journey, not population percentiles.",
+          "power: 0/100 content-relative index",
+          "freedom: 47/100 content-relative index",
+          "connection: 9/100 content-relative index",
+          "creation: 93/100 content-relative index",
+          "knowledge: 36/100 content-relative index",
+          "protection: 0/100 content-relative index"
+        ]
+      },
+      {
+        "number": 7,
+        "title": "How You Connect With Others",
+        "paragraphs": [
+          "Your choices suggest that you may connect in these ways: Connects through possibility and shared growth; Benefits from accepting a person without continually trying to transform the relationship. A secondary influence adds another possibility: Connects through shared projects and expression. Trust, independence and emotional communication can all change with the situation."
+        ]
+      },
+      {
+        "number": 8,
+        "title": "Natural Strengths",
+        "paragraphs": [
+          "Strength 1: Your choices suggest a capacity that reframes a stuck problem.",
+          "Strength 2: Your choices suggest a capacity that connects ideas across different domains.",
+          "Strength 3: Your choices suggest a capacity that helps others imagine a different outcome.",
+          "Strength 4: Your choices suggest a capacity that experiments with the system behind an event."
+        ]
+      },
+      {
+        "number": 9,
+        "title": "Patterns To Watch",
+        "paragraphs": [
+          "Pattern to notice 1: Under pressure, you may become attached to an elegant explanation.",
+          "Pattern to notice 2: Under pressure, you may try to shape outcomes without enough shared understanding.",
+          "Pattern to notice 3: Under pressure, you may underestimate the ordinary work that change requires."
+        ]
+      },
+      {
+        "number": 10,
+        "title": "Your Ideal Environment",
+        "paragraphs": [
+          "You may find it useful to seek an environment that leaves room to connect insight and action to make something newly possible, while inviting feedback from people whose approaches differ from yours."
+        ]
+      },
+      {
+        "number": 11,
+        "title": "Your Path of Evolution",
+        "paragraphs": [
+          "Practice 1: Test the smallest useful version of a transformation",
+          "Practice 2: Explain the process so others can choose their involvement",
+          "Practice 3: Value maintenance as part of change"
+        ]
+      },
+      {
+        "number": 12,
+        "title": "Final Reflection",
+        "paragraphs": [
+          "Think of a recent choice that felt like this journey. What did your familiar strategy protect, and what might a different strategy have made possible?"
+        ]
+      }
+    ],
+    "disclaimer": "This experience is designed for self-reflection and entertainment. It does not provide psychological or medical diagnosis."
+  }
+}
