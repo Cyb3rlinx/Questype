@@ -1,0 +1,23 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "questype",
+	"main": "dist/server/index.js",
+	"compatibility_date": "2026-08-31",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"assets": {
+		"directory": "dist/client"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "questype-db",
+			"database_id": "e1499e2e-39b7-414f-be9f-424e8d918b55",
+			"migrations_dir": "drizzle"
+		}
+	]
+}
