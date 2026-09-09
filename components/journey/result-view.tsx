@@ -28,6 +28,10 @@ import { requestJson } from '@/lib/client-api';
 import type { StructuredProfile } from '@/src/domain/scoring/profile';
 import type { Interpretation } from '@/src/ai/contracts';
 import type { ReportData } from '@/src/reports/data';
+import { useLocale } from '../i18n-provider';
+import { localizeArchetype, localizedCharacterTitle, archetypeName } from '@/src/i18n/archetypes';
+import { archetypeResultCopy } from '@/src/i18n/result-copy';
+import { archetypeImage, archetypeImageAlt } from '@/src/domain/archetype-images';
 export interface ResultPayload {
   profile: StructuredProfile;
   interpretation: Interpretation;
@@ -53,7 +57,8 @@ const labels: Record<string, string> = {
   obsession: 'Holding too tightly',
   emotional_detachment: 'Emotional distance',
 };
-function MeterList({ values }: { values: Record<string, number> }) {
+const labelsEs: Record<string, string> = { power: 'Influencia', freedom: 'Libertad', connection: 'Conexión', creation: 'Creación', knowledge: 'Conocimiento', protection: 'Protección', impulsive: 'Acción inmediata', strategic: 'Pensamiento estratégico', intuitive: 'Intuición', rational: 'Análisis', protective: 'Protección', dominant: 'Dirección', control: 'Mayor control', avoidance: 'Alejamiento', self_sacrifice: 'Cargar demasiado', rebellion: 'Resistencia automática', obsession: 'Aferrarse demasiado', emotional_detachment: 'Distancia emocional' };
+function MeterList({ values, es }: { values: Record<string, number>; es: boolean }) {
   return (
     <div className="meter-list">
       {Object.entries(values)
@@ -61,7 +66,7 @@ function MeterList({ values }: { values: Record<string, number> }) {
         .map(([key, value]) => (
           <div className="meter-row" key={key}>
             <div>
-              <span>{labels[key] ?? key.replaceAll('_', ' ')}</span>
+              <span>{(es ? labelsEs : labels)[key] ?? key.replaceAll('_', ' ')}</span>
               <span>
                 {value}
                 <small>/100</small>
@@ -76,6 +81,8 @@ function MeterList({ values }: { values: Record<string, number> }) {
   );
 }
 export function ResultView({ resultId }: { resultId: string }) {
+  const { locale } = useLocale();
+  const es = locale === 'es';
   const [data, setData] = useState<ResultPayload | null>(null);
   const [error, setError] = useState('');
   const [share, setShare] = useState(false);
@@ -86,7 +93,7 @@ export function ResultView({ resultId }: { resultId: string }) {
     requestJson<ResultPayload>(`/api/results/${resultId}`)
       .then(setData)
       .catch((e) => setError(e.message));
-  }, [resultId]);
+  }, [resultId, locale]);
   async function download() {
     setExporting(true);
     setMessage('');
@@ -96,7 +103,7 @@ export function ResultView({ resultId }: { resultId: string }) {
       );
       const { downloadReport } = await import('@/lib/export-assets');
       await downloadReport(report);
-      setMessage('Your personal report is ready.');
+      setMessage(es ? 'Tu informe personal está listo.' : 'Your personal report is ready.');
     } catch (e) {
       setMessage((e as Error).message);
     } finally {
@@ -110,13 +117,13 @@ export function ResultView({ resultId }: { resultId: string }) {
         <main id="main" className="centered-state">
           <Compass size={42} strokeWidth={1} />
           <h1>
-            {error ? 'A private story.' : 'Your story is coming into view…'}
+            {error ? (es ? 'Una historia privada.' : 'A private story.') : (es ? 'Tu historia está tomando forma…' : 'Your story is coming into view…')}
           </h1>
           {error && (
             <>
               <p role="alert">{error}</p>
               <Link href="/start" className="button button-gold">
-                Begin your own journey <ArrowRight size={17} />
+                {es ? 'Comienza tu propio viaje' : 'Begin your own journey'} <ArrowRight size={17} />
               </Link>
             </>
           )}
@@ -124,12 +131,15 @@ export function ResultView({ resultId }: { resultId: string }) {
       </>
     );
   const { profile: p, interpretation: i } = data;
-  const primary = p.registry_snapshot.find(
+  const primary = localizeArchetype(p.registry_snapshot.find(
     (a) => a.slug === p.archetypes.primary.slug,
-  )!;
-  const secondary = p.registry_snapshot.find(
+  )!, locale);
+  const secondary = localizeArchetype(p.registry_snapshot.find(
     (a) => a.slug === p.archetypes.secondary.slug,
-  )!;
+  )!, locale);
+  const characterTitle = localizedCharacterTitle(p, locale);
+  const primaryImage = archetypeImage(p.archetypes.primary.slug, p.user.character_gender);
+  const resultCopy = archetypeResultCopy(p.archetypes.primary.slug, locale);
   return (
     <>
       <SiteHeader />
@@ -137,22 +147,19 @@ export function ResultView({ resultId }: { resultId: string }) {
         <section className="result-hero page-width">
           <div className="result-identity">
             <span className="eyebrow">
-              <Check size={13} /> YOUR JOURNEY, REVEALED
+              <Check size={13} /> {es ? 'TU VIAJE, REVELADO' : 'YOUR JOURNEY, REVEALED'}
             </span>
             <p className="traveler-greeting">
-              {p.user.name
-                ? `${p.user.name}, your choices tell a story.`
-                : 'Traveler, your choices tell a story.'}
+              {es ? 'El camino fue el mismo. La forma en que lo recorriste fue completamente tuya.' : 'Your road was the same. The way you traveled it was entirely yours.'}
             </p>
             <h1>
-              {p.character.title.split(' ').slice(0, -1).join(' ')}
+              {characterTitle.split(' ').slice(0, -1).join(' ')}
               <br />
-              <em>{p.character.title.split(' ').at(-1)}</em>
+              <em>{characterTitle.split(' ').at(-1)}</em>
             </h1>
             <p className="result-lede">
-              Your path most strongly aligns with{' '}
-              <strong>the {primary.name}</strong>, with the {secondary.name}{' '}
-              close at its side.
+              {es ? 'Tu camino se alinea con mayor fuerza con ' : 'Your path most strongly aligns with '}
+              <strong>{es ? primary.name : `the ${primary.name}`}</strong>{es ? `, con ${secondary.name} muy cerca.` : `, with the ${secondary.name} close at its side.`}
             </p>
             <div className="identity-tags">
               <span>
@@ -166,7 +173,7 @@ export function ResultView({ resultId }: { resultId: string }) {
                 onClick={() => setShare(true)}
               >
                 <Share2 size={16} />
-                Share your story
+                {es ? 'Comparte tu historia' : 'Share your story'}
               </button>
               <button
                 className="button button-outline"
@@ -174,37 +181,38 @@ export function ResultView({ resultId }: { resultId: string }) {
                 onClick={download}
               >
                 <Download size={16} />
-                {exporting ? 'Preparing report…' : 'Your personal report'}
+                {exporting ? (es ? 'Preparando informe…' : 'Preparing report…') : (es ? 'Tu informe personal' : 'Your personal report')}
               </button>
             </div>
             <p aria-live="polite" className="export-message">
               {message}
             </p>
             <span className="completed-label">
-              15 choices · A story entirely your own
+              {es ? '15 elecciones · Una historia completamente tuya' : '15 choices · A story entirely your own'}
             </span>
           </div>
           <div className="identity-card">
             <img
-              src="/images/valley-reference.webp"
-              alt="A traveler at the beginning of a vast, open world"
+              src={primaryImage}
+              alt={archetypeImageAlt(p.archetypes.primary.slug, primary.name, p.user.character_gender, locale)}
+              fetchPriority="high"
             />
             <div className="identity-card-top">
               <Compass size={23} strokeWidth={1} />
-              <span>THE UNWRITTEN ROAD</span>
+              <span>{es ? 'EL CAMINO NO ESCRITO' : 'THE UNWRITTEN ROAD'}</span>
             </div>
             <div className="identity-card-bottom">
-              <span className="eyebrow">YOUR DOMINANT ARCHETYPE</span>
-              <h2>The {primary.name}</h2>
+              <span className="eyebrow">{es ? 'TU ARQUETIPO DOMINANTE' : 'YOUR DOMINANT ARCHETYPE'}</span>
+              <h2>{es ? primary.name : `The ${primary.name}`}</h2>
               <div>
                 <span>
                   {p.archetypes.primary.normalized_percentage}
                   <small>%</small>
                 </span>
                 <p>
-                  of your archetype
+                  {es ? 'de tu afinidad' : 'of your archetype'}
                   <br />
-                  alignment
+                  {es ? 'arquetípica' : 'alignment'}
                 </p>
               </div>
             </div>
@@ -213,62 +221,50 @@ export function ResultView({ resultId }: { resultId: string }) {
         <section className="result-details page-width">
           <Tabs defaultValue="archetypes" className="result-tabs">
             <TabsList variant="line" className="result-tab-list">
-              <TabsTrigger value="archetypes">Your archetypes</TabsTrigger>
-              <TabsTrigger value="compass">Your inner compass</TabsTrigger>
-              <TabsTrigger value="growth">Connections & growth</TabsTrigger>
+              <TabsTrigger value="archetypes">{es ? 'Tus arquetipos' : 'Your archetypes'}</TabsTrigger>
+              <TabsTrigger value="compass">{es ? 'Tu brújula interior' : 'Your inner compass'}</TabsTrigger>
+              <TabsTrigger value="growth">{es ? 'Vínculos y crecimiento' : 'Connections & growth'}</TabsTrigger>
             </TabsList>
             <TabsContent value="archetypes">
               <div className="result-columns">
                 <article className="result-summary">
                   <span className="eyebrow">
-                    THE THREAD THAT RUNS THROUGH YOU
+                    {es ? 'EL HILO QUE TE RECORRE' : 'THE THREAD THAT RUNS THROUGH YOU'}
                   </span>
                   <h2>
-                    A natural instinct
+                    {resultCopy.headline}
                     <br />
-                    to{' '}
-                    <em>
-                      {p.character.dominant_motivation === 'knowledge'
-                        ? 'understand.'
-                        : p.character.dominant_motivation === 'freedom'
-                          ? 'explore.'
-                          : p.character.dominant_motivation === 'creation'
-                            ? 'create.'
-                            : p.character.dominant_motivation === 'connection'
-                              ? 'connect.'
-                              : p.character.dominant_motivation === 'power'
-                                ? 'shape what comes next.'
-                                : 'care.'}
-                    </em>
+                    <em>{resultCopy.emphasis}</em>
                   </h2>
-                  <p>{i.summary}</p>
+                  <p className="archetype-thread-lead">{resultCopy.threadLead}</p>
+                  <p>{resultCopy.threadBody}</p>
                   <div className="result-quote">
                     <span>“</span>
-                    <p>{i.social.quote}</p>
+                    <p>{resultCopy.quote}</p>
                   </div>
                 </article>
                 <article className="distribution-panel">
                   <div className="panel-title">
-                    <h3>Your archetype constellation</h3>
+                    <h3>{es ? 'Tu constelación de arquetipos' : 'Your archetype constellation'}</h3>
                     <button
                       onClick={() => setInfo(true)}
-                      aria-label="About archetype percentages"
+                      aria-label={es ? 'Acerca de los porcentajes de arquetipos' : 'About archetype percentages'}
                     >
                       <Info size={17} />
                     </button>
                   </div>
-                  <p>Many influences. One individual blend.</p>
+                  <p>{es ? 'Muchas influencias. Una combinación individual.' : 'Many influences. One individual blend.'}</p>
                   <div className="archetype-bars">
                     {p.archetypes.all.map((a, index) => (
                       <div
-                        className={`archetype-bar ${index < 3 ? 'dominant' : ''}`}
+                        className={`archetype-bar ${index < 2 ? 'dominant' : ''}`}
                         key={a.slug}
                       >
                         <div>
                           <span>
                             <small>{String(index + 1).padStart(2, '0')}</small>
-                            {a.name}
-                            {index === 0 && <i>Primary</i>}
+                            {archetypeName(a.slug, a.name, locale)}
+                            {index === 0 && <i>{es ? 'Principal' : 'Primary'}</i>}
                           </span>
                           <strong>{a.normalized_percentage}%</strong>
                         </div>
@@ -281,14 +277,14 @@ export function ResultView({ resultId }: { resultId: string }) {
                     ))}
                   </div>
                   <p className="distribution-note">
-                    A blend of narrative patterns, with room to change.
+                    {es ? 'Una combinación de patrones narrativos con espacio para cambiar.' : 'A blend of narrative patterns, with room to change.'}
                   </p>
                 </article>
               </div>
               <section className="result-strengths">
-                <span className="eyebrow">WHAT YOU BRING TO THE ROAD</span>
+                <span className="eyebrow">{es ? 'LO QUE APORTAS AL CAMINO' : 'WHAT YOU BRING TO THE ROAD'}</span>
                 <h2>
-                  Your natural <em>strengths.</em>
+                  {es ? 'Tus fortalezas ' : 'Your natural '}<em>{es ? 'naturales.' : 'strengths.'}</em>
                 </h2>
                 <div className="strength-grid">
                   {primary.strengths.map((strength, index) => {
@@ -297,14 +293,7 @@ export function ResultView({ resultId }: { resultId: string }) {
                       <article key={strength}>
                         <Icon size={24} strokeWidth={1.2} />
                         <h3>
-                          {
-                            [
-                              'A clear sense of possibility',
-                              'A way through uncertainty',
-                              'A contribution that matters',
-                              'Room for another perspective',
-                            ][index]
-                          }
+                          {resultCopy.strengthTitles[index]}
                         </h3>
                         <p>{strength}.</p>
                       </article>
@@ -316,33 +305,32 @@ export function ResultView({ resultId }: { resultId: string }) {
             <TabsContent value="compass">
               <div className="compass-grid">
                 <article className="insight-panel">
-                  <span className="eyebrow">WHAT MOVES YOU</span>
-                  <h2>Your motivations</h2>
+                  <span className="eyebrow">{es ? 'LO QUE TE MUEVE' : 'WHAT MOVES YOU'}</span>
+                  <h2>{es ? 'Tus motivaciones' : 'Your motivations'}</h2>
                   <p>{i.motivation_analysis}</p>
-                  <MeterList values={p.motivations} />
+                  <MeterList values={p.motivations} es={es} />
                 </article>
                 <article className="insight-panel">
-                  <span className="eyebrow">HOW YOU FIND A WAY</span>
-                  <h2>Your decision style</h2>
+                  <span className="eyebrow">{es ? 'CÓMO ENCUENTRAS EL CAMINO' : 'HOW YOU FIND A WAY'}</span>
+                  <h2>{es ? 'Tu forma de decidir' : 'Your decision style'}</h2>
                   <p>{i.decision_style}</p>
-                  <MeterList values={p.decision_style} />
+                  <MeterList values={p.decision_style} es={es} />
                 </article>
               </div>
               <section className="shadow-panel">
                 <div>
-                  <span className="eyebrow">WHEN THE ROAD GETS DIFFICULT</span>
+                  <span className="eyebrow">{es ? 'CUANDO EL CAMINO SE VUELVE DIFÍCIL' : 'WHEN THE ROAD GETS DIFFICULT'}</span>
                   <h2>
-                    A meeting with
+                    {es ? 'Un encuentro con' : 'A meeting with'}
                     <br />
-                    <em>your shadow.</em>
+                    <em>{es ? 'tu sombra.' : 'your shadow.'}</em>
                   </h2>
                   <span className="shadow-tag">
-                    {p.archetypes.shadow.slug.charAt(0).toUpperCase() +
-                      p.archetypes.shadow.slug.slice(1)}{' '}
+                    {archetypeName(p.archetypes.shadow.slug, p.archetypes.shadow.slug.charAt(0).toUpperCase() + p.archetypes.shadow.slug.slice(1), locale)}{' '}
                     ·{' '}
                     {p.archetypes.shadow.evidence === 'supported'
-                      ? 'Repeated pressure pattern'
-                      : 'Tentative reflection'}
+                      ? (es ? 'Patrón repetido bajo presión' : 'Repeated pressure pattern')
+                      : (es ? 'Reflexión tentativa' : 'Tentative reflection')}
                   </span>
                 </div>
                 <div>
@@ -356,8 +344,7 @@ export function ResultView({ resultId }: { resultId: string }) {
                     ))}
                   </div>
                   <p className="small-note">
-                    These patterns describe possible responses under pressure.
-                    They are not diagnoses.
+                    {es ? 'Estos patrones describen posibles respuestas bajo presión. No son diagnósticos.' : 'These patterns describe possible responses under pressure. They are not diagnoses.'}
                   </p>
                 </div>
               </section>
@@ -366,20 +353,20 @@ export function ResultView({ resultId }: { resultId: string }) {
               <div className="growth-columns">
                 <article className="insight-panel">
                   <Heart size={26} strokeWidth={1.2} />
-                  <span className="eyebrow">THE PEOPLE ALONG YOUR PATH</span>
+                  <span className="eyebrow">{es ? 'LAS PERSONAS EN TU CAMINO' : 'THE PEOPLE ALONG YOUR PATH'}</span>
                   <h2>
-                    How you <em>connect.</em>
+                    {es ? 'Cómo ' : 'How you '}<em>{es ? 'conectas.' : 'connect.'}</em>
                   </h2>
                   <p>{i.relationships}</p>
-                  <h3>A place to feel at home</h3>
+                  <h3>{es ? 'Un lugar para sentirte en casa' : 'A place to feel at home'}</h3>
                   <p>{i.ideal_environment}</p>
                 </article>
                 <article className="growth-panel">
-                  <span className="eyebrow">WHAT COMES NEXT</span>
+                  <span className="eyebrow">{es ? 'LO QUE VIENE DESPUÉS' : 'WHAT COMES NEXT'}</span>
                   <h2>
-                    Small steps.
+                    {es ? 'Pasos pequeños.' : 'Small steps.'}
                     <br />
-                    <em>New possibilities.</em>
+                    <em>{es ? 'Nuevas posibilidades.' : 'New possibilities.'}</em>
                   </h2>
                   {i.growth_path.map((step, index) => (
                     <div className="growth-step" key={step.title}>
@@ -387,11 +374,15 @@ export function ResultView({ resultId }: { resultId: string }) {
                       <div>
                         <h3>
                           {
-                            [
+                            (es ? [
+                              'Abre espacio para una respuesta diferente',
+                              'Practica un cambio pequeño',
+                              'Llévalo a tu vida cotidiana',
+                            ] : [
                               'Make room for a different response',
                               'Practice one small change',
                               'Carry it into everyday life',
-                            ][index]
+                            ])[index]
                           }
                         </h3>
                         <p>{step.description}</p>
@@ -402,7 +393,7 @@ export function ResultView({ resultId }: { resultId: string }) {
               </div>
               <div className="reflection-panel">
                 <Compass size={29} strokeWidth={1} />
-                <span className="eyebrow">A QUESTION TO CARRY WITH YOU</span>
+                <span className="eyebrow">{es ? 'UNA PREGUNTA PARA LLEVAR CONTIGO' : 'A QUESTION TO CARRY WITH YOU'}</span>
                 <h2>{i.final_reflection}</h2>
               </div>
             </TabsContent>
@@ -410,9 +401,9 @@ export function ResultView({ resultId }: { resultId: string }) {
         </section>
         <section className="result-closing page-width">
           <div>
-            <span className="eyebrow">THE STORY DOESN’T END HERE</span>
+            <span className="eyebrow">{es ? 'LA HISTORIA NO TERMINA AQUÍ' : 'THE STORY DOESN’T END HERE'}</span>
             <h2>
-              Take a little of it <em>with you.</em>
+              {es ? 'Lleva una parte ' : 'Take a little of it '}<em>{es ? 'contigo.' : 'with you.'}</em>
             </h2>
           </div>
           <div>
@@ -420,11 +411,11 @@ export function ResultView({ resultId }: { resultId: string }) {
               className="button button-gold"
               onClick={() => setShare(true)}
             >
-              Share your story <ArrowUpRight size={17} />
+              {es ? 'Comparte tu historia' : 'Share your story'} <ArrowUpRight size={17} />
             </button>
             <Link href="/start?new=1" className="text-link">
               <RotateCcw size={14} />
-              Walk a different path
+              {es ? 'Recorrer un camino diferente' : 'Walk a different path'}
             </Link>
           </div>
         </section>
@@ -434,13 +425,10 @@ export function ResultView({ resultId }: { resultId: string }) {
       <Dialog open={info} onOpenChange={setInfo}>
         <DialogContent className="story-dialog">
           <DialogTitle className="dialog-heading">
-            A pattern, not a prediction.
+            {es ? 'Un patrón, no una predicción.' : 'A pattern, not a prediction.'}
           </DialogTitle>
           <DialogDescription>
-            These percentages show the relative alignment of your story choices
-            with twelve archetypes. They add up to 100%. They are not
-            probabilities, population rankings or clinical findings. Motivation
-            and decision indices are independent scales from 0 to 100.
+            {es ? 'Estos porcentajes expresan la jerarquía de tus elecciones en la historia. Los patrones dominante y secundario reciben mayor énfasis, mientras el resto se distribuye entre influencias más sutiles. En conjunto suman 100 %. No son probabilidades, posiciones frente a una población ni hallazgos clínicos. Los índices de motivación y decisión son escalas independientes de 0 a 100.' : 'These percentages express the hierarchy in your story choices. The dominant and secondary patterns are emphasized, while the remaining alignment is distributed across quieter influences. They add up to 100%. They are not probabilities, population rankings or clinical findings. Motivation and decision indices are independent scales from 0 to 100.'}
           </DialogDescription>
         </DialogContent>
       </Dialog>

@@ -25,6 +25,6 @@ export function validateInterpretation(input: unknown, profile: StructuredProfil
   };
   collect(result);
   if (strings.some(value => forbidden.test(value) || /<\/?[a-z][^>]*>/i.test(value))) throw new Error('Interpretation contains prohibited clinical, fixed-identity, or markup language');
-  if (profile.archetypes.shadow.evidence !== 'supported' && !/limited|tentative|insufficient|not enough/i.test(result.shadow_analysis)) throw new Error('Shadow interpretation must acknowledge limited evidence');
+  if (profile.archetypes.shadow.evidence !== 'supported' && !/limited|tentative|insufficient|not enough|limitad|insuficiente|no hay suficiente/i.test(result.shadow_analysis)) throw new Error('Shadow interpretation must acknowledge limited evidence');
   return result;
 }

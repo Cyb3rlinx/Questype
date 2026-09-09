@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { Compass, ArrowRight } from 'lucide-react';
 import { SiteHeader } from '@/components/journey/chrome';
 import { requestJson, type SessionView } from '@/lib/client-api';
+import { useLocale } from '@/components/i18n-provider';
 export default function ProcessingPage() {
+  const { locale } = useLocale();
+  const es = locale === 'es';
   const router = useRouter();
   const [error, setError] = useState('');
   const active = useRef(false);
@@ -41,7 +44,7 @@ export default function ProcessingPage() {
     <div className="processing-page">
       <img
         src="/images/ridge-beacon.webp"
-        alt="A beacon overlooking a quiet valley"
+        alt={es ? 'Un faro sobre un valle silencioso' : 'A beacon overlooking a quiet valley'}
       />
       <div className="processing-shade" />
       <SiteHeader compact />
@@ -49,23 +52,23 @@ export default function ProcessingPage() {
         <div className={`reveal-compass ${error ? '' : 'turning'}`}>
           <Compass size={65} strokeWidth={0.8} />
         </div>
-        <span className="eyebrow">FIFTEEN MOMENTS. ONE UNWRITTEN STORY.</span>
+        <span className="eyebrow">{es ? 'LA MELODÍA SE DESVANECE. LA CARTA PERMANECE.' : 'THE MELODY FADES. THE LETTER REMAINS.'}</span>
         <h1>
-          The road has revealed
+          {es ? 'Despiertas donde' : 'You wake where'}
           <br />
-          <em>a little more of you.</em>
+          <em>{es ? 'comenzó el viaje.' : 'the journey began.'}</em>
         </h1>
-        <p>Gathering the threads of your choices…</p>
+        <p>{es ? 'La misma habitación. La misma carta. Esta vez, el camino continúa dentro de ti.' : 'The same room. The same letter. This time, the road is still inside you.'}</p>
         {error && (
           <>
             <p className="error-message" role="alert">
               {error}
             </p>
             <button onClick={reveal} className="button button-gold">
-              Try the reveal again <ArrowRight size={16} />
+              {es ? 'Intentar la revelación otra vez' : 'Try the reveal again'} <ArrowRight size={16} />
             </button>
             <Link href="/journey" className="text-link">
-              Return to your journey
+              {es ? 'Volver a tu viaje' : 'Return to your journey'}
             </Link>
           </>
         )}

@@ -16,23 +16,24 @@ export default async function SharedResultPage({
   } catch {
     notFound();
   }
+  const es = shared.locale === 'es';
   return (
     <>
       <SiteHeader />
       <main id="main" className="shared-result-page">
         <div className="shared-result-art">
           <img
-            src="/images/valley-wide.webp"
-            alt="A traveler overlooking a green valley"
+            src={shared.image_url ?? '/images/valley-wide.webp'}
+            alt={es ? 'Retrato del arquetipo compartido' : 'Portrait of the shared archetype'}
           />
         </div>
         <div className="shared-result-copy">
           <Compass size={39} strokeWidth={1} />
-          <span className="eyebrow">A JOURNEY REVEALED</span>
+          <span className="eyebrow">{es ? 'UN VIAJE REVELADO' : 'A JOURNEY REVEALED'}</span>
           <p>
             {shared.display_name
-              ? `${shared.display_name}’s story revealed`
-              : 'One traveler’s story revealed'}
+              ? (es ? `La historia de ${shared.display_name}, revelada` : `${shared.display_name}’s story revealed`)
+              : (es ? 'La historia de un viajero, revelada' : 'One traveler’s story revealed')}
           </p>
           <h1>{shared.title}</h1>
           <div className="shared-archetypes">
@@ -42,17 +43,16 @@ export default async function SharedResultPage({
                   {a.percentage}
                   <small>%</small>
                 </span>
-                <p>The {a.name}</p>
+                <p>{es ? a.name : `The ${a.name}`}</p>
               </div>
             ))}
           </div>
           <blockquote>“{shared.quote}”</blockquote>
           <Link href="/start" className="button button-gold">
-            Discover your own archetypes <ArrowUpRight size={17} />
+            {es ? 'Descubre tus propios arquetipos' : 'Discover your own archetypes'} <ArrowUpRight size={17} />
           </Link>
           <p className="small-note">
-            A narrative experience for self-reflection. Your result will be your
-            own.
+            {es ? 'Una experiencia narrativa para la reflexión personal. Tu resultado será únicamente tuyo.' : 'A narrative experience for self-reflection. Your result will be your own.'}
           </p>
         </div>
       </main>

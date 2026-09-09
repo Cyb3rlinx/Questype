@@ -1,7 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useLocale } from '../i18n-provider';
 export function ResumeLink() {
+  const { locale } = useLocale();
   const [href, setHref] = useState<string | null>(null);
   useEffect(() => {
     fetch('/api/session')
@@ -15,7 +17,7 @@ export function ResumeLink() {
   }, []);
   return href ? (
     <Link href={href} className="text-link">
-      Continue your story <span aria-hidden="true">→</span>
+      {locale === 'es' ? 'Continúa tu historia' : 'Continue your story'} <span aria-hidden="true">→</span>
     </Link>
   ) : null;
 }

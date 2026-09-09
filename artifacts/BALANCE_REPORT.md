@@ -1,27 +1,27 @@
 # Journey v1 mechanical balancing report
 
-Seed: 20260903. Journeys: 10,000. Content hash: `63829cc7b55387a3ea519dd6f46f7138b3b372f5f1d10929766a03810f73192e`.
+Seed: 20260907. Journeys: 20,000. Content hash: `116ab299e56b8ff5ac00d123794521bf320852c4efaaf3814db2955429a9601e`.
 
 Uniform independent fictional choices test mechanics, not human population balance or psychometric validity.
 
-Exposure-calibrated stable softmax T=1; whole-percent largest remainder
+Exposure-calibrated softmax evidence with a 45–55% dominant band, 22–28% secondary band and bounded residual influences
 
 | Archetype | Positive options | Positive weight | Negative weight | Scenes | Primary | Secondary | Mean alignment |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| innocent | 10 | 20 | 0 | 9 | 8.62% | 8.65% | 8.45% |
-| explorer | 10 | 20 | 0 | 9 | 8.80% | 8.24% | 8.26% |
-| sage | 11 | 22 | 0 | 10 | 8.54% | 8.67% | 8.42% |
-| hero | 13 | 21 | 0 | 11 | 8.08% | 7.70% | 8.19% |
-| outlaw | 11 | 19 | 0 | 8 | 8.17% | 9.15% | 8.40% |
-| magician | 10 | 19 | 0 | 9 | 8.84% | 8.07% | 8.45% |
-| lover | 10 | 20 | 0 | 10 | 8.19% | 8.32% | 8.38% |
-| creator | 9 | 18 | 0 | 8 | 7.89% | 8.42% | 8.24% |
-| caregiver | 9 | 18 | 0 | 7 | 8.15% | 8.22% | 8.34% |
-| jester | 8 | 16 | 0 | 8 | 7.80% | 8.52% | 8.16% |
-| ruler | 10 | 21 | 0 | 9 | 8.58% | 8.12% | 8.41% |
-| everyman | 9 | 19 | 0 | 9 | 8.34% | 7.92% | 8.31% |
+| innocent | 10 | 20 | 0 | 9 | 10.20% | 8.78% | 9.12% |
+| explorer | 10 | 20 | 0 | 9 | 7.98% | 9.09% | 8.38% |
+| sage | 10 | 20 | 0 | 10 | 8.66% | 7.99% | 8.43% |
+| hero | 10 | 20 | 0 | 8 | 12.78% | 11.68% | 10.55% |
+| outlaw | 10 | 20 | 0 | 8 | 11.58% | 10.82% | 9.98% |
+| magician | 10 | 20 | 0 | 10 | 6.49% | 7.76% | 7.55% |
+| lover | 10 | 20 | 0 | 10 | 6.89% | 7.55% | 7.68% |
+| creator | 10 | 20 | 0 | 9 | 8.25% | 7.87% | 8.21% |
+| caregiver | 10 | 20 | 0 | 10 | 5.38% | 6.74% | 6.93% |
+| jester | 10 | 20 | 0 | 8 | 10.50% | 9.45% | 9.28% |
+| ruler | 10 | 20 | 0 | 10 | 6.08% | 6.57% | 7.19% |
+| everyman | 10 | 20 | 0 | 10 | 5.22% | 5.71% | 6.69% |
 
-Exact top ties: 0. Constructive observed outcome witnesses: 12/12. Full paths and calibration values are in balance-report.json.
+Exact top ties: 2803. Constructive observed outcome witnesses: 12/12. Full paths and calibration values are in balance-report.json.
 
 ## Findings
 

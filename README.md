@@ -1,4 +1,4 @@
-# Archetype — The Unwritten Road
+# Questype — The Unwritten Road
 
 A working web MVP for a fifteen-scene narrative journey. The visual direction follows the supplied photographic valley reference: natural limestone, old forests, a tiny traveler, muted greens, warm gold and editorial serif typography.
 

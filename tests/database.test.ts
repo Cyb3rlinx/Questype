@@ -57,7 +57,7 @@ test('migration checksums and released content cannot be silently rewritten', as
   await assert.rejects(db.query(`INSERT INTO app_private.psychological_dimensions(version_id,dimension_type,dimension_key,label,description) VALUES ($1,'traits','late_trait','Late trait','Must use a new release')`, [versionId]), /released content/);
 });
 test('a new release can coexist while cross-version answers and unknown choices are rejected', async () => {
-  const next = structuredClone(content); next.journey_version = '1.1';
+  const next = structuredClone(content); next.journey_version = '1.2';
   const nextVersion = (await seedContent(db, next)).version_id;
   const sessionId = await newSession();
   await assert.rejects(db.query('INSERT INTO app_private.user_answers(session_id,version_id,scene_id,choice_id) VALUES ($1,$2,$3,$4)', [sessionId, nextVersion, 'scene_01', 'scene_01_choice_a']), /foreign key/);

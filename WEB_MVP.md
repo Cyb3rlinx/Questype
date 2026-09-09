@@ -32,7 +32,7 @@ The existing deterministic engine runs only on the server and preserves the vers
 
 Interpretations are curated output from the validated deterministic provider. No runtime AI credentials are configured. Report data comes from an authorized route and is rendered in the browser with pdf-lib and embedded fonts; the browser renders names using system fallback fonts to preserve non-Latin scripts locally. The report contains a cover, twelve sections and a reflection disclaimer.
 
-Social exports are PNGs in Instagram portrait (1080×1350), Story (1080×1920), LinkedIn (1200×627), and X (1200×675) formats. Name inclusion is off by default. Users select one to three archetypes. Creating/updating a link explicitly persists that projection. Reloading restores link-management controls. Changed settings never silently reuse an older public projection in downloads/captions. Native sharing and clipboard actions are initiated by the user; the application never posts to a social account.
+Social exports are PNGs in Instagram portrait (1080×1350), Story (1080×1920), LinkedIn (1200×627), and X (1200×675) formats. Name inclusion is off by default. Users select one or two archetypes. Creating/updating a link explicitly persists that projection. Reloading restores link-management controls. Changed settings never silently reuse an older public projection in downloads/captions. Native sharing and clipboard actions are initiated by the user; the application never posts to a social account.
 
 ## Verification and remaining scope
 

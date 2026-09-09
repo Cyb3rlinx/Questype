@@ -51,3 +51,10 @@ test('representation variants change narrative text only and preserve choice ide
   assert.notEqual(man.narrative, woman.narrative);
   assert.deepEqual(man.choices.map(c => c.id), woman.choices.map(c => c.id));
 });
+test('the same saved scene can be presented in English or Spanish without changing choice ids', () => {
+  const english = toPublicScene(content.scenes[0]!, 'woman', 'en');
+  const spanish = toPublicScene(content.scenes[0]!, 'woman', 'es');
+  assert.notEqual(english.title, spanish.title);
+  assert.match(spanish.narrative, /Despiertas/);
+  assert.deepEqual(english.choices.map(choice => choice.id), spanish.choices.map(choice => choice.id));
+});

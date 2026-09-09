@@ -15,6 +15,7 @@ export interface SessionView {
   completed_scenes: number;
   total_scenes: number;
   result_id: string | null;
+  scene_image_variant: number | null;
   scene: PublicScene | null;
 }
 export async function requestJson<T>(
@@ -40,16 +41,7 @@ export const actNames = [
   'The Threshold',
   'Allies & Strangers',
   'The Trials',
-  'The Temptation',
-  'The Shadow',
+  'The Offering',
+  'The Lighthouse',
   'The Return',
-];
-export const actImages = [
-  'forest-waystation',
-  'forest-waystation',
-  'forest-waystation',
-  'valley-wide',
-  'ridge-beacon',
-  'ridge-beacon',
-  'valley-wide',
 ];

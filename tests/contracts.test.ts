@@ -2,11 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deterministicInterpretation } from '../src/ai/fallback.js';
 import { interpretationSchema, validateInterpretation } from '../src/ai/contracts.js';
-import { generateReportData, REPORT_SECTION_TITLES, DISCLAIMER } from '../src/reports/data.js';
+import { generateReportData, REPORT_SECTION_TITLES, REPORT_SECTION_TITLES_ES, DISCLAIMER, DISCLAIMER_ES } from '../src/reports/data.js';
 import { createPublicProjection, publicResultSchema, CARD_FORMATS } from '../src/sharing/contracts.js';
 import { generateCharacterCandidates } from '../src/domain/character/naming.js';
 import { contentHash } from '../src/database/content-hash.js';
 import { content, sampleProfile } from './fixtures.js';
+import { archetypeImage } from '../src/domain/archetype-images.js';
+import { ARCHETYPE_KEYS } from '../src/domain/types.js';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 test('deterministic interpretation is labelled and satisfies the bounded AI contract', () => {
   const profile = sampleProfile(); const fallback = deterministicInterpretation(profile);
@@ -49,12 +53,24 @@ test('report data includes a personalized cover, twelve ordered sections and not
   assert.equal(report.sections[1]!.paragraphs.length, 12);
   assert.equal(report.disclaimer, DISCLAIMER);
 });
+test('Spanish interpretation, report and public projection remain fully localized', () => {
+  const profile = sampleProfile();
+  const interpretation = deterministicInterpretation(profile, 'es').interpretation;
+  const report = generateReportData(profile, interpretation, null, 'es');
+  const shared = createPublicProjection(profile, { includeName: false, topCount: 2, quote: interpretation.social.quote, imageUrl: null, locale: 'es' });
+  assert.equal(report.locale, 'es');
+  assert.deepEqual(report.sections.map(section => section.title), [...REPORT_SECTION_TITLES_ES]);
+  assert.equal(report.disclaimer, DISCLAIMER_ES);
+  assert.match(interpretation.summary, /Tu recorrido/);
+  assert.equal(shared.locale, 'es');
+  assert.notEqual(shared.archetypes[0]!.name, profile.archetypes.primary.name);
+});
 test('public projection omits names unless selected and cannot expose raw answers', () => {
   const profile = sampleProfile();
-  const selection = { includeName: false, topCount: 3 as const, quote: 'The road remains open.', imageUrl: null };
+  const selection = { includeName: false, topCount: 2 as const, quote: 'The road remains open.', imageUrl: null };
   const publicResult = createPublicProjection(profile, selection);
   assert.equal(publicResult.display_name, null);
-  assert.equal(publicResult.archetypes.length, 3);
+  assert.equal(publicResult.archetypes.length, 2);
   assert.equal(publicResultSchema.safeParse({ ...publicResult, answers: profile.journey.answers }).success, false);
   assert.equal(createPublicProjection(profile, { ...selection, includeName: true }).display_name, profile.user.name);
   assert.ok(!JSON.stringify(publicResult).includes('shadow'));
@@ -66,4 +82,10 @@ test('content hashes are independent of object key insertion order and sensitive
   assert.equal(contentHash(content), contentHash(shuffled));
   const edited = structuredClone(content); edited.scenes[0]!.narrative += ' An added sentence.';
   assert.notEqual(contentHash(edited), contentHash(content));
+});
+test('every archetype has optimized result art for both representations', () => {
+  for (const slug of ARCHETYPE_KEYS) for (const gender of ['man', 'woman'] as const) {
+    const source = archetypeImage(slug, gender);
+    assert.ok(existsSync(join(process.cwd(), 'public', source.replace('/images/', 'images/'))), `Missing ${source}`);
+  }
 });

@@ -14,6 +14,7 @@ import {
 import { createScoringEngine } from '../domain/scoring/engine.js';
 import {
   generateStructuredProfile,
+  refreshArchetypePercentages,
   structuredProfileSchema,
 } from '../domain/scoring/profile.js';
 import { deterministicInterpretation } from '../ai/fallback.js';
@@ -22,8 +23,12 @@ import { contentHash } from '../database/content-hash.js';
 import {
   createPublicProjection,
   publicResultSchema,
+  readPublicProjection,
 } from '../sharing/contracts.js';
 import { userIdentitySchema } from '../domain/types.js';
+import { localeFromRequest, type Locale } from '../i18n/locale.js';
+import { archetypeName, localizedCharacterTitle } from '../i18n/archetypes.js';
+import { archetypeImage } from '../domain/archetype-images.js';
 
 const engine = createScoringEngine(journeyV1);
 const hash = contentHash(journeyV1);
@@ -125,16 +130,24 @@ export async function findSession(
   if (!owner) throw new WebError(404, 'No saved journey on this browser yet.');
   const row = await db
     .prepare(
-      `SELECT s.*,r.id AS result_id FROM web_sessions s LEFT JOIN web_results r ON r.session_id=s.id WHERE s.owner_hash=? ${id ? 'AND s.id=?' : ''} ORDER BY s.created_at DESC,s.id DESC LIMIT 1`,
+      `SELECT s.*,r.id AS result_id FROM web_sessions s LEFT JOIN web_results r ON r.session_id=s.id WHERE s.owner_hash=? AND s.release_id=? ${id ? 'AND s.id=?' : ''} ORDER BY s.created_at DESC,s.id DESC LIMIT 1`,
     )
-    .bind(...(id ? [owner, id] : [owner]))
+    .bind(...(id ? [owner, releaseId, id] : [owner, releaseId]))
     .first<SessionRow>();
   if (!row)
     throw new WebError(404, 'This journey could not be found on this browser.');
   return row;
 }
-function sessionView(row: SessionRow) {
+function sessionView(row: SessionRow, locale: Locale = 'en') {
   const saved = state(row);
+  const objectAnswer = saved.answers.find(
+    (answer) => answer.scene_id === 'scene_10',
+  );
+  const objectVariant = objectAnswer
+    ? journeyV1.scenes[9]!.choices.findIndex(
+        (choice) => choice.id === objectAnswer.choice_id,
+      ) + 1
+    : 0;
   return {
     id: row.id,
     name: saved.user.name,
@@ -144,22 +157,25 @@ function sessionView(row: SessionRow) {
     completed_scenes: saved.answers.length,
     total_scenes: journeyV1.scenes.length,
     result_id: row.result_id ?? null,
+    scene_image_variant:
+      saved.current_scene === 11 && objectVariant > 0 ? objectVariant : null,
     scene:
       saved.status === 'in_progress'
-        ? toPublicScene(
+          ? toPublicScene(
             journeyV1.scenes[saved.answers.length]!,
             saved.user.character_gender,
+            locale,
           )
         : null,
   };
 }
 export async function getSession(db: D1Database, request: Request) {
-  return sessionView(await findSession(db, ownerHash(request)));
+  return sessionView(await findSession(db, ownerHash(request)), localeFromRequest(request));
 }
 export async function startSession(db: D1Database, request: Request) {
   const input = z
     .strictObject({
-      name: z.string().trim().max(60),
+      name: z.string().trim().max(60).optional().default(''),
       character_gender: z.enum(['man', 'woman']),
       request_id: z.uuid(),
       restart: z.boolean().optional(),
@@ -171,7 +187,7 @@ export async function startSession(db: D1Database, request: Request) {
     try {
       const existing = await findSession(db, owner);
       if (state(existing).status !== 'completed')
-        return { data: sessionView(existing), cookie };
+        return { data: sessionView(existing, localeFromRequest(request)), cookie };
     } catch (e) {
       if (!(e instanceof WebError && e.status === 404)) throw e;
     }
@@ -221,7 +237,7 @@ export async function startSession(db: D1Database, request: Request) {
         Date.now(),
       ),
   ]);
-  return { data: sessionView(await findSession(db, owner, saved.id)), cookie };
+  return { data: sessionView(await findSession(db, owner, saved.id), localeFromRequest(request)), cookie };
 }
 export async function submitAnswer(db: D1Database, request: Request) {
   const input = z
@@ -246,7 +262,7 @@ export async function submitAnswer(db: D1Database, request: Request) {
       e instanceof Error ? e.message : 'Your journey changed in another tab.',
     );
   }
-  if (next.answers.length === before.answers.length) return sessionView(row);
+  if (next.answers.length === before.answers.length) return sessionView(row, localeFromRequest(request));
   await db.batch([
     db
       .prepare(
@@ -286,7 +302,7 @@ export async function submitAnswer(db: D1Database, request: Request) {
       409,
       'A different choice was saved in another tab. Refresh to continue your story.',
     );
-  return sessionView(current);
+  return sessionView(current, localeFromRequest(request));
 }
 export async function completeJourney(db: D1Database, request: Request) {
   const input = z
@@ -350,14 +366,19 @@ export async function getResult(db: D1Database, request: Request, id: string) {
       404,
       'This result is private or is no longer available.',
     );
-  const profile = structuredProfileSchema.parse(JSON.parse(row.profile_json));
+  const profile = refreshArchetypePercentages(
+    structuredProfileSchema.parse(JSON.parse(row.profile_json)),
+  );
   const stored = JSON.parse(row.interpretation_json) as ReturnType<
     typeof deterministicInterpretation
   >;
+  const locale = localeFromRequest(request);
+  const localized = locale === 'es' ? deterministicInterpretation(profile, locale) : stored;
   return {
     profile,
-    interpretation: validateInterpretation(stored.interpretation, profile),
-    interpretation_provider: stored.provider,
+    interpretation: validateInterpretation(localized.interpretation, profile),
+    interpretation_provider: localized.provider,
+    locale,
   };
 }
 export async function deleteData(db: D1Database, request: Request) {
@@ -378,15 +399,19 @@ export async function shareResult(
   const input = z
     .strictObject({
       include_name: z.boolean(),
-      top_count: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+      top_count: z.union([z.literal(1), z.literal(2)]),
+      locale: z.enum(['en', 'es']).optional(),
     })
     .parse(await readJson(request));
   const result = await getResult(db, request, id);
+  const locale = input.locale ?? result.locale;
+  const shareInterpretation = deterministicInterpretation(result.profile, locale).interpretation;
   const projection = createPublicProjection(result.profile, {
     includeName: input.include_name,
     topCount: input.top_count,
-    quote: result.interpretation.social.quote,
-    imageUrl: new URL('/images/valley-wide.webp', request.url).href,
+    quote: shareInterpretation.social.quote,
+    imageUrl: new URL(archetypeImage(result.profile.archetypes.primary.slug, result.profile.user.character_gender), request.url).href,
+    locale,
   });
   const shareId = Buffer.from(randomBytes(24)).toString('hex');
   await db
@@ -421,20 +446,34 @@ export async function getOwnedShare(
     .prepare('SELECT id,projection_json FROM web_shares WHERE result_id=?')
     .bind(id)
     .first<{ id: string; projection_json: string }>();
-  if (!row) return { url: null, include_name: false, top_count: 3 };
-  const projection = publicResultSchema.parse(JSON.parse(row.projection_json));
+  if (!row) return { url: null, include_name: false, top_count: 2, locale: localeFromRequest(request) };
+  const projection = readPublicProjection(JSON.parse(row.projection_json));
   return {
     url: new URL(`/share/${row.id}`, request.url).href,
     include_name: projection.display_name !== null,
     top_count: projection.archetypes.length,
+    locale: projection.locale,
   };
 }
 export async function getShare(db: D1Database, id: string) {
   const row = await db
-    .prepare('SELECT projection_json FROM web_shares WHERE id=?')
+    .prepare(
+      'SELECT s.projection_json,r.profile_json FROM web_shares s JOIN web_results r ON r.id=s.result_id WHERE s.id=?',
+    )
     .bind(id)
-    .first<{ projection_json: string }>();
+    .first<{ projection_json: string; profile_json: string }>();
   if (!row)
     throw new WebError(404, 'This shared story is no longer available.');
-  return publicResultSchema.parse(JSON.parse(row.projection_json));
+  const stored = readPublicProjection(JSON.parse(row.projection_json));
+  const profile = refreshArchetypePercentages(JSON.parse(row.profile_json));
+  return publicResultSchema.parse({
+    ...stored,
+    archetypes: profile.archetypes.all
+      .slice(0, stored.archetypes.length)
+      .map((archetype) => ({
+        name: archetypeName(archetype.slug, archetype.name, stored.locale),
+        percentage: archetype.normalized_percentage,
+      })),
+    title: localizedCharacterTitle(profile, stored.locale),
+  });
 }

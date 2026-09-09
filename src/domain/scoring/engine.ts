@@ -46,7 +46,50 @@ export function calculateCalibration(content: JourneyContent, scenes: readonly S
   }))])) as CalibrationMap;
 }
 
-/** Whole-percent largest remainder allocation. Ranking always uses unrounded scores. */
+function allocateMinorInfluences(
+  keys: readonly ArchetypeKey[],
+  shares: Record<ArchetypeKey, number>,
+  total: number,
+) {
+  const shareTotal = keys.reduce((sum, key) => sum + shares[key], 0);
+  const targets = Object.fromEntries(
+    keys.map((key) => [key, (shares[key] / shareTotal) * total]),
+  ) as Record<ArchetypeKey, number>;
+  const allocated = Object.fromEntries(
+    keys.map((key) => [key, Math.max(1, Math.min(9, Math.floor(targets[key])))]),
+  ) as Record<ArchetypeKey, number>;
+
+  let assigned = keys.reduce((sum, key) => sum + allocated[key], 0);
+  while (assigned < total) {
+    const next = [...keys]
+      .filter((key) => allocated[key] < 9)
+      .sort(
+        (a, b) =>
+          targets[b] - allocated[b] - (targets[a] - allocated[a]) ||
+          ARCHETYPE_KEYS.indexOf(a) - ARCHETYPE_KEYS.indexOf(b),
+      )[0]!;
+    allocated[next]++;
+    assigned++;
+  }
+  while (assigned > total) {
+    const next = [...keys]
+      .filter((key) => allocated[key] > 1)
+      .sort(
+        (a, b) =>
+          allocated[b] - targets[b] - (allocated[a] - targets[a]) ||
+          ARCHETYPE_KEYS.indexOf(b) - ARCHETYPE_KEYS.indexOf(a),
+      )[0]!;
+    allocated[next]--;
+    assigned--;
+  }
+  return allocated;
+}
+
+/**
+ * Evidence proportions remain a stable softmax. Whole-number presentation
+ * percentages emphasize the two strongest patterns and distribute the
+ * residual alignment across the ten quieter influences.
+ */
 export function normalizeArchetypes(scores: Record<ArchetypeKey, number>, temperature = 1): { percentages: Record<ArchetypeKey, number>; proportions: Record<ArchetypeKey, number> } {
   if (!Number.isFinite(temperature) || temperature <= 0) throw new Error('Temperature must be finite and positive');
   if (Object.keys(scores).length !== ARCHETYPE_KEYS.length || ARCHETYPE_KEYS.some(key => !Number.isFinite(scores[key]))) throw new Error('Expected exactly twelve finite archetype scores');
@@ -54,13 +97,42 @@ export function normalizeArchetypes(scores: Record<ArchetypeKey, number>, temper
   const weights = ARCHETYPE_KEYS.map(key => Math.exp((scores[key] - max) / temperature));
   const sum = weights.reduce((a, b) => a + b, 0);
   const shares = weights.map(w => w / sum);
-  const units = shares.map(v => Math.floor(v * 100));
-  const remaining = 100 - units.reduce((a, b) => a + b, 0);
-  const order = shares.map((v, i) => ({ i, remainder: v * 100 - units[i]! })).sort((a, b) => b.remainder - a.remainder || a.i - b.i);
-  for (let i = 0; i < remaining; i++) units[order[i]!.i]!++;
+  const proportions = Object.fromEntries(
+    ARCHETYPE_KEYS.map((key, i) => [key, shares[i]!]),
+  ) as Record<ArchetypeKey, number>;
+  const ranked = [...ARCHETYPE_KEYS].sort(
+    (a, b) =>
+      scores[b] - scores[a] || ARCHETYPE_KEYS.indexOf(a) - ARCHETYPE_KEYS.indexOf(b),
+  );
+  const primary = ranked[0]!;
+  const secondary = ranked[1]!;
+  const primaryPercentage = Math.max(
+    45,
+    Math.min(55, Math.round(40 + proportions[primary] * 28)),
+  );
+  const secondaryPercentage = Math.max(
+    22,
+    Math.min(28, Math.round(18 + proportions[secondary] * 40)),
+  );
+  const minorKeys = ranked.slice(2);
+  const minor = allocateMinorInfluences(
+    minorKeys,
+    proportions,
+    100 - primaryPercentage - secondaryPercentage,
+  );
+  const percentages = Object.fromEntries(
+    ARCHETYPE_KEYS.map((key) => [
+      key,
+      key === primary
+        ? primaryPercentage
+        : key === secondary
+          ? secondaryPercentage
+          : minor[key],
+    ]),
+  ) as Record<ArchetypeKey, number>;
   return {
-    percentages: Object.fromEntries(ARCHETYPE_KEYS.map((key, i) => [key, units[i]!])) as Record<ArchetypeKey, number>,
-    proportions: Object.fromEntries(ARCHETYPE_KEYS.map((key, i) => [key, shares[i]!])) as Record<ArchetypeKey, number>,
+    percentages,
+    proportions,
   };
 }
 
@@ -85,7 +157,7 @@ export function createScoringEngine(input: JourneyContent) {
   // Own a validated immutable snapshot; caller mutations cannot change calibration mid-session.
   assertValidContent(input);
   const content = deepFreeze(journeyContentSchema.parse(input));
-  if (content.scoring_version !== '1.0') throw new Error(`Unsupported scoring version: ${content.scoring_version}`);
+  if (content.scoring_version !== '1.1') throw new Error(`Unsupported scoring version: ${content.scoring_version}`);
   const calibration = deepFreeze(calculateCalibration(content));
   for (const key of ARCHETYPE_KEYS) if (calibration.archetypes[key]!.variance <= 0) throw new Error(`No scoring variance for ${key}`);
   return {

@@ -12,6 +12,7 @@ export async function renderReportPdf(
   },
 ) {
   const pdf = await PDFDocument.create();
+  const es = report.locale === 'es';
   pdf.registerFontkit(fontkit);
   const body = await pdf.embedFont(assets.bodyFont, { subset: true });
   const heading = await pdf.embedFont(assets.headingFont, { subset: true });
@@ -62,7 +63,7 @@ export async function renderReportPdf(
       color: rgb(0.83, 0.86, 0.81),
       thickness: 0.5,
     });
-    page.drawText('ARCHETYPE  /  THE UNWRITTEN ROAD', {
+    page.drawText(es ? 'QUESTYPE  /  EL CAMINO NO ESCRITO' : 'QUESTYPE  /  THE UNWRITTEN ROAD', {
       x: margin,
       y: 28,
       size: 7,
@@ -79,17 +80,23 @@ export async function renderReportPdf(
   };
   const cover = pdf.addPage([width, height]);
   cover.drawRectangle({ x: 0, y: 0, width, height, color: green });
-  const ph = (photo.height / photo.width) * width;
-  cover.drawImage(photo, { x: 0, y: height - ph, width, height: ph });
+  if (report.cover.character_image_url) {
+    const portraitWidth = width * 0.58;
+    const portraitHeight = (photo.height / photo.width) * portraitWidth;
+    cover.drawImage(photo, { x: width - portraitWidth, y: height - portraitHeight, width: portraitWidth, height: portraitHeight });
+  } else {
+    const ph = (photo.height / photo.width) * width;
+    cover.drawImage(photo, { x: 0, y: height - ph, width, height: ph });
+  }
   cover.drawRectangle({ x: 0, y: 0, width, height: 435, color: green });
-  cover.drawText('ARCHETYPE', {
+  cover.drawText('QUESTYPE', {
     x: margin,
     y: height - 45,
     size: 15,
     font: heading,
     color: rgb(0.96, 0.96, 0.9),
   });
-  cover.drawText('YOUR PERSONAL JOURNEY', {
+  cover.drawText(es ? 'TU VIAJE PERSONAL' : 'YOUR PERSONAL JOURNEY', {
     x: margin,
     y: 385,
     size: 9,
@@ -113,7 +120,7 @@ export async function renderReportPdf(
     y -= 49;
   }
   y -= 18;
-  const named = report.cover.user_name ?? 'A story entirely your own';
+  const named = report.cover.user_name ?? (es ? 'Una historia completamente tuya' : 'A story entirely your own');
   if (assets.nameImage) {
     const name = await pdf.embedPng(assets.nameImage);
     const scale = Math.min(1 / 3, (width - margin * 2) / name.width);
@@ -142,7 +149,7 @@ export async function renderReportPdf(
     }
   }
   cover.drawText(
-    new Date(report.cover.date).toLocaleDateString('en', {
+    new Date(report.cover.date).toLocaleDateString(es ? 'es' : 'en', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -150,7 +157,7 @@ export async function renderReportPdf(
     }),
     { x: margin, y: 112, size: 10, font: body, color: gold },
   );
-  cover.drawText('15 moments. Twelve archetypes. Your individual blend.', {
+  cover.drawText(es ? '15 momentos. Doce arquetipos. Una combinación única.' : '15 moments. Twelve archetypes. Your individual blend.', {
     x: margin,
     y: 86,
     size: 10,
@@ -167,7 +174,7 @@ export async function renderReportPdf(
   };
   for (const section of report.sections) {
     if (y < 210) newPage();
-    page.drawText(`CHAPTER ${String(section.number).padStart(2, '0')}`, {
+    page.drawText(`${es ? 'CAPÍTULO' : 'CHAPTER'} ${String(section.number).padStart(2, '0')}`, {
       x: margin,
       y,
       size: 8,
@@ -212,7 +219,7 @@ export async function renderReportPdf(
   }
   footer(page, pageIndex);
   pdf.setTitle(report.cover.character_title);
-  pdf.setAuthor('Archetype');
-  pdf.setSubject('A personal narrative reflection');
+  pdf.setAuthor('Questype');
+  pdf.setSubject(es ? 'Una reflexión narrativa personal' : 'A personal narrative reflection');
   return pdf.save();
 }

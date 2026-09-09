@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ARCHETYPE_KEYS, MOTIVATION_KEYS, DECISION_KEYS, SHADOW_KEYS, archetypeSchema, answerSchema, dimensionKeySchema, userIdentitySchema, type Answer, type MotivationKey, type UserIdentity } from '../types.js';
-import { calculateDimensionProfile, type ScoringEngine } from './engine.js';
+import { calculateDimensionProfile, normalizeArchetypes, type ScoringEngine } from './engine.js';
 import { determineShadowArchetype } from './shadow.js';
 import { generateCharacterCandidates } from '../character/naming.js';
 
@@ -42,6 +42,33 @@ export const structuredProfileSchema = z.strictObject({
   });
 });
 export type StructuredProfile = z.infer<typeof structuredProfileSchema>;
+
+/** Reprojects stored results through the current presentation model. */
+export function refreshArchetypePercentages(input: unknown): StructuredProfile {
+  const profile = structuredProfileSchema.parse(input);
+  const calibrated = Object.fromEntries(
+    profile.archetypes.all.map((archetype) => [
+      archetype.slug,
+      archetype.calibrated_score,
+    ]),
+  ) as Record<(typeof ARCHETYPE_KEYS)[number], number>;
+  const normalized = normalizeArchetypes(calibrated);
+  const all = profile.archetypes.all.map((archetype) => ({
+    ...archetype,
+    proportion: normalized.proportions[archetype.slug],
+    normalized_percentage: normalized.percentages[archetype.slug],
+  }));
+  return structuredProfileSchema.parse({
+    ...profile,
+    archetypes: {
+      ...profile.archetypes,
+      primary: all[0]!,
+      secondary: all[1]!,
+      tertiary: all[2]!,
+      all,
+    },
+  });
+}
 
 export function generateStructuredProfile(engine: ScoringEngine, answers: readonly Answer[], user: UserIdentity, metadata: { id: string; created_at: string; content_hash: string }): StructuredProfile {
   const result = engine.evaluate(answers);

@@ -25,7 +25,7 @@ export interface ShadowResult {
 }
 
 export function determineShadowArchetype(content: JourneyContent, input: readonly Answer[], calibrated: Record<ArchetypeKey, number>, primary: ArchetypeKey): ShadowResult {
-  if (content.scoring_version !== '1.0') throw new Error('Unsupported shadow rules version');
+  if (content.scoring_version !== '1.1') throw new Error('Unsupported shadow rules version');
   if (ARCHETYPE_KEYS.some(k => !Number.isFinite(calibrated[k]))) throw new Error('Invalid calibrated scores');
   const answers = validateAnswers(content, input, true);
   const axes = Object.fromEntries(SHADOW_KEYS.map(key => {

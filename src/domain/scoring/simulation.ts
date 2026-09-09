@@ -58,7 +58,7 @@ export function simulateJourneys(content: JourneyContent, count = 10_000, seed =
   }
   return { journey_id: content.id, journey_version: content.journey_version, scoring_version: content.scoring_version,
     seed, journeys: count, choices_per_scene: content.scenes.map(s => s.choices.length), top_tie_count: tiedJourneys,
-    normalization: 'Exposure-calibrated stable softmax T=1; whole-percent largest remainder',
+    normalization: 'Exposure-calibrated softmax evidence with a 45–55% dominant band, 22–28% secondary band and bounded residual influences',
     caveat: 'Uniform independent fictional choices test mechanics, not human population balance or psychometric validity.',
     archetypes: rows, warnings, errors,
   };

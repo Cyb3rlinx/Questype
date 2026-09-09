@@ -1,18 +1,22 @@
+'use client';
 import Link from 'next/link';
 import { SiteHeader } from '@/components/journey/chrome';
+import { useLocale } from '@/components/i18n-provider';
 export default function NotFound() {
+  const { locale } = useLocale();
+  const es = locale === 'es';
   return (
     <>
       <SiteHeader compact />
       <main id="main" className="centered-state">
-        <span className="eyebrow">AN UNCHARTED TURN</span>
+        <span className="eyebrow">{es ? 'UN GIRO SIN TRAZAR' : 'AN UNCHARTED TURN'}</span>
         <h1>
-          This path isn’t
+          {es ? 'Este camino no está' : 'This path isn’t'}
           <br />
-          on <em>the map.</em>
+          {es ? 'en ' : 'on '}<em>{es ? 'el mapa.' : 'the map.'}</em>
         </h1>
         <Link href="/" className="button button-gold">
-          Return to the world
+          {es ? 'Volver al mundo' : 'Return to the world'}
         </Link>
       </main>
     </>

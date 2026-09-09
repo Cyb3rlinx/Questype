@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { answerSchema, userIdentitySchema, type Answer, type Gender, type JourneyContent, type Scene, type UserIdentity } from '../types.js';
 import { validateAnswers } from '../scoring/engine.js';
+import { journeyEs } from '../../i18n/journey-es.js';
+import type { Locale } from '../../i18n/locale.js';
 
 export const sessionSchema = z.strictObject({
   id: z.uuid(), journey_id: z.string(), journey_version: z.string(), scoring_version: z.string(),
@@ -48,11 +50,12 @@ export function markSessionCompleted(content: JourneyContent, input: JourneySess
   return restoreSession(content, { ...session, status: 'completed', completed_at: completedAt });
 }
 
-export function toPublicScene(scene: Scene, gender: Gender) {
+export function toPublicScene(scene: Scene, gender: Gender, locale: Locale = 'en') {
   const variant = gender === 'man' ? scene.male_variant : scene.female_variant;
+  const localized = locale === 'es' ? journeyEs[scene.id] : undefined;
   return {
-    id: scene.id, act: scene.act, order: scene.order, title: scene.title, narrative: variant ?? scene.narrative,
-    choices: scene.choices.map(choice => ({ id: choice.id, text: (gender === 'man' ? choice.male_variant : choice.female_variant) ?? choice.text })),
+    id: scene.id, act: scene.act, order: scene.order, title: localized?.title ?? scene.title, narrative: localized?.narrative ?? variant ?? scene.narrative,
+    choices: scene.choices.map((choice, index) => ({ id: choice.id, text: localized?.choices[index] ?? (gender === 'man' ? choice.male_variant : choice.female_variant) ?? choice.text })),
   };
 }
 

@@ -19,24 +19,22 @@ test('released content has all dimensions and complete, unique scenes', () => {
 });
 test('raw calculation accumulates only canonical chosen effects and keeps zero keys', () => {
   const result = calculateScores(content, answers.slice(0, 2));
-  assert.equal(result.archetypes.explorer, 3);
-  assert.equal(result.archetypes.creator, 3);
-  assert.equal(result.archetypes.magician, 1);
-  assert.equal(result.archetypes.sage, 1);
-  assert.equal(result.archetypes.ruler, 0);
-  assert.equal(result.motivations.freedom, 2);
-  assert.equal(result.motivations.creation, 2);
+  assert.equal(result.archetypes.explorer, 4);
+  assert.equal(result.archetypes.hero, 2);
+  assert.equal(result.archetypes.ruler, 2);
+  assert.equal(result.archetypes.sage, 0);
+  assert.equal(result.motivations.freedom, 3);
+  assert.equal(result.motivations.protection, 1);
   assert.equal(result.decision_styles.intuitive, 1);
   assert.equal(Object.keys(result.archetypes).length, 12);
 });
-test('negative and zero signals are retained', () => {
+test('zero dimensions are retained while pressure signals accumulate', () => {
   const path = answers.map(a => ({ ...a }));
-  path[11]!.choice_id = content.scenes[11]!.choices[0]!.id;
   path[12]!.choice_id = content.scenes[12]!.choices[2]!.id;
   const raw = calculateScores(content, path);
-  assert.equal(raw.shadow.emotional_detachment, -2);
-  assert.equal(raw.traits.autonomy, 2); // +1 at scene 10, -1 at scene 12, +2 at scene 15.
-  assert.equal(raw.shadow.rebellion, 0);
+  assert.equal(raw.shadow.control, 4);
+  assert.equal(raw.traits.autonomy, 4);
+  assert.equal(raw.shadow.emotional_detachment, 0);
 });
 test('rejects duplicate, foreign, out-of-order, extra and incomplete answers', () => {
   assert.throws(() => calculateScores(content, [answers[0]!, answers[0]!]));
@@ -56,9 +54,9 @@ test('normalization is signed, translation invariant and sums to exactly 100', (
 });
 test('normalization is stable for huge finite magnitudes and deterministic for ties', () => {
   const uniform = normalizeArchetypes(equalScores(-1e308));
-  assert.deepEqual(Object.values(uniform.percentages), [9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 8, 8]);
+  assert.deepEqual(Object.values(uniform.percentages), [45, 22, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3]);
   const huge = equalScores(-1e308); huge.magician = 1e308;
-  assert.equal(normalizeArchetypes(huge).percentages.magician, 100);
+  assert.equal(normalizeArchetypes(huge).percentages.magician, 55);
   assert.throws(() => normalizeArchetypes({ ...huge, sage: NaN }));
   assert.throws(() => normalizeArchetypes({ ...huge, sage: Infinity }));
   assert.throws(() => normalizeArchetypes(huge, 0));
@@ -66,10 +64,10 @@ test('normalization is stable for huge finite magnitudes and deterministic for t
 });
 test('calibration accounts for opportunity exposure with exact scene bounds', () => {
   const c = calculateCalibration(content, [content.scenes[0]!]);
-  assert.equal(c.archetypes.explorer!.mean, 0.75);
-  assert.equal(c.archetypes.explorer!.variance, 1.6875);
+  assert.equal(c.archetypes.explorer!.mean, 0.5);
+  assert.equal(c.archetypes.explorer!.variance, 0.75);
   assert.equal(c.archetypes.explorer!.lower, 0);
-  assert.equal(c.archetypes.explorer!.upper, 3);
+  assert.equal(c.archetypes.explorer!.upper, 2);
 });
 test('ranking uses unrounded values and canonical tie order independently of input order', () => {
   const tied = ARCHETYPE_KEYS.map(slug => ({ slug, name: slug, raw_score: 0, calibrated_score: 0, normalized_percentage: 8, proportion: 1 / 12 })).reverse();
@@ -82,6 +80,9 @@ test('same input generates identical complete profiles and rejects altered snaps
   const first = sampleProfile();
   assert.deepEqual(first, sampleProfile());
   assert.equal(first.archetypes.all.reduce((sum, a) => sum + a.normalized_percentage, 0), 100);
+  assert.ok(first.archetypes.primary.normalized_percentage >= 45);
+  assert.ok(first.archetypes.secondary.normalized_percentage >= 22);
+  assert.ok(first.archetypes.all.slice(2).every(a => a.normalized_percentage <= 9));
   assert.equal(new Set([first.archetypes.primary.slug, first.archetypes.secondary.slug, first.archetypes.tertiary.slug]).size, 3);
   const changed = structuredClone(first); changed.archetypes.primary.normalized_percentage++;
   assert.equal(structuredProfileSchema.safeParse(changed).success, false);
@@ -105,11 +106,11 @@ test('shadow uses repeat and pressure evidence, never the lowest-score rule', ()
   const noEvidence = determineShadowArchetype(altered, answers, equalScores(0), 'explorer');
   assert.equal(noEvidence.evidence, 'insufficient');
   assert.equal(noEvidence.slug, 'explorer');
-  altered.scenes[11]!.choices[0]!.scores.shadow = { control: 3 };
+  altered.scenes[8]!.choices[0]!.scores.shadow = { control: 3 };
   const single = determineShadowArchetype(altered, answers, equalScores(0), 'explorer');
   assert.equal(single.evidence, 'limited');
   assert.equal(single.axes.control.evidence_score, 2); // (3 positive + 3 pressure) / 3.
-  altered.scenes[8]!.choices[0]!.scores.shadow = { control: 1 };
+  altered.scenes[3]!.choices[0]!.scores.shadow = { control: 1 };
   const calibrated = equalScores(0); calibrated.ruler = 3; calibrated.sage = -3;
   const repeated = determineShadowArchetype(altered, answers, calibrated, 'ruler');
   assert.equal(repeated.evidence, 'supported');

@@ -19,10 +19,14 @@ import {
   type CardFormat,
 } from '@/src/sharing/contracts';
 import type { ResultPayload } from './result-view';
+import { useLocale } from '../i18n-provider';
+import { archetypeName, localizedCharacterTitle } from '@/src/i18n/archetypes';
+import { archetypeImage, archetypeImageAlt } from '@/src/domain/archetype-images';
 type SavedShare = {
   url: string | null;
   include_name: boolean;
-  top_count: 1 | 2 | 3;
+  top_count: 1 | 2;
+  locale: 'en' | 'es';
 };
 export function SharePanel({
   open,
@@ -33,13 +37,17 @@ export function SharePanel({
   onOpenChange: (value: boolean) => void;
   result: ResultPayload;
 }) {
+  const { locale } = useLocale();
+  const es = locale === 'es';
   const [format, setFormat] = useState<CardFormat>('instagram_portrait');
   const [includeName, setIncludeName] = useState(false);
-  const [topCount, setTopCount] = useState<1 | 2 | 3>(3);
+  const [topCount, setTopCount] = useState<1 | 2>(2);
   const [saved, setSaved] = useState<SavedShare | null>(null);
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const endpoint = `/api/results/${result.profile.id}/share`;
+  const primaryImage = archetypeImage(result.profile.archetypes.primary.slug, result.profile.user.character_gender);
+  const primaryName = result.profile.archetypes.primary.name;
   useEffect(() => {
     if (!open) return;
     let active = true;
@@ -63,24 +71,24 @@ export function SharePanel({
     };
   }, [open, endpoint]);
   const clean =
-    saved?.include_name === includeName && saved?.top_count === topCount;
+    saved?.include_name === includeName && saved?.top_count === topCount && saved?.locale === locale;
   const currentUrl = clean ? saved?.url : null;
   const projection = () =>
     createPublicProjection(result.profile, {
       includeName,
       topCount,
       quote: result.interpretation.social.quote,
-      imageUrl: new URL('/images/valley-wide.webp', window.location.origin)
-        .href,
+      imageUrl: new URL(primaryImage, window.location.origin).href,
+      locale,
     });
   const caption = () => {
     const types = result.profile.archetypes.all
       .slice(0, topCount)
-      .map((a) => `${a.name} (${a.normalized_percentage}%)`)
+      .map((a) => `${archetypeName(a.slug, a.name, locale)} (${a.normalized_percentage}%)`)
       .join(', ');
     return format === 'linkedin'
-      ? `A moment for reflection: my Archetype journey revealed ${types}. ${result.interpretation.social.quote}`
-      : `My story revealed ${types}.\n“${result.interpretation.social.quote}”\nDiscover your story with Archetype.`;
+      ? (es ? `Un momento para reflexionar: mi viaje de Questype reveló ${types}. ${result.interpretation.social.quote}` : `A moment for reflection: my Questype journey revealed ${types}. ${result.interpretation.social.quote}`)
+      : (es ? `Mi historia reveló ${types}.\n“${result.interpretation.social.quote}”\nDescubre tu historia con Questype.` : `My story revealed ${types}.\n“${result.interpretation.social.quote}”\nDiscover your story with Questype.`);
   };
   async function run(task: () => Promise<void>) {
     setBusy(true);
@@ -97,11 +105,13 @@ export function SharePanel({
     const shared = await requestJson<{ url: string }>(endpoint, 'POST', {
       include_name: includeName,
       top_count: topCount,
+      locale,
     });
     setSaved({
       url: shared.url,
       include_name: includeName,
       top_count: topCount,
+      locale,
     });
     return shared;
   }
@@ -109,20 +119,20 @@ export function SharePanel({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="story-dialog share-dialog">
         <DialogTitle className="dialog-heading">
-          A story worth sharing.
+          {es ? 'Una historia que vale la pena compartir.' : 'A story worth sharing.'}
         </DialogTitle>
         <DialogDescription>
-          Take your archetypes into the world. Choose what travels with them.
+          {es ? 'Lleva tus arquetipos al mundo. Elige qué viaja con ellos.' : 'Take your archetypes into the world. Choose what travels with them.'}
         </DialogDescription>
         <div className="share-preview">
-          <img src="/images/valley-wide.webp" alt="Your story landscape" />
+          <img src={primaryImage} alt={archetypeImageAlt(result.profile.archetypes.primary.slug, primaryName, result.profile.user.character_gender, locale)} />
           <div>
-            <span>ARCHETYPE · THE STORY WITHIN</span>
-            <h3>{result.profile.character.title}</h3>
+            <span>QUESTYPE · {es ? 'LA HISTORIA INTERIOR' : 'THE STORY WITHIN'}</span>
+            <h3>{localizedCharacterTitle(result.profile, locale)}</h3>
             <p>
               {result.profile.archetypes.all
                 .slice(0, topCount)
-                .map((a) => `${a.name} ${a.normalized_percentage}%`)
+                .map((a) => `${archetypeName(a.slug, a.name, locale)} ${a.normalized_percentage}%`)
                 .join(' · ')}
             </p>
             {includeName && result.profile.user.name && (
@@ -132,11 +142,11 @@ export function SharePanel({
         </div>
         <div className="share-settings">
           <label>
-            Card format
+            {es ? 'Formato de tarjeta' : 'Card format'}
             <NativeSelect
               value={format}
               onChange={(e) => setFormat(e.target.value as CardFormat)}
-              aria-label="Card format"
+              aria-label={es ? 'Formato de tarjeta' : 'Card format'}
             >
               {Object.keys(CARD_FORMATS).map((key) => (
                 <NativeSelectOption key={key} value={key}>
@@ -144,9 +154,9 @@ export function SharePanel({
                     (
                       {
                         instagram_portrait: 'Instagram · 4:5',
-                        instagram_story: 'Instagram Story · 9:16',
-                        linkedin: 'LinkedIn · Professional',
-                        x: 'X · Landscape',
+                        instagram_story: es ? 'Historia de Instagram · 9:16' : 'Instagram Story · 9:16',
+                        linkedin: es ? 'LinkedIn · Profesional' : 'LinkedIn · Professional',
+                        x: es ? 'X · Horizontal' : 'X · Landscape',
                       } as Record<string, string>
                     )[key]
                   }
@@ -155,15 +165,15 @@ export function SharePanel({
             </NativeSelect>
           </label>
           <label>
-            Archetypes to include
+            {es ? 'Arquetipos para incluir' : 'Archetypes to include'}
             <NativeSelect
               value={topCount}
-              onChange={(e) => setTopCount(Number(e.target.value) as 1 | 2 | 3)}
-              aria-label="Archetypes to include"
+              onChange={(e) => setTopCount(Number(e.target.value) as 1 | 2)}
+              aria-label={es ? 'Arquetipos para incluir' : 'Archetypes to include'}
             >
-              {[1, 2, 3].map((n) => (
+              {[1, 2].map((n) => (
                 <NativeSelectOption key={n} value={n}>
-                  Top {n}
+                  {es ? `Primeros ${n}` : `Top ${n}`}
                 </NativeSelectOption>
               ))}
             </NativeSelect>
@@ -174,7 +184,7 @@ export function SharePanel({
             checked={includeName}
             onCheckedChange={(value) => setIncludeName(Boolean(value))}
           />
-          Include my name
+          {es ? 'Incluir mi nombre' : 'Include my name'}
         </label>
         <div className="share-buttons">
           <button
@@ -188,14 +198,14 @@ export function SharePanel({
                   format,
                   result: projection(),
                   share_url: currentUrl || `${window.location.origin}/`,
-                  branding: 'ARCHETYPE',
+                  branding: 'QUESTYPE',
                 });
-                setNotice('Your result card is ready.');
+                setNotice(es ? 'Tu tarjeta de resultado está lista.' : 'Your result card is ready.');
               })
             }
           >
             <Download size={16} />
-            Download card
+            {es ? 'Descargar tarjeta' : 'Download card'}
           </button>
           <button
             disabled={busy}
@@ -205,12 +215,12 @@ export function SharePanel({
                 await navigator.clipboard.writeText(
                   caption() + (currentUrl ? `\n\n${currentUrl}` : ''),
                 );
-                setNotice('Caption copied.');
+                setNotice(es ? 'Texto copiado.' : 'Caption copied.');
               })
             }
           >
             <Copy size={16} />
-            Copy caption
+            {es ? 'Copiar texto' : 'Copy caption'}
           </button>
           <button
             disabled={busy}
@@ -219,12 +229,12 @@ export function SharePanel({
               run(async () => {
                 const shared = await link();
                 await navigator.clipboard.writeText(shared.url);
-                setNotice('Your selected result is shared. Link copied.');
+                setNotice(es ? 'Tu resultado seleccionado fue compartido. Enlace copiado.' : 'Your selected result is shared. Link copied.');
               })
             }
           >
             <Link2 size={16} />
-            {saved?.url ? 'Update & copy link' : 'Create a share link'}
+            {saved?.url ? (es ? 'Actualizar y copiar enlace' : 'Update & copy link') : (es ? 'Crear enlace para compartir' : 'Create a share link')}
           </button>
           <button
             disabled={busy}
@@ -234,26 +244,26 @@ export function SharePanel({
                 const shared = await link();
                 if (navigator.share)
                   await navigator.share({
-                    title: result.profile.character.title,
+                    title: localizedCharacterTitle(result.profile, locale),
                     text: caption(),
                     url: shared.url,
                   });
                 else {
                   await navigator.clipboard.writeText(shared.url);
-                  setNotice('Link copied. Paste it into your favorite app.');
+                  setNotice(es ? 'Enlace copiado. Pégalo en tu aplicación favorita.' : 'Link copied. Paste it into your favorite app.');
                 }
               })
             }
           >
             <Share2 size={16} />
-            Share via…
+            {es ? 'Compartir mediante…' : 'Share via…'}
           </button>
         </div>
         {saved?.url && (
           <>
             <div className="shared-link">
               <a href={saved.url} target="_blank" rel="noreferrer">
-                View shared result ↗
+                {es ? 'Ver resultado compartido ↗' : 'View shared result ↗'}
               </a>
               <button
                 disabled={busy}
@@ -261,17 +271,16 @@ export function SharePanel({
                   run(async () => {
                     await requestJson(endpoint, 'DELETE');
                     setSaved(null);
-                    setNotice('Share link revoked.');
+                    setNotice(es ? 'Enlace compartido revocado.' : 'Share link revoked.');
                   })
                 }
               >
-                Revoke link
+                {es ? 'Revocar enlace' : 'Revoke link'}
               </button>
             </div>
             {!clean && (
               <p className="small-note">
-                Your link still uses the earlier selection. Update it to apply
-                these changes. Downloads and captions omit the link until then.
+                {es ? 'Tu enlace aún usa la selección anterior. Actualízalo para aplicar estos cambios. Las descargas y los textos omiten el enlace hasta entonces.' : 'Your link still uses the earlier selection. Update it to apply these changes. Downloads and captions omit the link until then.'}
               </p>
             )}
           </>
@@ -280,8 +289,7 @@ export function SharePanel({
           {notice}
         </p>
         <p className="small-note">
-          Story choices and private pressure patterns stay private. Downloading
-          a card does not create a public link.
+          {es ? 'Tus decisiones y patrones privados bajo presión permanecen privados. Descargar una tarjeta no crea un enlace público.' : 'Story choices and private pressure patterns stay private. Downloading a card does not create a public link.'}
         </p>
       </DialogContent>
     </Dialog>
