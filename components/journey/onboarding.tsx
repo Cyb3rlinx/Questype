@@ -57,13 +57,18 @@ export function Onboarding() {
         <aside className="onboarding-art">
           <img
             src="/images/forest-waystation.webp"
+            srcSet="/images/forest-waystation-sm.webp 900w, /images/forest-waystation.webp 1672w"
+            sizes="(max-width: 900px) 100vw, 46vw"
+            width={1672}
+            height={941}
             alt={es ? 'Un sendero tranquilo a través de un bosque antiguo' : 'A quiet path through an ancient forest'}
+            fetchPriority="high"
           />
           <div className="art-caption">
             <span className="eyebrow">{es ? 'EL PRIMER PASO ES TUYO' : 'THE FIRST STEP IS YOURS'}</span>
             <h2>
               {es ? 'El camino no conoce' : 'The road knows'}
-              <br />
+              <br />{' '}
               {es ? 'desconocidos.' : 'no strangers.'}
               <br />
               <em>{es ? 'Solo historias aún no contadas.' : 'Only stories yet untold.'}</em>

@@ -125,19 +125,21 @@ export function SharePanel({
           {es ? 'Lleva tus arquetipos al mundo. Elige qué viaja con ellos.' : 'Take your archetypes into the world. Choose what travels with them.'}
         </DialogDescription>
         <div className="share-preview">
-          <img src={primaryImage} alt={archetypeImageAlt(result.profile.archetypes.primary.slug, primaryName, result.profile.user.character_gender, locale)} />
+          <img src={primaryImage} width={900} height={1600} alt={archetypeImageAlt(result.profile.archetypes.primary.slug, primaryName, result.profile.user.character_gender, locale)} />
           <div>
             <span>QUESTYPE · {es ? 'LA HISTORIA INTERIOR' : 'THE STORY WITHIN'}</span>
-            <h3>{localizedCharacterTitle(result.profile, locale)}</h3>
-            <p>
-              {result.profile.archetypes.all
-                .slice(0, topCount)
-                .map((a) => `${archetypeName(a.slug, a.name, locale)} ${a.normalized_percentage}%`)
-                .join(' · ')}
-            </p>
-            {includeName && result.profile.user.name && (
-              <small>{result.profile.user.name}</small>
-            )}
+            <div className="share-preview-summary">
+              <p>
+                {result.profile.archetypes.all
+                  .slice(0, topCount)
+                  .map((a) => `${archetypeName(a.slug, a.name, locale)} ${a.normalized_percentage}%`)
+                  .join(' · ')}
+              </p>
+              {includeName && result.profile.user.name && (
+                <small>{result.profile.user.name}</small>
+              )}
+              <h3>{localizedCharacterTitle(result.profile, locale)}</h3>
+            </div>
           </div>
         </div>
         <div className="share-settings">

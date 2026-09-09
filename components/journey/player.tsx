@@ -122,6 +122,11 @@ export function JourneyPlayer() {
             <img
               key={imageSource}
               src={imageSource}
+              srcSet={`${imageSource.replace('.webp', '-sm.webp')} 900w, ${imageSource} 1600w`}
+              sizes="100vw"
+              width={1600}
+              height={900}
+              fetchPriority="high"
               alt={es ? `Ilustración de ${scene.title}` : `Illustration for ${scene.title}`}
             />
             <div className="scene-art-top">

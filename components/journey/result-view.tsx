@@ -194,6 +194,8 @@ export function ResultView({ resultId }: { resultId: string }) {
           <div className="identity-card">
             <img
               src={primaryImage}
+              width={900}
+              height={1600}
               alt={archetypeImageAlt(p.archetypes.primary.slug, primary.name, p.user.character_gender, locale)}
               fetchPriority="high"
             />

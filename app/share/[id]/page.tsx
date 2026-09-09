@@ -24,6 +24,9 @@ export default async function SharedResultPage({
         <div className="shared-result-art">
           <img
             src={shared.image_url ?? '/images/valley-wide.webp'}
+            width={900}
+            height={1600}
+            fetchPriority="high"
             alt={es ? 'Retrato del arquetipo compartido' : 'Portrait of the shared archetype'}
           />
         </div>

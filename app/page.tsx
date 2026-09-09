@@ -54,6 +54,10 @@ export default function Home() {
         <img
           className="hero-landscape"
           src="/images/hero-lighthouse.webp"
+          srcSet="/images/hero-lighthouse-sm.webp 900w, /images/hero-lighthouse.webp 1672w"
+          sizes="100vw"
+          width={1672}
+          height={941}
           alt={es ? 'Un grupo de viajeros cruza un valle montañoso hacia un faro al atardecer' : 'A group of travelers crossing a mountain valley toward a lighthouse at sunset'}
           fetchPriority="high"
         />
@@ -125,8 +129,13 @@ export default function Home() {
         <div className="threshold-image">
           <img
             src="/images/forest-waystation.webp"
+            srcSet="/images/forest-waystation-sm.webp 900w, /images/forest-waystation.webp 1672w"
+            sizes="(max-width: 680px) 100vw, 50vw"
+            width={1672}
+            height={941}
             alt={es ? 'Un sendero de piedra cubierto de musgo conduce a una estación en un bosque antiguo' : 'A mossy stone path leading to a waystation in an ancient forest'}
             loading="lazy"
+            decoding="async"
           />
         </div>
         <div className="threshold-copy">

@@ -44,6 +44,11 @@ export default function ProcessingPage() {
     <div className="processing-page">
       <img
         src="/images/ridge-beacon.webp"
+        srcSet="/images/ridge-beacon-sm.webp 900w, /images/ridge-beacon.webp 1672w"
+        sizes="100vw"
+        width={1672}
+        height={941}
+        fetchPriority="high"
         alt={es ? 'Un faro sobre un valle silencioso' : 'A beacon overlooking a quiet valley'}
       />
       <div className="processing-shade" />

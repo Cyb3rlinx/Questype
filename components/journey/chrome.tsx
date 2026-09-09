@@ -44,7 +44,9 @@ export function SiteHeader({
         )}
         <LanguageSwitch />
         <Link href={compact ? '/' : '/start'} className="header-action">
-          {compact ? (es ? 'Volver al mundo' : 'Back to the world') : (es ? 'Comienza tu viaje' : 'Begin your journey')}
+          <span className="header-action-label">
+            {compact ? (es ? 'Volver al mundo' : 'Back to the world') : (es ? 'Comienza tu viaje' : 'Begin your journey')}
+          </span>
           <ArrowUpRight size={15} />
         </Link>
       </div>
