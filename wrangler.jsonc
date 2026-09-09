@@ -7,6 +7,18 @@
 		"nodejs_compat"
 	],
 	"workers_dev": true,
+	"routes": [
+		{
+			"pattern": "questype.com",
+			"zone_name": "questype.com",
+			"custom_domain": true
+		},
+		{
+			"pattern": "www.questype.com",
+			"zone_name": "questype.com",
+			"custom_domain": true
+		}
+	],
 	"assets": {
 		"directory": "dist/client"
 	},
