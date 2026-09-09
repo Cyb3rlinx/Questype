@@ -28,7 +28,7 @@
     "check": "npm run typecheck && npm test && npm run validate:content && npm run build:domain",
     "build:domain": "tsc -p tsconfig.build.json",
     "test:web": "tsx scripts/web-smoke.ts",
-    "db:local": "wrangler d1 migrations apply site-creator-d1 --local --config wrangler.local.jsonc"
+    "db:local": "wrangler d1 migrations apply questype-db --local --config wrangler.jsonc"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",
