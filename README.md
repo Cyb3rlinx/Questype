@@ -23,7 +23,7 @@ npm run db:local
 npm run dev
 ```
 
-The web app uses React, Vinext, shadcn/Base UI and the Sites Vite plugin. Durable web data lives in the Sites `DB` D1 binding. Drizzle migrations are checked in under `drizzle/` and bundled for deployment. Local data is stored in ignored `.wrangler/` state. No external AI or PostgreSQL credentials are needed for this preview.
+The web app uses React, Vinext and shadcn/Base UI. Durable web data lives in the Cloudflare `DB` D1 binding. Drizzle migrations are checked in under `drizzle/` and bundled for deployment. Local data is stored in ignored `.wrangler/` state. No external AI or PostgreSQL credentials are needed for this preview.
 
 ```sh
 npm run check
@@ -34,6 +34,19 @@ npm run build
 `check` runs strict web/domain typechecking, 37 tests, content validation and domain compilation into `dist-domain/`. `test:web` exercises the real HTTP/D1 endpoints with disposable synthetic data, removes that data, and writes an ignored QA report/PDF. `build` creates the deployed Worker and browser assets in `dist/`.
 
 `npm run simulate` reproduces 10,000 seeded paths. The recorded primary frequencies are 7.80%–8.84%, with every archetype reachable, exact totals and no configured balance warnings. This checks the mechanics; human playtesting is still needed.
+
+## Deploy to Cloudflare Workers
+
+The Worker and its D1 binding are declared in `wrangler.jsonc`. After authenticating Wrangler, apply the migrations once and deploy:
+
+```sh
+npm run db:remote
+npm run deploy
+```
+
+For Cloudflare Workers Builds connected to GitHub, use `main` as the production branch, `npm run build` as the build command and `npx wrangler deploy` as the deploy command. The repository root is the build root and no application secrets are required.
+
+Add `questype.com` to the same Cloudflare account before assigning it as a Worker custom domain. Cloudflare must manage the domain's active DNS zone before Wrangler can create the custom-domain records and certificate.
 
 ## Structure and design documents
 
