@@ -20,6 +20,8 @@
     "db:generate": "drizzle-kit generate",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.domain.json --noEmit",
     "test": "node --import tsx --test --test-concurrency=1 tests/*.test.ts",
+    "test:v1-golden": "node --import tsx --test --test-concurrency=1 tests/v1-golden.test.ts",
+    "fixtures:v1:update": "tsx scripts/generate-v1-golden.ts",
     "validate:content": "tsx scripts/validate-content.ts",
     "simulate": "tsx scripts/simulate.ts",
     "example": "tsx scripts/example.ts",
@@ -28,6 +30,7 @@
     "check": "npm run typecheck && npm test && npm run validate:content && npm run build:domain",
     "build:domain": "tsc -p tsconfig.build.json",
     "test:web": "tsx scripts/web-smoke.ts",
+    "check:full": "node scripts/check-full.mjs",
     "db:local": "wrangler d1 migrations apply questype-db --local --config wrangler.jsonc"
   },
   "dependencies": {

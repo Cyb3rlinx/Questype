@@ -1,0 +1,1273 @@
+{
+  "fixture_version": 1,
+  "journey_id": "archetype-journey",
+  "journey_version": "1.1",
+  "scoring_version": "1.1",
+  "content_hash": "116ab299e56b8ff5ac00d123794521bf320852c4efaaf3814db2955429a9601e",
+  "canonicalization": "recursive-key-sort + JSON + SHA-256",
+  "cases": [
+    {
+      "name": "primary-innocent",
+      "choices": [
+        "scene_01_choice_c",
+        "scene_02_choice_d",
+        "scene_03_choice_b",
+        "scene_04_choice_a",
+        "scene_05_choice_d",
+        "scene_06_choice_c",
+        "scene_07_choice_b",
+        "scene_08_choice_a",
+        "scene_09_choice_b",
+        "scene_10_choice_d",
+        "scene_11_choice_c",
+        "scene_12_choice_d",
+        "scene_13_choice_d",
+        "scene_14_choice_c",
+        "scene_15_choice_a"
+      ],
+      "expected": {
+        "primary": "innocent",
+        "secondary": "jester",
+        "tertiary": "magician",
+        "tied_primary": [
+          "innocent"
+        ],
+        "percentages": [
+          [
+            "innocent",
+            49
+          ],
+          [
+            "jester",
+            24
+          ],
+          [
+            "magician",
+            7
+          ],
+          [
+            "ruler",
+            7
+          ],
+          [
+            "lover",
+            3
+          ],
+          [
+            "sage",
+            2
+          ],
+          [
+            "everyman",
+            2
+          ],
+          [
+            "creator",
+            2
+          ],
+          [
+            "outlaw",
+            1
+          ],
+          [
+            "caregiver",
+            1
+          ],
+          [
+            "hero",
+            1
+          ],
+          [
+            "explorer",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "ruler",
+          "evidence": "supported",
+          "dominant_axis": "control"
+        },
+        "character_title": "The Playful Dawnkeeper",
+        "dominant_motivation": "power",
+        "profile_hash": "ca1e2420f08d5d6365da25c6e2fb617d718ff031a069b24cae8ab06b58adcdba",
+        "locale_hashes": {
+          "en": "5248c06c6b26403a000ddcf0ec14e64147c0c3136b79011cd2a7723bad8b63d6",
+          "es": "71d80c5360bfd0ffa60d6f7ee8b29cada38f80d2482a648d20aa63b6b1a73f7f"
+        }
+      }
+    },
+    {
+      "name": "primary-explorer",
+      "choices": [
+        "scene_01_choice_c",
+        "scene_02_choice_d",
+        "scene_03_choice_d",
+        "scene_04_choice_b",
+        "scene_05_choice_c",
+        "scene_06_choice_b",
+        "scene_07_choice_c",
+        "scene_08_choice_b",
+        "scene_09_choice_c",
+        "scene_10_choice_c",
+        "scene_11_choice_d",
+        "scene_12_choice_a",
+        "scene_13_choice_d",
+        "scene_14_choice_c",
+        "scene_15_choice_b"
+      ],
+      "expected": {
+        "primary": "explorer",
+        "secondary": "innocent",
+        "tertiary": "creator",
+        "tied_primary": [
+          "explorer"
+        ],
+        "percentages": [
+          [
+            "explorer",
+            49
+          ],
+          [
+            "innocent",
+            24
+          ],
+          [
+            "creator",
+            8
+          ],
+          [
+            "jester",
+            4
+          ],
+          [
+            "magician",
+            3
+          ],
+          [
+            "lover",
+            3
+          ],
+          [
+            "sage",
+            2
+          ],
+          [
+            "everyman",
+            2
+          ],
+          [
+            "outlaw",
+            2
+          ],
+          [
+            "ruler",
+            1
+          ],
+          [
+            "hero",
+            1
+          ],
+          [
+            "caregiver",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "innocent",
+          "evidence": "supported",
+          "dominant_axis": "avoidance"
+        },
+        "character_title": "The Dawnlit Wayfinder",
+        "dominant_motivation": "freedom",
+        "profile_hash": "81a958a1c98e47ff2a2c80c5e00636d09b2405a97f734e8c4501be32eb3bf560",
+        "locale_hashes": {
+          "en": "cf81a366827f0088a3192718bd2e9565e355619cb00d6d0a625ecf3275c939f8",
+          "es": "e3e86ead1b555b9ac057f64eb45dbdf0679fe3e151cabe95dbd2165ce2728270"
+        }
+      }
+    },
+    {
+      "name": "primary-sage",
+      "choices": [
+        "scene_01_choice_b",
+        "scene_02_choice_d",
+        "scene_03_choice_c",
+        "scene_04_choice_a",
+        "scene_05_choice_a",
+        "scene_06_choice_c",
+        "scene_07_choice_b",
+        "scene_08_choice_c",
+        "scene_09_choice_c",
+        "scene_10_choice_c",
+        "scene_11_choice_b",
+        "scene_12_choice_a",
+        "scene_13_choice_a",
+        "scene_14_choice_c",
+        "scene_15_choice_c"
+      ],
+      "expected": {
+        "primary": "sage",
+        "secondary": "magician",
+        "tertiary": "jester",
+        "tied_primary": [
+          "sage"
+        ],
+        "percentages": [
+          [
+            "sage",
+            54
+          ],
+          [
+            "magician",
+            27
+          ],
+          [
+            "jester",
+            4
+          ],
+          [
+            "ruler",
+            3
+          ],
+          [
+            "lover",
+            2
+          ],
+          [
+            "caregiver",
+            2
+          ],
+          [
+            "everyman",
+            2
+          ],
+          [
+            "innocent",
+            2
+          ],
+          [
+            "hero",
+            1
+          ],
+          [
+            "outlaw",
+            1
+          ],
+          [
+            "creator",
+            1
+          ],
+          [
+            "explorer",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "hero",
+          "evidence": "limited",
+          "dominant_axis": "self_sacrifice"
+        },
+        "character_title": "The Farseeing Lorekeeper",
+        "dominant_motivation": "knowledge",
+        "profile_hash": "c2dc70553d8d815e5308caef281f774e7ff936bcbab74790bfe8bc5df36cd744",
+        "locale_hashes": {
+          "en": "41851acdc24fa6a994ee06ab06f451985e5f74ec5b25df78b0ea7047ed8c0205",
+          "es": "e158972003e5769a864943fd89661fd59fb9f8e56742f13973ded973debef961"
+        }
+      }
+    },
+    {
+      "name": "primary-hero",
+      "choices": [
+        "scene_01_choice_a",
+        "scene_02_choice_b",
+        "scene_03_choice_a",
+        "scene_04_choice_d",
+        "scene_05_choice_b",
+        "scene_06_choice_c",
+        "scene_07_choice_b",
+        "scene_08_choice_b",
+        "scene_09_choice_a",
+        "scene_10_choice_a",
+        "scene_11_choice_b",
+        "scene_12_choice_b",
+        "scene_13_choice_d",
+        "scene_14_choice_c",
+        "scene_15_choice_b"
+      ],
+      "expected": {
+        "primary": "hero",
+        "secondary": "innocent",
+        "tertiary": "explorer",
+        "tied_primary": [
+          "hero"
+        ],
+        "percentages": [
+          [
+            "hero",
+            45
+          ],
+          [
+            "innocent",
+            25
+          ],
+          [
+            "explorer",
+            7
+          ],
+          [
+            "magician",
+            7
+          ],
+          [
+            "outlaw",
+            3
+          ],
+          [
+            "sage",
+            3
+          ],
+          [
+            "lover",
+            3
+          ],
+          [
+            "caregiver",
+            2
+          ],
+          [
+            "jester",
+            2
+          ],
+          [
+            "creator",
+            1
+          ],
+          [
+            "ruler",
+            1
+          ],
+          [
+            "everyman",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "caregiver",
+          "evidence": "supported",
+          "dominant_axis": "self_sacrifice"
+        },
+        "character_title": "The Dawnlit Pathwarden",
+        "dominant_motivation": "freedom",
+        "profile_hash": "da192ed41ad95e3dc47d827bcd85bbbcd56e751f3e26050262fba447eaeebae7",
+        "locale_hashes": {
+          "en": "bb9d030d579e33bcd1d49c3f4868d185ab91609a882d7b6d33784e6229a362a2",
+          "es": "797e68aaa153c2f311436fcb03f7251fa080be9d11a73e0dd68c7c5f535b0add"
+        }
+      }
+    },
+    {
+      "name": "primary-outlaw",
+      "choices": [
+        "scene_01_choice_b",
+        "scene_02_choice_c",
+        "scene_03_choice_a",
+        "scene_04_choice_b",
+        "scene_05_choice_a",
+        "scene_06_choice_d",
+        "scene_07_choice_d",
+        "scene_08_choice_b",
+        "scene_09_choice_c",
+        "scene_10_choice_d",
+        "scene_11_choice_c",
+        "scene_12_choice_a",
+        "scene_13_choice_b",
+        "scene_14_choice_c",
+        "scene_15_choice_d"
+      ],
+      "expected": {
+        "primary": "outlaw",
+        "secondary": "explorer",
+        "tertiary": "lover",
+        "tied_primary": [
+          "outlaw"
+        ],
+        "percentages": [
+          [
+            "outlaw",
+            45
+          ],
+          [
+            "explorer",
+            25
+          ],
+          [
+            "lover",
+            9
+          ],
+          [
+            "innocent",
+            4
+          ],
+          [
+            "creator",
+            4
+          ],
+          [
+            "sage",
+            4
+          ],
+          [
+            "magician",
+            2
+          ],
+          [
+            "caregiver",
+            2
+          ],
+          [
+            "everyman",
+            2
+          ],
+          [
+            "ruler",
+            1
+          ],
+          [
+            "hero",
+            1
+          ],
+          [
+            "jester",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "caregiver",
+          "evidence": "supported",
+          "dominant_axis": "self_sacrifice"
+        },
+        "character_title": "The Wandering Unbound Traveler",
+        "dominant_motivation": "connection",
+        "profile_hash": "28b1ea816d7d845ab7533deb3321593af7dfb27109395b0324e3cdba006e92f1",
+        "locale_hashes": {
+          "en": "f3efbe11dd30a693eba2d06132531eff6b24383d5d78981a59457b1dfebc68db",
+          "es": "9c3aaa3ffa399316b1640c8cc5ec9060802e6a92c516dac3d621b24812157ea3"
+        }
+      }
+    },
+    {
+      "name": "primary-magician",
+      "choices": [
+        "scene_01_choice_d",
+        "scene_02_choice_d",
+        "scene_03_choice_c",
+        "scene_04_choice_d",
+        "scene_05_choice_c",
+        "scene_06_choice_c",
+        "scene_07_choice_b",
+        "scene_08_choice_a",
+        "scene_09_choice_b",
+        "scene_10_choice_a",
+        "scene_11_choice_a",
+        "scene_12_choice_b",
+        "scene_13_choice_d",
+        "scene_14_choice_d",
+        "scene_15_choice_c"
+      ],
+      "expected": {
+        "primary": "magician",
+        "secondary": "jester",
+        "tertiary": "ruler",
+        "tied_primary": [
+          "magician"
+        ],
+        "percentages": [
+          [
+            "magician",
+            49
+          ],
+          [
+            "jester",
+            24
+          ],
+          [
+            "ruler",
+            7
+          ],
+          [
+            "hero",
+            4
+          ],
+          [
+            "innocent",
+            3
+          ],
+          [
+            "creator",
+            3
+          ],
+          [
+            "caregiver",
+            3
+          ],
+          [
+            "sage",
+            2
+          ],
+          [
+            "outlaw",
+            2
+          ],
+          [
+            "lover",
+            1
+          ],
+          [
+            "everyman",
+            1
+          ],
+          [
+            "explorer",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "ruler",
+          "evidence": "supported",
+          "dominant_axis": "control"
+        },
+        "character_title": "The Playful Magician",
+        "dominant_motivation": "creation",
+        "profile_hash": "fd900bfde3ba54b2d745bba762070659c4acd64d79a87f2e5a9efa85e1ca74f2",
+        "locale_hashes": {
+          "en": "5a04bc8db27728fc4d61cf7ca34ba003507f98fb8c3d010408a075aa1dd66a00",
+          "es": "13b36376b28eba1d2bc3c7cdf62b0ff0840cfd48264b0fcfb820fb5cfaf886dc"
+        }
+      }
+    },
+    {
+      "name": "primary-lover",
+      "choices": [
+        "scene_01_choice_a",
+        "scene_02_choice_b",
+        "scene_03_choice_c",
+        "scene_04_choice_d",
+        "scene_05_choice_b",
+        "scene_06_choice_c",
+        "scene_07_choice_c",
+        "scene_08_choice_d",
+        "scene_09_choice_d",
+        "scene_10_choice_b",
+        "scene_11_choice_b",
+        "scene_12_choice_c",
+        "scene_13_choice_b",
+        "scene_14_choice_b",
+        "scene_15_choice_a"
+      ],
+      "expected": {
+        "primary": "lover",
+        "secondary": "jester",
+        "tertiary": "creator",
+        "tied_primary": [
+          "lover"
+        ],
+        "percentages": [
+          [
+            "lover",
+            49
+          ],
+          [
+            "jester",
+            24
+          ],
+          [
+            "creator",
+            8
+          ],
+          [
+            "outlaw",
+            3
+          ],
+          [
+            "explorer",
+            3
+          ],
+          [
+            "sage",
+            3
+          ],
+          [
+            "magician",
+            3
+          ],
+          [
+            "everyman",
+            2
+          ],
+          [
+            "innocent",
+            2
+          ],
+          [
+            "hero",
+            1
+          ],
+          [
+            "caregiver",
+            1
+          ],
+          [
+            "ruler",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "outlaw",
+          "evidence": "limited",
+          "dominant_axis": "rebellion"
+        },
+        "character_title": "The Playful Heartkeeper",
+        "dominant_motivation": "connection",
+        "profile_hash": "d2f973c1a115ae1e4b250166219c823cc0150de35813fc010b49f49833204f78",
+        "locale_hashes": {
+          "en": "99e2b1a9ca59fcedf265b31c642fdb52157fb8ac4e4798a48c3f31beede96720",
+          "es": "d7bd916a27f9216bde06a8cc98bd1c603cc33850c15c1f2e378949b4a8151d46"
+        }
+      }
+    },
+    {
+      "name": "primary-creator",
+      "choices": [
+        "scene_01_choice_c",
+        "scene_02_choice_d",
+        "scene_03_choice_c",
+        "scene_04_choice_c",
+        "scene_05_choice_a",
+        "scene_06_choice_b",
+        "scene_07_choice_c",
+        "scene_08_choice_d",
+        "scene_09_choice_b",
+        "scene_10_choice_a",
+        "scene_11_choice_a",
+        "scene_12_choice_b",
+        "scene_13_choice_d",
+        "scene_14_choice_a",
+        "scene_15_choice_d"
+      ],
+      "expected": {
+        "primary": "creator",
+        "secondary": "magician",
+        "tertiary": "innocent",
+        "tied_primary": [
+          "creator"
+        ],
+        "percentages": [
+          [
+            "creator",
+            53
+          ],
+          [
+            "magician",
+            26
+          ],
+          [
+            "innocent",
+            7
+          ],
+          [
+            "hero",
+            3
+          ],
+          [
+            "caregiver",
+            3
+          ],
+          [
+            "everyman",
+            2
+          ],
+          [
+            "outlaw",
+            1
+          ],
+          [
+            "sage",
+            1
+          ],
+          [
+            "lover",
+            1
+          ],
+          [
+            "ruler",
+            1
+          ],
+          [
+            "explorer",
+            1
+          ],
+          [
+            "jester",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "ruler",
+          "evidence": "limited",
+          "dominant_axis": "control"
+        },
+        "character_title": "The Farseeing Worldmaker",
+        "dominant_motivation": "creation",
+        "profile_hash": "fcc65001b407ab44029409c7cf9ff3300d9a362059fcfdb1adf298a4115fa60d",
+        "locale_hashes": {
+          "en": "d18003af9f6bc14e45862a13515bead2a0c0e4405c5fa60a84fc847ec893019f",
+          "es": "34d3e132f8633ab740844341d06d96eb6cc22782ce4751378188adc96c10fbc8"
+        }
+      }
+    },
+    {
+      "name": "primary-caregiver",
+      "choices": [
+        "scene_01_choice_d",
+        "scene_02_choice_c",
+        "scene_03_choice_c",
+        "scene_04_choice_d",
+        "scene_05_choice_c",
+        "scene_06_choice_c",
+        "scene_07_choice_b",
+        "scene_08_choice_b",
+        "scene_09_choice_a",
+        "scene_10_choice_d",
+        "scene_11_choice_c",
+        "scene_12_choice_b",
+        "scene_13_choice_a",
+        "scene_14_choice_b",
+        "scene_15_choice_c"
+      ],
+      "expected": {
+        "primary": "caregiver",
+        "secondary": "creator",
+        "tertiary": "hero",
+        "tied_primary": [
+          "caregiver"
+        ],
+        "percentages": [
+          [
+            "caregiver",
+            55
+          ],
+          [
+            "creator",
+            23
+          ],
+          [
+            "hero",
+            4
+          ],
+          [
+            "sage",
+            3
+          ],
+          [
+            "magician",
+            3
+          ],
+          [
+            "lover",
+            3
+          ],
+          [
+            "ruler",
+            2
+          ],
+          [
+            "innocent",
+            2
+          ],
+          [
+            "jester",
+            2
+          ],
+          [
+            "explorer",
+            1
+          ],
+          [
+            "outlaw",
+            1
+          ],
+          [
+            "everyman",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "caregiver",
+          "evidence": "supported",
+          "dominant_axis": "self_sacrifice"
+        },
+        "character_title": "The Inventive Hearthkeeper",
+        "dominant_motivation": "creation",
+        "profile_hash": "f899e7b57a990b62b52eafc1589d1f0b7736c58ed754e8e8595be777a105f28e",
+        "locale_hashes": {
+          "en": "f698fcdde00530b074ab87ccdd31aba1caa351cad521bbe60f4b3a6611c3c14f",
+          "es": "f165bc588028ff4ed0997922c96e154166cb1bbe7082904f417d937cbc910e81"
+        }
+      }
+    },
+    {
+      "name": "primary-jester",
+      "choices": [
+        "scene_01_choice_d",
+        "scene_02_choice_c",
+        "scene_03_choice_d",
+        "scene_04_choice_a",
+        "scene_05_choice_a",
+        "scene_06_choice_c",
+        "scene_07_choice_d",
+        "scene_08_choice_a",
+        "scene_09_choice_d",
+        "scene_10_choice_b",
+        "scene_11_choice_d",
+        "scene_12_choice_d",
+        "scene_13_choice_d",
+        "scene_14_choice_b",
+        "scene_15_choice_b"
+      ],
+      "expected": {
+        "primary": "jester",
+        "secondary": "everyman",
+        "tertiary": "outlaw",
+        "tied_primary": [
+          "jester"
+        ],
+        "percentages": [
+          [
+            "jester",
+            46
+          ],
+          [
+            "everyman",
+            26
+          ],
+          [
+            "outlaw",
+            5
+          ],
+          [
+            "explorer",
+            5
+          ],
+          [
+            "magician",
+            5
+          ],
+          [
+            "sage",
+            2
+          ],
+          [
+            "lover",
+            2
+          ],
+          [
+            "caregiver",
+            2
+          ],
+          [
+            "ruler",
+            2
+          ],
+          [
+            "innocent",
+            2
+          ],
+          [
+            "creator",
+            2
+          ],
+          [
+            "hero",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "innocent",
+          "evidence": "supported",
+          "dominant_axis": "avoidance"
+        },
+        "character_title": "The Kindred Reveler",
+        "dominant_motivation": "connection",
+        "profile_hash": "8cacfa8b55930f4d6a1bde073c57bc53e88c632c6f4d5c4b88a51622516bd967",
+        "locale_hashes": {
+          "en": "4e279f2d37f1678a993e5fde148882044038d445976381a1fc8c789ffa595030",
+          "es": "31affe564a250f02f689cfe184690272f1480f73138f1d2f70789fbc2bc68098"
+        }
+      }
+    },
+    {
+      "name": "primary-ruler",
+      "choices": [
+        "scene_01_choice_a",
+        "scene_02_choice_a",
+        "scene_03_choice_a",
+        "scene_04_choice_c",
+        "scene_05_choice_c",
+        "scene_06_choice_a",
+        "scene_07_choice_d",
+        "scene_08_choice_a",
+        "scene_09_choice_c",
+        "scene_10_choice_c",
+        "scene_11_choice_b",
+        "scene_12_choice_b",
+        "scene_13_choice_c",
+        "scene_14_choice_a",
+        "scene_15_choice_b"
+      ],
+      "expected": {
+        "primary": "ruler",
+        "secondary": "outlaw",
+        "tertiary": "explorer",
+        "tied_primary": [
+          "ruler"
+        ],
+        "percentages": [
+          [
+            "ruler",
+            49
+          ],
+          [
+            "outlaw",
+            25
+          ],
+          [
+            "explorer",
+            7
+          ],
+          [
+            "everyman",
+            7
+          ],
+          [
+            "sage",
+            2
+          ],
+          [
+            "caregiver",
+            2
+          ],
+          [
+            "innocent",
+            2
+          ],
+          [
+            "creator",
+            2
+          ],
+          [
+            "hero",
+            1
+          ],
+          [
+            "magician",
+            1
+          ],
+          [
+            "lover",
+            1
+          ],
+          [
+            "jester",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "ruler",
+          "evidence": "supported",
+          "dominant_axis": "control"
+        },
+        "character_title": "The Unbound Beacon Keeper",
+        "dominant_motivation": "power",
+        "profile_hash": "956f7129088a616d02472e3916dd44938ce9da36ddb479b9794b14bf486c088e",
+        "locale_hashes": {
+          "en": "58df11847715d4f518b88e7cfd810c854b3c7ccb1c5d37683242d70d08b71f67",
+          "es": "35c076436a2167a029801241be63978b409ace8d952a903c8f71ef3f9cb55269"
+        }
+      }
+    },
+    {
+      "name": "primary-everyman",
+      "choices": [
+        "scene_01_choice_b",
+        "scene_02_choice_d",
+        "scene_03_choice_c",
+        "scene_04_choice_c",
+        "scene_05_choice_b",
+        "scene_06_choice_a",
+        "scene_07_choice_d",
+        "scene_08_choice_d",
+        "scene_09_choice_b",
+        "scene_10_choice_c",
+        "scene_11_choice_d",
+        "scene_12_choice_b",
+        "scene_13_choice_d",
+        "scene_14_choice_a",
+        "scene_15_choice_c"
+      ],
+      "expected": {
+        "primary": "everyman",
+        "secondary": "innocent",
+        "tertiary": "ruler",
+        "tied_primary": [
+          "everyman"
+        ],
+        "percentages": [
+          [
+            "everyman",
+            49
+          ],
+          [
+            "innocent",
+            24
+          ],
+          [
+            "ruler",
+            7
+          ],
+          [
+            "creator",
+            4
+          ],
+          [
+            "sage",
+            4
+          ],
+          [
+            "magician",
+            3
+          ],
+          [
+            "lover",
+            3
+          ],
+          [
+            "caregiver",
+            2
+          ],
+          [
+            "hero",
+            1
+          ],
+          [
+            "outlaw",
+            1
+          ],
+          [
+            "jester",
+            1
+          ],
+          [
+            "explorer",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "ruler",
+          "evidence": "supported",
+          "dominant_axis": "control"
+        },
+        "character_title": "The Dawnlit Companion",
+        "dominant_motivation": "connection",
+        "profile_hash": "0e3fa32cd3d2caa974343b86b38ba06b1d836da0909090883bc82959b5ff5737",
+        "locale_hashes": {
+          "en": "322cdecc378e7aa5955c6baf2551e298eb8431ba25b0635147fe1d2027aa3ad9",
+          "es": "a7b8e7e9ed6f075c003901e28c839c3d699fabace6ae369f65b259d23f5ae97d"
+        }
+      }
+    },
+    {
+      "name": "three-way-primary-tie",
+      "choices": [
+        "scene_01_choice_c",
+        "scene_02_choice_c",
+        "scene_03_choice_c",
+        "scene_04_choice_b",
+        "scene_05_choice_a",
+        "scene_06_choice_b",
+        "scene_07_choice_b",
+        "scene_08_choice_d",
+        "scene_09_choice_a",
+        "scene_10_choice_d",
+        "scene_11_choice_a",
+        "scene_12_choice_d",
+        "scene_13_choice_c",
+        "scene_14_choice_b",
+        "scene_15_choice_b"
+      ],
+      "expected": {
+        "primary": "sage",
+        "secondary": "magician",
+        "tertiary": "caregiver",
+        "tied_primary": [
+          "sage",
+          "magician",
+          "caregiver"
+        ],
+        "percentages": [
+          [
+            "sage",
+            45
+          ],
+          [
+            "magician",
+            25
+          ],
+          [
+            "caregiver",
+            9
+          ],
+          [
+            "innocent",
+            4
+          ],
+          [
+            "creator",
+            4
+          ],
+          [
+            "lover",
+            4
+          ],
+          [
+            "everyman",
+            2
+          ],
+          [
+            "explorer",
+            2
+          ],
+          [
+            "hero",
+            2
+          ],
+          [
+            "ruler",
+            1
+          ],
+          [
+            "outlaw",
+            1
+          ],
+          [
+            "jester",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "caregiver",
+          "evidence": "supported",
+          "dominant_axis": "self_sacrifice"
+        },
+        "character_title": "The Farseeing Lorekeeper",
+        "dominant_motivation": "knowledge",
+        "profile_hash": "c9e23fb355703fdbb054f52eab33aa60eaddd9b274e738b15b2883ff9da4884f",
+        "locale_hashes": {
+          "en": "aeed2ad874519196f767a44a13c0ca73acc23749920483157352cbc4e5f56efe",
+          "es": "181f351ea4516b0e2f243b94665302bf54651e9caf6d876bd60f382a17e7c6c6"
+        }
+      }
+    },
+    {
+      "name": "limited-shadow-evidence",
+      "choices": [
+        "scene_01_choice_a",
+        "scene_02_choice_c",
+        "scene_03_choice_c",
+        "scene_04_choice_a",
+        "scene_05_choice_d",
+        "scene_06_choice_c",
+        "scene_07_choice_b",
+        "scene_08_choice_c",
+        "scene_09_choice_c",
+        "scene_10_choice_a",
+        "scene_11_choice_a",
+        "scene_12_choice_d",
+        "scene_13_choice_a",
+        "scene_14_choice_c",
+        "scene_15_choice_a"
+      ],
+      "expected": {
+        "primary": "hero",
+        "secondary": "jester",
+        "tertiary": "innocent",
+        "tied_primary": [
+          "hero",
+          "jester"
+        ],
+        "percentages": [
+          [
+            "hero",
+            45
+          ],
+          [
+            "jester",
+            25
+          ],
+          [
+            "innocent",
+            7
+          ],
+          [
+            "lover",
+            7
+          ],
+          [
+            "caregiver",
+            7
+          ],
+          [
+            "magician",
+            3
+          ],
+          [
+            "everyman",
+            1
+          ],
+          [
+            "sage",
+            1
+          ],
+          [
+            "ruler",
+            1
+          ],
+          [
+            "explorer",
+            1
+          ],
+          [
+            "creator",
+            1
+          ],
+          [
+            "outlaw",
+            1
+          ]
+        ],
+        "shadow": {
+          "slug": "caregiver",
+          "evidence": "limited",
+          "dominant_axis": "self_sacrifice"
+        },
+        "character_title": "The Playful Pathwarden",
+        "dominant_motivation": "connection",
+        "profile_hash": "c9d1b6b267d876b6fc4d268b8b353c4105d5d6efda10247d27c72da2482f2940",
+        "locale_hashes": {
+          "en": "c102b122ff3616f05734a47d3a9d4e1c7f1a5718bf7e88b129aeaef70fb4cdfd",
+          "es": "cc8fd77b389fb0a40152a91817d7701783c6797d98a1faae94c891546151c4cb"
+        }
+      }
+    }
+  ]
+}

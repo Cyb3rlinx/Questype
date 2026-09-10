@@ -82,3 +82,7 @@ El primer bloque recomendado es **Blindaje de V1 + registro multi-Journey**. Es 
 - Destino remoto: ninguno
 - Deploy: ninguno
 - `main`: sin modificar
+
+## Seguimiento
+
+La Fase 0 fue aprobada el 2026-09-10. La Etapa 1 quedó documentada en [`STAGE_1_REPORT.md`](./STAGE_1_REPORT.md).
