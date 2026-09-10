@@ -17,6 +17,12 @@ const START_EVENT = 'questype:journey-soundtrack-start';
 const STOP_EVENT = 'questype:journey-soundtrack-stop';
 const MUTED_STORAGE_KEY = 'questype:journey-soundtrack-muted';
 
+function isJourneyPlayer(pathname: string) {
+  return (
+    pathname === '/journey' || /^\/journey\/[^/]+\/play\/?$/.test(pathname)
+  );
+}
+
 type SoundtrackContextValue = {
   muted: boolean;
   playing: boolean;
@@ -99,7 +105,7 @@ export function JourneySoundtrackProvider({
   }, [play, stop]);
 
   useEffect(() => {
-    if (pathname === '/journey') void play();
+    if (isJourneyPlayer(pathname)) void play();
     else stop();
   }, [pathname, play, stop]);
 

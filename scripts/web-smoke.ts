@@ -27,8 +27,20 @@ async function call(
   const data = contentType?.includes('application/json')
     ? ((await r.json()) as any)
     : await r.text();
-  return { status: r.status, data, headers: r.headers };
+  return { status: r.status, data, headers: r.headers, url: r.url };
 }
+const legacyStart = await call('/start?new=1');
+assert.equal(legacyStart.status, 200);
+assert.ok(
+  legacyStart.url.endsWith('/journey/the-unwritten-road/start?new=1'),
+  legacyStart.url,
+);
+assert.equal((await call('/journeys')).status, 200);
+assert.equal((await call('/journey/not-a-real-journey/start')).status, 404);
+assert.equal(
+  (await call('/api/session?journey_slug=not-a-real-journey')).status,
+  404,
+);
 assert.equal((await call('/api/session')).status, 404);
 assert.equal(
   (
@@ -54,24 +66,34 @@ assert.equal(started.status, 200, JSON.stringify(started.data));
 assert.ok(started.headers.get('set-cookie')?.includes('HttpOnly'));
 let session = started.data;
 assert.ok(!JSON.stringify(session).includes('scores'));
+assert.equal(session.journey.slug, 'the-unwritten-road');
+assert.equal(session.journey.version, '1.1');
+assert.equal(session.total_scenes, 15);
+assert.ok(session.scene.visual.default.src.endsWith('woman-01.webp'));
+assert.ok(
+  session.scene.visual.default.responsive_src.endsWith('woman-01-sm.webp'),
+);
 const id = session.id;
 const raced = await Promise.all(
-  session.scene.choices
-    .slice(0, 2)
-    .map((c: any) =>
-      call('/api/session/answer', 'POST', {
-        session_id: id,
-        scene_id: session.scene.id,
-        choice_id: c.id,
-      }),
-    ),
+  session.scene.choices.slice(0, 2).map((c: any) =>
+    call('/api/session/answer', 'POST', {
+      session_id: id,
+      scene_id: session.scene.id,
+      choice_id: c.id,
+    }),
+  ),
 );
-assert.deepEqual(raced.map((r) => r.status).sort(), [200, 409]);
+assert.deepEqual(
+  raced.map((r) => r.status).sort((a, b) => a - b),
+  [200, 409],
+);
 session = (await call('/api/session')).data;
 assert.equal(session.completed_scenes, 1);
 for (let i = 1; i < 15; i++) {
   const previous = JSON.stringify(session);
   const chosen = session.scene.choices[i % 4];
+  const selectedVisual =
+    session.scene.visual.choice_variants[chosen.id] ?? null;
   const response = await call('/api/session/answer', 'POST', {
     session_id: id,
     scene_id: session.scene.id,
@@ -79,6 +101,10 @@ for (let i = 1; i < 15; i++) {
   });
   assert.equal(response.status, 200, JSON.stringify(response.data));
   session = response.data;
+  if (selectedVisual) {
+    assert.equal(session.scene.order, 11);
+    assert.equal(session.scene.visual.default.src, selectedVisual.src);
+  }
   if (i === 7) {
     const resumed = (await call('/api/session')).data;
     assert.equal(resumed.current_scene, 9);
@@ -175,6 +201,11 @@ const summary = {
   passed: true,
   checks: [
     'anonymous start',
+    'legacy route redirects',
+    'Journey catalog and unknown-slug handling',
+    'registered Journey identity and version',
+    'manifest-driven responsive scene art',
+    'choice visual carry-forward',
     'same-origin protection',
     'HttpOnly ownership cookie',
     'no client score maps',

@@ -31,7 +31,8 @@
     "build:domain": "tsc -p tsconfig.build.json",
     "test:web": "tsx scripts/web-smoke.ts",
     "check:full": "node scripts/check-full.mjs",
-    "db:local": "wrangler d1 migrations apply questype-db --local --config wrangler.jsonc"
+    "db:local": "wrangler d1 migrations apply questype-db --local --config wrangler.jsonc",
+    "verify:d1-v2": "node scripts/verify-v2-d1.mjs"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

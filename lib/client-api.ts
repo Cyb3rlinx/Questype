@@ -5,6 +5,19 @@ export interface PublicScene {
   title: string;
   narrative: string;
   choices: { id: string; text: string }[];
+  visual: {
+    default: PublicVisualAsset;
+    choice_variants: Record<string, PublicVisualAsset>;
+  };
+}
+export interface PublicVisualAsset {
+  id: string;
+  src: string;
+  responsive_src: string | null;
+  width: number;
+  height: number;
+  focal_point: { x: number; y: number };
+  alt: string;
 }
 export interface SessionView {
   id: string;
@@ -16,6 +29,15 @@ export interface SessionView {
   total_scenes: number;
   result_id: string | null;
   scene_image_variant: number | null;
+  journey: {
+    id: string;
+    slug: string;
+    version: string;
+    title: string;
+    act_names: string[];
+    act_count: number;
+    estimated_minutes: number;
+  };
   scene: PublicScene | null;
 }
 export async function requestJson<T>(

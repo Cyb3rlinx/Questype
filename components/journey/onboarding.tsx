@@ -15,7 +15,24 @@ import { requestJson, type SessionView } from '@/lib/client-api';
 import { useLocale } from '../i18n-provider';
 import { startJourneySoundtrack, stopJourneySoundtrack } from './soundtrack';
 
-export function Onboarding() {
+interface OnboardingProps {
+  journeySlug: string;
+  sceneCount: number;
+  onboardingAsset: {
+    src: string;
+    responsiveSrc?: string;
+    width: number;
+    height: number;
+    alt: { en: string; es: string };
+    focalPoint: { x: number; y: number };
+  };
+}
+
+export function Onboarding({
+  journeySlug,
+  sceneCount,
+  onboardingAsset,
+}: OnboardingProps) {
   const { locale } = useLocale();
   const es = locale === 'es';
   const router = useRouter(),
@@ -27,14 +44,20 @@ export function Onboarding() {
   const requestId = useRef('');
   useEffect(() => {
     requestId.current = crypto.randomUUID();
-    requestJson<SessionView>('/api/session')
+    requestJson<SessionView>(
+      `/api/session?journey_slug=${encodeURIComponent(journeySlug)}`,
+    )
       .then(setExisting)
       .catch(() => {});
-  }, []);
+  }, [journeySlug]);
   async function start(event: React.FormEvent) {
     event.preventDefault();
     if (!gender) {
-      setError(es ? 'Elige cómo quieres que se represente a tu personaje.' : 'Choose how you would like your character represented.');
+      setError(
+        es
+          ? 'Elige cómo quieres que se represente a tu personaje.'
+          : 'Choose how you would like your character represented.',
+      );
       return;
     }
     startJourneySoundtrack();
@@ -45,8 +68,9 @@ export function Onboarding() {
         character_gender: gender,
         request_id: requestId.current,
         restart: search.get('new') === '1',
+        journey_slug: journeySlug,
       });
-      router.push('/journey');
+      router.push(`/journey/${journeySlug}/play`);
     } catch (e) {
       stopJourneySoundtrack();
       setError((e as Error).message);
@@ -59,70 +83,119 @@ export function Onboarding() {
       <main id="main" className="onboarding-layout">
         <aside className="onboarding-art">
           <img
-            src="/images/forest-waystation.webp"
-            srcSet="/images/forest-waystation-sm.webp 900w, /images/forest-waystation.webp 1672w"
+            src={onboardingAsset.src}
+            srcSet={
+              onboardingAsset.responsiveSrc
+                ? `${onboardingAsset.responsiveSrc} 900w, ${onboardingAsset.src} ${onboardingAsset.width}w`
+                : undefined
+            }
             sizes="(max-width: 900px) 100vw, 46vw"
-            width={1672}
-            height={941}
-            alt={es ? 'Un sendero tranquilo a través de un bosque antiguo' : 'A quiet path through an ancient forest'}
+            width={onboardingAsset.width}
+            height={onboardingAsset.height}
+            alt={onboardingAsset.alt[locale]}
+            style={{
+              objectPosition: `${onboardingAsset.focalPoint.x * 100}% ${onboardingAsset.focalPoint.y * 100}%`,
+            }}
             fetchPriority="high"
           />
           <div className="art-caption">
-            <span className="eyebrow">{es ? 'EL PRIMER PASO ES TUYO' : 'THE FIRST STEP IS YOURS'}</span>
+            <span className="eyebrow">
+              {es ? 'EL PRIMER PASO ES TUYO' : 'THE FIRST STEP IS YOURS'}
+            </span>
             <h2>
               {es ? 'El camino no conoce' : 'The road knows'}
-              <br />{' '}
-              {es ? 'desconocidos.' : 'no strangers.'}
+              <br /> {es ? 'desconocidos.' : 'no strangers.'}
               <br />
-              <em>{es ? 'Solo historias aún no contadas.' : 'Only stories yet untold.'}</em>
+              <em>
+                {es
+                  ? 'Solo historias aún no contadas.'
+                  : 'Only stories yet untold.'}
+              </em>
             </h2>
-            <span className="art-coordinate">VEY R · {es ? 'LA ANTIGUA ESTACIÓN' : 'THE OLD WAYSTATION'}</span>
+            <span className="art-coordinate">
+              VEY R · {es ? 'LA ANTIGUA ESTACIÓN' : 'THE OLD WAYSTATION'}
+            </span>
           </div>
         </aside>
         <section className="onboarding-panel">
           <div className="flow-steps">
-            <span className="current">01 · {es ? 'Tu personaje' : 'Your character'}</span>
+            <span className="current">
+              01 · {es ? 'Tu personaje' : 'Your character'}
+            </span>
             <i />
             <span>02 · {es ? 'Tu viaje' : 'Your journey'}</span>
             <i />
             <span>03 · {es ? 'Tu revelación' : 'Your reveal'}</span>
           </div>
           <Compass className="panel-symbol" size={35} strokeWidth={1} />
-          <span className="eyebrow">{es ? 'ANTES DE CRUZAR EL UMBRAL' : 'BEFORE YOU CROSS THE THRESHOLD'}</span>
+          <span className="eyebrow">
+            {es
+              ? 'ANTES DE CRUZAR EL UMBRAL'
+              : 'BEFORE YOU CROSS THE THRESHOLD'}
+          </span>
           <h1>
             {es ? 'Toda historia comienza' : 'Every story begins'}
             <br />
-            {es ? 'con ' : 'with '}<em>{es ? 'alguien.' : 'someone.'}</em>
+            {es ? 'con ' : 'with '}
+            <em>{es ? 'alguien.' : 'someone.'}</em>
           </h1>
           <p className="panel-intro">
-            {es ? 'Elige cómo aparece tu viajero en la historia.' : 'Choose how your traveler appears in the story.'}
+            {es
+              ? 'Elige cómo aparece tu viajero en la historia.'
+              : 'Choose how your traveler appears in the story.'}
             <br />
-            {es ? 'El resto lo revelarán tus elecciones.' : 'The rest, your choices will reveal.'}
+            {es
+              ? 'El resto lo revelarán tus elecciones.'
+              : 'The rest, your choices will reveal.'}
           </p>
           {existing &&
           existing.status !== 'completed' &&
           search.get('new') !== '1' ? (
             <div className="resume-box">
-              <h3>{es ? 'Tu camino todavía te espera.' : 'Your road is still waiting.'}</h3>
+              <h3>
+                {es
+                  ? 'Tu camino todavía te espera.'
+                  : 'Your road is still waiting.'}
+              </h3>
               <p>
-                {es ? `Completaste ${existing.completed_scenes} de 15 momentos. Continúa desde donde lo dejaste.` : `You’ve completed ${existing.completed_scenes} of 15 moments. Pick up where you left off.`}
+                {es
+                  ? `Completaste ${existing.completed_scenes} de ${sceneCount} momentos. Continúa desde donde lo dejaste.`
+                  : `You’ve completed ${existing.completed_scenes} of ${sceneCount} moments. Pick up where you left off.`}
               </p>
-              <Link href="/journey" className="button button-gold" onClick={startJourneySoundtrack}>
-                {es ? 'Continuar tu viaje' : 'Continue your journey'} <ArrowRight size={17} />
+              <Link
+                href={`/journey/${journeySlug}/play`}
+                className="button button-gold"
+                onClick={startJourneySoundtrack}
+              >
+                {es ? 'Continuar tu viaje' : 'Continue your journey'}{' '}
+                <ArrowRight size={17} />
               </Link>
-              <Link href="/start?new=1" className="text-link">
-                {es ? 'Comenzar una nueva historia' : 'Start a new story instead'}
+              <Link
+                href={`/journey/${journeySlug}/start?new=1`}
+                className="text-link"
+              >
+                {es
+                  ? 'Comenzar una nueva historia'
+                  : 'Start a new story instead'}
               </Link>
             </div>
           ) : (
             <form onSubmit={start} className="onboarding-form">
               <fieldset>
-                <legend>{es ? '¿Cómo quieres que se represente a tu personaje?' : 'How would you like your character represented?'}</legend>
+                <legend>
+                  {es
+                    ? '¿Cómo quieres que se represente a tu personaje?'
+                    : 'How would you like your character represented?'}
+                </legend>
                 <RadioGroup
                   value={gender ?? ''}
                   onValueChange={(value) => setGender(value as 'man' | 'woman')}
                   className="representation-options"
-                  aria-label={es ? 'Representación del personaje' : 'Character representation'}
+                  aria-label={
+                    es
+                      ? 'Representación del personaje'
+                      : 'Character representation'
+                  }
                 >
                   {(['man', 'woman'] as const).map((value) => (
                     <label
@@ -133,14 +206,34 @@ export function Onboarding() {
                         <UserRound size={31} strokeWidth={1} />
                       </div>
                       <span className="representation-name">
-                        {value === 'man' ? (es ? 'Hombre' : 'Man') : (es ? 'Mujer' : 'Woman')}
+                        {value === 'man'
+                          ? es
+                            ? 'Hombre'
+                            : 'Man'
+                          : es
+                            ? 'Mujer'
+                            : 'Woman'}
                         <small>
-                          {value === 'man' ? (es ? 'Él' : 'He / him') : (es ? 'Ella' : 'She / her')}
+                          {value === 'man'
+                            ? es
+                              ? 'Él'
+                              : 'He / him'
+                            : es
+                              ? 'Ella'
+                              : 'She / her'}
                         </small>
                       </span>
                       <RadioGroupItem
                         value={value}
-                        aria-label={value === 'man' ? (es ? 'Hombre' : 'Man') : (es ? 'Mujer' : 'Woman')}
+                        aria-label={
+                          value === 'man'
+                            ? es
+                              ? 'Hombre'
+                              : 'Man'
+                            : es
+                              ? 'Mujer'
+                              : 'Woman'
+                        }
                       />
                       {gender === value && (
                         <Check size={14} className="representation-check" />
@@ -149,7 +242,9 @@ export function Onboarding() {
                   ))}
                 </RadioGroup>
                 <p className="field-hint">
-                  {es ? 'Esto define la representación de tu personaje. Tus elecciones revelan tus arquetipos.' : 'This shapes your character’s representation. Your choices shape your archetypes.'}
+                  {es
+                    ? 'Esto define la representación de tu personaje. Tus elecciones revelan tus arquetipos.'
+                    : 'This shapes your character’s representation. Your choices shape your archetypes.'}
                 </p>
               </fieldset>
               {error && (
@@ -162,19 +257,31 @@ export function Onboarding() {
                 className="button button-gold full-width"
                 type="submit"
               >
-                {busy ? (es ? 'Abriendo tu historia…' : 'Opening your story…') : (es ? 'Entrar en la historia' : 'Step into the story')}
+                {busy
+                  ? es
+                    ? 'Abriendo tu historia…'
+                    : 'Opening your story…'
+                  : es
+                    ? 'Entrar en la historia'
+                    : 'Step into the story'}
                 <ArrowRight size={18} />
               </button>
               <p className="private-note">
                 <LockKeyhole size={13} />
-                {es ? 'Tu viaje es privado. No necesitas una cuenta.' : 'Your journey is private. No account needed.'}
+                {es
+                  ? 'Tu viaje es privado. No necesitas una cuenta.'
+                  : 'Your journey is private. No account needed.'}
               </p>
             </form>
           )}
           <p className="onboarding-disclaimer">
-            {es ? 'Un viaje para la reflexión personal y el entretenimiento.' : 'A journey for self-reflection and entertainment.'}
+            {es
+              ? 'Un viaje para la reflexión personal y el entretenimiento.'
+              : 'A journey for self-reflection and entertainment.'}
             <br />
-            {es ? 'Esta experiencia no ofrece diagnósticos psicológicos ni médicos.' : 'This experience does not provide psychological or medical diagnosis.'}
+            {es
+              ? 'Esta experiencia no ofrece diagnósticos psicológicos ni médicos.'
+              : 'This experience does not provide psychological or medical diagnosis.'}
           </p>
         </section>
       </main>

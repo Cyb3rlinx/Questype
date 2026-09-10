@@ -15,6 +15,33 @@ export const releases = sqliteTable('web_releases', {
   snapshot: text('snapshot').notNull(),
   createdAt: integer('created_at').notNull(),
 });
+export const journeys = sqliteTable('journeys', {
+  id: text('id').primaryKey(),
+  slug: text('slug').notNull().unique(),
+  status: text('status').notNull(),
+  accessTier: text('access_tier').notNull(),
+  createdAt: integer('created_at').notNull(),
+  retiredAt: integer('retired_at'),
+});
+export const journeyVersions = sqliteTable(
+  'journey_versions',
+  {
+    id: text('id').primaryKey(),
+    journeyId: text('journey_id')
+      .notNull()
+      .references(() => journeys.id),
+    version: text('version').notNull(),
+    contentHash: text('content_hash').notNull(),
+    scoringVersion: text('scoring_version').notNull(),
+    snapshot: text('snapshot').notNull(),
+    publishedAt: integer('published_at'),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('journey_versions_journey_version').on(t.journeyId, t.version),
+    uniqueIndex('journey_versions_journey_hash').on(t.journeyId, t.contentHash),
+  ],
+);
 export const sessions = sqliteTable(
   'web_sessions',
   {
@@ -25,13 +52,25 @@ export const sessions = sqliteTable(
     releaseId: text('release_id')
       .notNull()
       .references(() => releases.id),
+    journeyId: text('journey_id').references(() => journeys.id),
+    journeyVersionId: text('journey_version_id').references(
+      () => journeyVersions.id,
+    ),
     stateJson: text('state_json').notNull(),
     revision: integer('revision').notNull().default(0),
     status: text('status').notNull(),
     currentScene: integer('current_scene').notNull(),
     createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at'),
   },
-  (t) => [index('web_sessions_owner_created').on(t.ownerHash, t.createdAt)],
+  (t) => [
+    index('web_sessions_owner_created').on(t.ownerHash, t.createdAt),
+    index('web_sessions_journey_status_created').on(
+      t.journeyId,
+      t.status,
+      t.createdAt,
+    ),
+  ],
 );
 export const answers = sqliteTable(
   'web_answers',

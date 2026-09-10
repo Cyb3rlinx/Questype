@@ -2,7 +2,6 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 import { z } from 'zod';
 import type { D1Database } from '@cloudflare/workers-types';
-import { journeyV1 } from '../domain/content/journey-v1.js';
 import {
   createSession,
   restoreSession,
@@ -11,7 +10,6 @@ import {
   toPublicScene,
   type JourneySession,
 } from '../domain/journey/session.js';
-import { createScoringEngine } from '../domain/scoring/engine.js';
 import {
   generateStructuredProfile,
   refreshArchetypePercentages,
@@ -19,7 +17,6 @@ import {
 } from '../domain/scoring/profile.js';
 import { deterministicInterpretation } from '../ai/fallback.js';
 import { validateInterpretation } from '../ai/contracts.js';
-import { contentHash } from '../database/content-hash.js';
 import {
   createPublicProjection,
   publicResultSchema,
@@ -29,20 +26,31 @@ import { userIdentitySchema } from '../domain/types.js';
 import { localeFromRequest, type Locale } from '../i18n/locale.js';
 import { archetypeName, localizedCharacterTitle } from '../i18n/archetypes.js';
 import { archetypeImage } from '../domain/archetype-images.js';
+import {
+  DEFAULT_JOURNEY_SLUG,
+  getJourneyDefinitionById,
+  requireJourneyDefinition,
+} from '../domain/journeys/registry.js';
+import type {
+  JourneyDefinition,
+  JourneyPublicManifest,
+  JourneyServerModel,
+  VisualAsset,
+} from '../domain/journeys/contracts.js';
 
-const engine = createScoringEngine(journeyV1);
-const hash = contentHash(journeyV1);
-const releaseId = `${journeyV1.id}:${journeyV1.journey_version}:${journeyV1.scoring_version}`;
 const COOKIE = 'archetype_visitor';
 interface SessionRow {
   id: string;
   owner_hash: string;
   release_id: string;
+  journey_id?: string | null;
+  journey_version_id?: string | null;
   state_json: string;
   revision: number;
   status: string;
   current_scene: number;
   created_at: number;
+  updated_at?: number | null;
   result_id?: string | null;
 }
 export class WebError extends Error {
@@ -100,52 +108,237 @@ export async function readJson(request: Request): Promise<unknown> {
     throw new WebError(400, 'The request could not be read.');
   }
 }
-async function release(db: D1Database) {
+interface JourneyContext {
+  definition: JourneyDefinition;
+  manifest: JourneyPublicManifest;
+  model: JourneyServerModel;
+}
+
+async function contextForDefinition(
+  definition: JourneyDefinition,
+): Promise<JourneyContext> {
+  return {
+    definition,
+    manifest: definition.manifest,
+    model: await definition.loadServerModel(),
+  };
+}
+
+async function hasMultiJourneySchema(db: D1Database): Promise<boolean> {
+  const row = await db
+    .prepare(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='journey_versions'",
+    )
+    .first<{ name: string }>();
+  return row?.name === 'journey_versions';
+}
+
+function requestedJourneySlug(request: Request): string {
+  return (
+    new URL(request.url).searchParams.get('journey_slug') ??
+    DEFAULT_JOURNEY_SLUG
+  );
+}
+
+function definitionForSlug(slug: string): JourneyDefinition {
+  try {
+    const definition = requireJourneyDefinition(slug);
+    if (definition.manifest.status !== 'published')
+      throw new WebError(404, 'This journey is not currently available.');
+    return definition;
+  } catch (error) {
+    if (error instanceof WebError) throw error;
+    throw new WebError(404, 'This journey could not be found.');
+  }
+}
+
+async function release(db: D1Database, context: JourneyContext) {
+  const { manifest, model } = context;
   await db
     .prepare(
       'INSERT INTO web_releases(id,content_hash,snapshot,created_at) VALUES (?,?,?,?) ON CONFLICT(id) DO NOTHING',
     )
-    .bind(releaseId, hash, JSON.stringify(journeyV1), Date.now())
+    .bind(
+      model.legacyReleaseId,
+      model.contentHash,
+      JSON.stringify(model.content),
+      Date.now(),
+    )
     .run();
+  const multiJourney = await hasMultiJourneySchema(db);
+  if (!multiJourney) {
+    const legacy = await db
+      .prepare('SELECT content_hash FROM web_releases WHERE id=?')
+      .bind(model.legacyReleaseId)
+      .first<{ content_hash: string }>();
+    if (legacy?.content_hash !== model.contentHash)
+      throw new WebError(
+        409,
+        'This story release has changed. Your previous progress remains saved.',
+      );
+    return false;
+  }
+  await db.batch([
+    db
+      .prepare(
+        'INSERT INTO journeys(id,slug,status,access_tier,created_at,retired_at) VALUES (?,?,?,?,?,NULL) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug,status=excluded.status,access_tier=excluded.access_tier',
+      )
+      .bind(
+        manifest.id,
+        manifest.slug,
+        manifest.status,
+        manifest.access,
+        Date.now(),
+      ),
+    db
+      .prepare(
+        'INSERT INTO journey_versions(id,journey_id,version,content_hash,scoring_version,snapshot,published_at,created_at) VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING',
+      )
+      .bind(
+        model.legacyReleaseId,
+        manifest.id,
+        manifest.currentVersion,
+        model.contentHash,
+        manifest.scoringVersion,
+        JSON.stringify(model.content),
+        Date.now(),
+        Date.now(),
+      ),
+  ]);
   const row = await db
-    .prepare('SELECT content_hash FROM web_releases WHERE id=?')
-    .bind(releaseId)
-    .first<{ content_hash: string }>();
-  if (row?.content_hash !== hash)
+    .prepare(
+      'SELECT r.content_hash AS legacy_hash,v.content_hash AS version_hash FROM web_releases r JOIN journey_versions v ON v.id=r.id WHERE r.id=? AND v.journey_id=?',
+    )
+    .bind(model.legacyReleaseId, manifest.id)
+    .first<{ legacy_hash: string; version_hash: string }>();
+  if (
+    row?.legacy_hash !== model.contentHash ||
+    row.version_hash !== model.contentHash
+  )
     throw new WebError(
       409,
       'This story release has changed. Your previous progress remains saved.',
     );
+  return true;
 }
-function state(row: SessionRow) {
-  if (row.release_id !== releaseId)
+
+async function contextForRow(row: SessionRow): Promise<JourneyContext> {
+  const stored = JSON.parse(row.state_json) as { journey_id?: string };
+  const definition = getJourneyDefinitionById(
+    row.journey_id ?? stored.journey_id ?? '',
+  );
+  if (!definition)
+    throw new WebError(409, 'This journey uses an unavailable story release.');
+  const context = await contextForDefinition(definition);
+  if (
+    row.release_id !== context.model.legacyReleaseId ||
+    (row.journey_version_id &&
+      row.journey_version_id !== context.model.legacyReleaseId)
+  )
     throw new WebError(409, 'This journey uses an earlier story release.');
-  return restoreSession(journeyV1, JSON.parse(row.state_json));
+  return context;
 }
+
+function state(row: SessionRow, context: JourneyContext) {
+  return restoreSession(context.model.content, JSON.parse(row.state_json));
+}
+
 export async function findSession(
   db: D1Database,
   owner: string | null,
-  id?: string,
+  options: { id?: string; definition?: JourneyDefinition } = {},
 ) {
   if (!owner) throw new WebError(404, 'No saved journey on this browser yet.');
+  const idFilter = options.id ? 'AND s.id=?' : '';
+  const multiJourney = await hasMultiJourneySchema(db);
+  const journeyFilter =
+    options.definition && multiJourney
+      ? 'AND (s.journey_id=? OR (s.journey_id IS NULL AND s.release_id=?))'
+      : options.definition
+        ? 'AND s.release_id=?'
+        : '';
+  const params: unknown[] = [owner];
+  if (options.id) params.push(options.id);
+  if (options.definition) {
+    const context = await contextForDefinition(options.definition);
+    if (multiJourney)
+      params.push(context.manifest.id, context.model.legacyReleaseId);
+    else params.push(context.model.legacyReleaseId);
+  }
   const row = await db
     .prepare(
-      `SELECT s.*,r.id AS result_id FROM web_sessions s LEFT JOIN web_results r ON r.session_id=s.id WHERE s.owner_hash=? AND s.release_id=? ${id ? 'AND s.id=?' : ''} ORDER BY s.created_at DESC,s.id DESC LIMIT 1`,
+      `SELECT s.*,r.id AS result_id FROM web_sessions s LEFT JOIN web_results r ON r.session_id=s.id WHERE s.owner_hash=? ${idFilter} ${journeyFilter} ORDER BY s.created_at DESC,s.id DESC LIMIT 1`,
     )
-    .bind(...(id ? [owner, releaseId, id] : [owner, releaseId]))
+    .bind(...params)
     .first<SessionRow>();
   if (!row)
     throw new WebError(404, 'This journey could not be found on this browser.');
   return row;
 }
-function sessionView(row: SessionRow, locale: Locale = 'en') {
-  const saved = state(row);
-  const objectAnswer = saved.answers.find(
-    (answer) => answer.scene_id === 'scene_10',
-  );
-  const objectVariant = objectAnswer
-    ? journeyV1.scenes[9]!.choices.findIndex(
-        (choice) => choice.id === objectAnswer.choice_id,
+
+function publicAsset(asset: VisualAsset, locale: Locale) {
+  return {
+    id: asset.id,
+    src: asset.src,
+    responsive_src: asset.responsiveSrc ?? null,
+    width: asset.width,
+    height: asset.height,
+    focal_point: asset.focalPoint,
+    alt: asset.alt[locale],
+  };
+}
+
+function sceneVisual(
+  context: JourneyContext,
+  saved: JourneySession,
+  sceneId: string,
+  locale: Locale,
+) {
+  const visual =
+    context.manifest.assets.scenes[saved.user.character_gender][sceneId];
+  if (!visual)
+    throw new WebError(503, 'This scene image is temporarily unavailable.');
+  const inherited = visual.inheritsChoiceFrom
+    ? saved.answers.find(
+        (answer) => answer.scene_id === visual.inheritsChoiceFrom,
+      )?.choice_id
+    : undefined;
+  const selected = inherited
+    ? (visual.choiceVariants?.[inherited] ?? visual.default)
+    : visual.default;
+  return {
+    default: publicAsset(selected, locale),
+    choice_variants: visual.choiceVariants
+      ? Object.fromEntries(
+          Object.entries(visual.choiceVariants).map(([choiceId, asset]) => [
+            choiceId,
+            publicAsset(asset, locale),
+          ]),
+        )
+      : {},
+  };
+}
+
+function sessionView(
+  row: SessionRow,
+  context: JourneyContext,
+  locale: Locale = 'en',
+) {
+  const saved = state(row, context);
+  const currentScene = context.model.content.scenes[saved.answers.length];
+  const currentVisual = currentScene
+    ? context.manifest.assets.scenes[saved.user.character_gender][
+        currentScene.id
+      ]
+    : undefined;
+  const inheritedAnswer = currentVisual?.inheritsChoiceFrom
+    ? saved.answers.find(
+        (answer) => answer.scene_id === currentVisual.inheritsChoiceFrom,
+      )
+    : undefined;
+  const inheritedVariant = inheritedAnswer
+    ? Object.keys(currentVisual?.choiceVariants ?? {}).indexOf(
+        inheritedAnswer.choice_id,
       ) + 1
     : 0;
   return {
@@ -155,22 +348,38 @@ function sessionView(row: SessionRow, locale: Locale = 'en') {
     status: saved.status,
     current_scene: saved.current_scene,
     completed_scenes: saved.answers.length,
-    total_scenes: journeyV1.scenes.length,
+    total_scenes: context.model.content.scenes.length,
+    journey: {
+      id: context.manifest.id,
+      slug: context.manifest.slug,
+      version: context.manifest.currentVersion,
+      title: context.manifest.title[locale],
+      act_names: context.manifest.actNames[locale],
+      act_count: context.manifest.actCount,
+      estimated_minutes: context.manifest.estimatedMinutes,
+    },
     result_id: row.result_id ?? null,
-    scene_image_variant:
-      saved.current_scene === 11 && objectVariant > 0 ? objectVariant : null,
+    scene_image_variant: inheritedVariant > 0 ? inheritedVariant : null,
     scene:
       saved.status === 'in_progress'
-          ? toPublicScene(
-            journeyV1.scenes[saved.answers.length]!,
-            saved.user.character_gender,
-            locale,
-          )
+        ? (() => {
+            const scene = context.model.content.scenes[saved.answers.length]!;
+            return {
+              ...toPublicScene(scene, saved.user.character_gender, locale),
+              visual: sceneVisual(context, saved, scene.id, locale),
+            };
+          })()
         : null,
   };
 }
 export async function getSession(db: D1Database, request: Request) {
-  return sessionView(await findSession(db, ownerHash(request)), localeFromRequest(request));
+  const definition = definitionForSlug(requestedJourneySlug(request));
+  const context = await contextForDefinition(definition);
+  return sessionView(
+    await findSession(db, ownerHash(request), { definition }),
+    context,
+    localeFromRequest(request),
+  );
 }
 export async function startSession(db: D1Database, request: Request) {
   const input = z
@@ -179,15 +388,23 @@ export async function startSession(db: D1Database, request: Request) {
       character_gender: z.enum(['man', 'woman']),
       request_id: z.uuid(),
       restart: z.boolean().optional(),
+      journey_slug: z.string().min(3).max(80).optional(),
     })
     .parse(await readJson(request));
+  const definition = definitionForSlug(
+    input.journey_slug ?? DEFAULT_JOURNEY_SLUG,
+  );
+  const context = await contextForDefinition(definition);
   let owner = ownerHash(request);
   let cookie: string | null = null;
   if (owner && !input.restart) {
     try {
-      const existing = await findSession(db, owner);
-      if (state(existing).status !== 'completed')
-        return { data: sessionView(existing, localeFromRequest(request)), cookie };
+      const existing = await findSession(db, owner, { definition });
+      if (state(existing, context).status !== 'completed')
+        return {
+          data: sessionView(existing, context, localeFromRequest(request)),
+          cookie,
+        };
     } catch (e) {
       if (!(e instanceof WebError && e.status === 404)) throw e;
     }
@@ -208,36 +425,61 @@ export async function startSession(db: D1Database, request: Request) {
       429,
       'You have started many journeys today. Please return tomorrow.',
     );
-  await release(db);
+  const multiJourney = await release(db, context);
   const saved = createSession(
-    journeyV1,
+    context.model.content,
     userIdentitySchema.parse({
       name: input.name || null,
       character_gender: input.character_gender,
     }),
     { id: input.request_id, started_at: new Date().toISOString() },
   );
+  const sessionInsert = multiJourney
+    ? db
+        .prepare(
+          'INSERT INTO web_sessions(id,owner_hash,release_id,journey_id,journey_version_id,state_json,revision,status,current_scene,created_at,updated_at) VALUES (?,?,?,?,?,?,0,?,?,?,?) ON CONFLICT(id) DO NOTHING',
+        )
+        .bind(
+          saved.id,
+          owner,
+          context.model.legacyReleaseId,
+          context.manifest.id,
+          context.model.legacyReleaseId,
+          JSON.stringify(saved),
+          saved.status,
+          saved.current_scene,
+          Date.now(),
+          Date.now(),
+        )
+    : db
+        .prepare(
+          'INSERT INTO web_sessions(id,owner_hash,release_id,state_json,revision,status,current_scene,created_at) VALUES (?,?,?,?,0,?,?,?) ON CONFLICT(id) DO NOTHING',
+        )
+        .bind(
+          saved.id,
+          owner,
+          context.model.legacyReleaseId,
+          JSON.stringify(saved),
+          saved.status,
+          saved.current_scene,
+          Date.now(),
+        );
   await db.batch([
     db
       .prepare(
         'INSERT INTO web_visitors(owner_hash,created_at) VALUES (?,?) ON CONFLICT(owner_hash) DO NOTHING',
       )
       .bind(owner, Date.now()),
-    db
-      .prepare(
-        'INSERT INTO web_sessions(id,owner_hash,release_id,state_json,revision,status,current_scene,created_at) VALUES (?,?,?,?,0,?,?,?) ON CONFLICT(id) DO NOTHING',
-      )
-      .bind(
-        saved.id,
-        owner,
-        releaseId,
-        JSON.stringify(saved),
-        saved.status,
-        saved.current_scene,
-        Date.now(),
-      ),
+    sessionInsert,
   ]);
-  return { data: sessionView(await findSession(db, owner, saved.id), localeFromRequest(request)), cookie };
+  return {
+    data: sessionView(
+      await findSession(db, owner, { id: saved.id, definition }),
+      context,
+      localeFromRequest(request),
+    ),
+    cookie,
+  };
 }
 export async function submitAnswer(db: D1Database, request: Request) {
   const input = z
@@ -248,11 +490,12 @@ export async function submitAnswer(db: D1Database, request: Request) {
     })
     .parse(await readJson(request));
   const owner = ownerHash(request);
-  const row = await findSession(db, owner, input.session_id);
-  const before = state(row);
+  const row = await findSession(db, owner, { id: input.session_id });
+  const context = await contextForRow(row);
+  const before = state(row, context);
   let next: JourneySession;
   try {
-    next = acceptAnswer(journeyV1, before, {
+    next = acceptAnswer(context.model.content, before, {
       scene_id: input.scene_id,
       choice_id: input.choice_id,
     });
@@ -262,7 +505,41 @@ export async function submitAnswer(db: D1Database, request: Request) {
       e instanceof Error ? e.message : 'Your journey changed in another tab.',
     );
   }
-  if (next.answers.length === before.answers.length) return sessionView(row, localeFromRequest(request));
+  if (next.answers.length === before.answers.length)
+    return sessionView(row, context, localeFromRequest(request));
+  const multiJourney = await hasMultiJourneySchema(db);
+  const updateSession = multiJourney
+    ? db
+        .prepare(
+          `UPDATE web_sessions SET state_json=?,status=?,current_scene=?,updated_at=?,revision=revision+1 WHERE id=? AND owner_hash=? AND revision=? AND EXISTS(SELECT 1 FROM web_answers WHERE session_id=? AND scene_id=? AND choice_id=?)`,
+        )
+        .bind(
+          JSON.stringify(next),
+          next.status,
+          next.current_scene,
+          Date.now(),
+          row.id,
+          owner,
+          row.revision,
+          row.id,
+          input.scene_id,
+          input.choice_id,
+        )
+    : db
+        .prepare(
+          `UPDATE web_sessions SET state_json=?,status=?,current_scene=?,revision=revision+1 WHERE id=? AND owner_hash=? AND revision=? AND EXISTS(SELECT 1 FROM web_answers WHERE session_id=? AND scene_id=? AND choice_id=?)`,
+        )
+        .bind(
+          JSON.stringify(next),
+          next.status,
+          next.current_scene,
+          row.id,
+          owner,
+          row.revision,
+          row.id,
+          input.scene_id,
+          input.choice_id,
+        );
   await db.batch([
     db
       .prepare(
@@ -277,24 +554,10 @@ export async function submitAnswer(db: D1Database, request: Request) {
         owner,
         row.revision,
       ),
-    db
-      .prepare(
-        `UPDATE web_sessions SET state_json=?,status=?,current_scene=?,revision=revision+1 WHERE id=? AND owner_hash=? AND revision=? AND EXISTS(SELECT 1 FROM web_answers WHERE session_id=? AND scene_id=? AND choice_id=?)`,
-      )
-      .bind(
-        JSON.stringify(next),
-        next.status,
-        next.current_scene,
-        row.id,
-        owner,
-        row.revision,
-        row.id,
-        input.scene_id,
-        input.choice_id,
-      ),
+    updateSession,
   ]);
-  const current = await findSession(db, owner, row.id);
-  const accepted = state(current).answers.find(
+  const current = await findSession(db, owner, { id: row.id });
+  const accepted = state(current, context).answers.find(
     (a) => a.scene_id === input.scene_id,
   );
   if (accepted?.choice_id !== input.choice_id)
@@ -302,30 +565,55 @@ export async function submitAnswer(db: D1Database, request: Request) {
       409,
       'A different choice was saved in another tab. Refresh to continue your story.',
     );
-  return sessionView(current, localeFromRequest(request));
+  return sessionView(current, context, localeFromRequest(request));
 }
 export async function completeJourney(db: D1Database, request: Request) {
   const input = z
     .strictObject({ session_id: z.uuid() })
     .parse(await readJson(request));
   const owner = ownerHash(request);
-  const row = await findSession(db, owner, input.session_id);
+  const row = await findSession(db, owner, { id: input.session_id });
+  const context = await contextForRow(row);
   if (row.result_id) return { result_id: row.result_id };
-  const saved = state(row);
+  const saved = state(row, context);
   if (saved.status !== 'processing')
     throw new WebError(
       409,
-      'Complete all fifteen moments before revealing your result.',
+      `Complete all ${context.manifest.sceneCount} moments before revealing your result.`,
     );
   const id = randomUUID(),
     now = new Date().toISOString();
-  const profile = generateStructuredProfile(engine, saved.answers, saved.user, {
-    id,
-    created_at: now,
-    content_hash: hash,
-  });
+  const profile = generateStructuredProfile(
+    context.model.engine,
+    saved.answers,
+    saved.user,
+    {
+      id,
+      created_at: now,
+      content_hash: context.model.contentHash,
+    },
+  );
   const interpretation = deterministicInterpretation(profile);
-  const completed = markSessionCompleted(journeyV1, saved, now);
+  const completed = markSessionCompleted(context.model.content, saved, now);
+  const multiJourney = await hasMultiJourneySchema(db);
+  const updateSession = multiJourney
+    ? db
+        .prepare(
+          "UPDATE web_sessions SET state_json=?,status='completed',updated_at=?,revision=revision+1 WHERE id=? AND owner_hash=? AND revision=? AND EXISTS(SELECT 1 FROM web_results WHERE session_id=?)",
+        )
+        .bind(
+          JSON.stringify(completed),
+          Date.now(),
+          row.id,
+          owner,
+          row.revision,
+          row.id,
+        )
+    : db
+        .prepare(
+          "UPDATE web_sessions SET state_json=?,status='completed',revision=revision+1 WHERE id=? AND owner_hash=? AND revision=? AND EXISTS(SELECT 1 FROM web_results WHERE session_id=?)",
+        )
+        .bind(JSON.stringify(completed), row.id, owner, row.revision, row.id);
   await db.batch([
     db
       .prepare(
@@ -340,13 +628,9 @@ export async function completeJourney(db: D1Database, request: Request) {
         owner,
         row.revision,
       ),
-    db
-      .prepare(
-        "UPDATE web_sessions SET state_json=?,status='completed',revision=revision+1 WHERE id=? AND owner_hash=? AND revision=? AND EXISTS(SELECT 1 FROM web_results WHERE session_id=?)",
-      )
-      .bind(JSON.stringify(completed), row.id, owner, row.revision, row.id),
+    updateSession,
   ]);
-  const final = await findSession(db, owner, row.id);
+  const final = await findSession(db, owner, { id: row.id });
   if (!final.result_id)
     throw new WebError(
       409,
@@ -373,7 +657,8 @@ export async function getResult(db: D1Database, request: Request, id: string) {
     typeof deterministicInterpretation
   >;
   const locale = localeFromRequest(request);
-  const localized = locale === 'es' ? deterministicInterpretation(profile, locale) : stored;
+  const localized =
+    locale === 'es' ? deterministicInterpretation(profile, locale) : stored;
   return {
     profile,
     interpretation: validateInterpretation(localized.interpretation, profile),
@@ -405,12 +690,21 @@ export async function shareResult(
     .parse(await readJson(request));
   const result = await getResult(db, request, id);
   const locale = input.locale ?? result.locale;
-  const shareInterpretation = deterministicInterpretation(result.profile, locale).interpretation;
+  const shareInterpretation = deterministicInterpretation(
+    result.profile,
+    locale,
+  ).interpretation;
   const projection = createPublicProjection(result.profile, {
     includeName: input.include_name,
     topCount: input.top_count,
     quote: shareInterpretation.social.quote,
-    imageUrl: new URL(archetypeImage(result.profile.archetypes.primary.slug, result.profile.user.character_gender), request.url).href,
+    imageUrl: new URL(
+      archetypeImage(
+        result.profile.archetypes.primary.slug,
+        result.profile.user.character_gender,
+      ),
+      request.url,
+    ).href,
     locale,
   });
   const shareId = Buffer.from(randomBytes(24)).toString('hex');
@@ -446,7 +740,13 @@ export async function getOwnedShare(
     .prepare('SELECT id,projection_json FROM web_shares WHERE result_id=?')
     .bind(id)
     .first<{ id: string; projection_json: string }>();
-  if (!row) return { url: null, include_name: false, top_count: 2, locale: localeFromRequest(request) };
+  if (!row)
+    return {
+      url: null,
+      include_name: false,
+      top_count: 2,
+      locale: localeFromRequest(request),
+    };
   const projection = readPublicProjection(JSON.parse(row.projection_json));
   return {
     url: new URL(`/share/${row.id}`, request.url).href,

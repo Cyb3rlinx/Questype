@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useLocale } from '../i18n-provider';
 import { startJourneySoundtrack } from './soundtrack';
+import type { SessionView } from '@/lib/client-api';
 export function ResumeLink() {
   const { locale } = useLocale();
   const [href, setHref] = useState<string | null>(null);
@@ -10,8 +11,12 @@ export function ResumeLink() {
     fetch('/api/session')
       .then(async (r) => {
         if (r.ok) {
-          const d = (await r.json()) as { result_id: string | null };
-          setHref(d.result_id ? `/result/${d.result_id}` : '/journey');
+          const d = (await r.json()) as SessionView;
+          setHref(
+            d.result_id
+              ? `/result/${d.result_id}`
+              : `/journey/${d.journey.slug}/play`,
+          );
         }
       })
       .catch(() => {});
@@ -20,9 +25,10 @@ export function ResumeLink() {
     <Link
       href={href}
       className="text-link"
-      onClick={href === '/journey' ? startJourneySoundtrack : undefined}
+      onClick={href.endsWith('/play') ? startJourneySoundtrack : undefined}
     >
-      {locale === 'es' ? 'Continúa tu historia' : 'Continue your story'} <span aria-hidden="true">→</span>
+      {locale === 'es' ? 'Continúa tu historia' : 'Continue your story'}{' '}
+      <span aria-hidden="true">→</span>
     </Link>
   ) : null;
 }

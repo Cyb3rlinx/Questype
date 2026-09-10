@@ -1,7 +1,12 @@
 import { spawn } from 'node:child_process';
+import { resolve } from 'node:path';
 
 const npmCli = process.env.npm_execpath;
 const appUrl = process.env.TEST_APP_URL ?? 'http://localhost:3000';
+const localEnvironment = {
+  ...process.env,
+  WRANGLER_LOG_PATH: resolve('artifacts/wrangler-check-full.log'),
+};
 
 if (!npmCli) throw new Error('check:full must be started through npm');
 
@@ -11,7 +16,10 @@ function run(command, args, options = {}) {
     child.once('error', reject);
     child.once('exit', (code, signal) => {
       if (code === 0) resolve();
-      else reject(new Error(`${command} ${args.join(' ')} failed (${code ?? signal})`));
+      else
+        reject(
+          new Error(`${command} ${args.join(' ')} failed (${code ?? signal})`),
+        );
     });
   });
 }
@@ -51,12 +59,18 @@ async function stop(child) {
 }
 
 await run(process.execPath, [npmCli, 'run', 'check']);
-await run(process.execPath, [npmCli, 'run', 'db:local']);
+await run(process.execPath, [npmCli, 'run', 'db:local'], {
+  env: localEnvironment,
+});
+await run(process.execPath, [npmCli, 'run', 'verify:d1-v2'], {
+  env: localEnvironment,
+});
 
 const server = (await isAppReady(appUrl))
   ? null
   : spawn(process.execPath, ['node_modules/vinext/dist/cli.js', 'dev'], {
       stdio: 'inherit',
+      env: localEnvironment,
     });
 
 try {

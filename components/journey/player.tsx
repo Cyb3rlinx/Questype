@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Check, Compass, Map, Pause, RotateCw } from 'lucide-react';
@@ -12,45 +12,32 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Brand, LanguageSwitch } from './chrome';
-import {
-  requestJson,
-  type SessionView,
-  type PublicScene,
-} from '@/lib/client-api';
+import { requestJson, type SessionView } from '@/lib/client-api';
 import { useLocale } from '../i18n-provider';
 import { SoundtrackControl } from './soundtrack';
 
-function sceneImage(
-  scene: PublicScene,
-  gender: SessionView['character_gender'],
-  selectedChoice: string,
-  savedVariant: number | null,
-) {
-  const prefix = gender === 'man' ? 'man' : 'woman';
-  const selectedVariant = scene.choices.findIndex(
-    (option) => option.id === selectedChoice,
-  );
-
-  if (scene.order === 10 && selectedVariant >= 0) {
-    return `/images/journey/${prefix}-10-${selectedVariant + 1}.webp`;
+function romanNumeral(value: number) {
+  const numerals: readonly [number, string][] = [
+    [10, 'X'],
+    [9, 'IX'],
+    [5, 'V'],
+    [4, 'IV'],
+    [1, 'I'],
+  ];
+  let remaining = value;
+  let result = '';
+  for (const [amount, numeral] of numerals) {
+    while (remaining >= amount) {
+      result += numeral;
+      remaining -= amount;
+    }
   }
-  if (scene.order === 11) {
-    return `/images/journey/${prefix}-10-${savedVariant ?? 1}.webp`;
-  }
-  if (scene.order === 5) {
-    return `/images/journey/${prefix}-05-mara.webp`;
-  }
-
-  // The original collection was numbered before moment five was added, so the
-  // remaining files keep their existing one-position offset.
-  const visualMoment = scene.order <= 4 ? scene.order : scene.order - 1;
-  return `/images/journey/${prefix}-${String(visualMoment).padStart(2, '0')}.webp`;
+  return result;
 }
 
-export function JourneyPlayer() {
+export function JourneyPlayer({ journeySlug }: { journeySlug: string }) {
   const { locale } = useLocale();
   const es = locale === 'es';
-  const actNames = es ? ['La llamada', 'El umbral', 'Aliados y desconocidos', 'Las pruebas', 'La ofrenda', 'El faro', 'El regreso'] : ['The Call', 'The Threshold', 'Allies & Strangers', 'The Trials', 'The Offering', 'The Lighthouse', 'The Return'];
   const router = useRouter();
   const [session, setSession] = useState<SessionView | null>(null);
   const [choice, setChoice] = useState('');
@@ -58,23 +45,28 @@ export function JourneyPlayer() {
   const [error, setError] = useState('');
   const [pause, setPause] = useState(false);
   const [map, setMap] = useState(false);
-  function accept(view: SessionView) {
-    setSession(view);
-    setChoice('');
-    if (view.result_id) router.replace(`/result/${view.result_id}`);
-    else if (view.status === 'processing') router.replace('/processing');
-  }
-  async function load() {
+  const sessionUrl = `/api/session?journey_slug=${encodeURIComponent(journeySlug)}`;
+  const accept = useCallback(
+    (view: SessionView) => {
+      setSession(view);
+      setChoice('');
+      if (view.result_id) router.replace(`/result/${view.result_id}`);
+      else if (view.status === 'processing')
+        router.replace(`/journey/${view.journey.slug}/processing`);
+    },
+    [router],
+  );
+  const load = useCallback(async () => {
     setError('');
     try {
-      accept(await requestJson<SessionView>('/api/session'));
+      accept(await requestJson<SessionView>(sessionUrl));
     } catch (e) {
       setError((e as Error).message);
     }
-  }
+  }, [accept, sessionUrl]);
   useEffect(() => {
-    void load();
-  }, [locale]);
+    queueMicrotask(() => void load());
+  }, [load, locale]);
   async function next() {
     if (!session?.scene || !choice) return;
     setBusy(true);
@@ -95,21 +87,17 @@ export function JourneyPlayer() {
     }
   }
   const scene = session?.scene;
-  const imageSource =
-    scene && session
-      ? sceneImage(
-          scene,
-          session.character_gender,
-          choice,
-          session.scene_image_variant,
-        )
-      : '';
+  const visual = scene
+    ? (choice && scene.visual.choice_variants[choice]) || scene.visual.default
+    : null;
+  const actNames = session?.journey.act_names ?? [];
   return (
     <div className="player-page">
       <header className="player-header page-width">
         <Brand />
         <span className="player-journey-label">
-          {es ? 'VIAJE I' : 'JOURNEY I'} <i /> {es ? 'EL CAMINO NO ESCRITO' : 'THE UNWRITTEN ROAD'}
+          {es ? 'VIAJE' : 'JOURNEY'} <i />{' '}
+          {session?.journey.title.toUpperCase() ?? ''}
         </span>
         <LanguageSwitch />
         <button className="quiet-button" onClick={() => setPause(true)}>
@@ -121,26 +109,41 @@ export function JourneyPlayer() {
         <main id="main" className="player-layout" key={scene.id}>
           <aside className="scene-art">
             <img
-              key={imageSource}
-              src={imageSource}
-              srcSet={`${imageSource.replace('.webp', '-sm.webp')} 900w, ${imageSource} 1600w`}
+              key={visual?.src}
+              src={visual?.src}
+              srcSet={
+                visual?.responsive_src
+                  ? `${visual.responsive_src} 900w, ${visual.src} ${visual.width}w`
+                  : undefined
+              }
               sizes="100vw"
-              width={1600}
-              height={900}
+              width={visual?.width}
+              height={visual?.height}
               fetchPriority="high"
-              alt={es ? `Ilustración de ${scene.title}` : `Illustration for ${scene.title}`}
+              alt={visual?.alt ?? ''}
+              style={
+                visual
+                  ? {
+                      objectPosition: `${visual.focal_point.x * 100}% ${visual.focal_point.y * 100}%`,
+                    }
+                  : undefined
+              }
             />
             <SoundtrackControl />
             <div className="scene-art-top">
               <span>
-                {es ? 'ACTO' : 'ACT'} {['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'][scene.act - 1]}
+                {es ? 'ACTO' : 'ACT'} {romanNumeral(scene.act)}
               </span>
               <span>{actNames[scene.act - 1]}</span>
             </div>
             <div className="scene-art-bottom">
               <Compass size={30} strokeWidth={1} />
               <h2>{actNames[scene.act - 1]}</h2>
-              <p>{es ? 'Cada camino revela una posibilidad.' : 'Every path reveals a possibility.'}</p>
+              <p>
+                {es
+                  ? 'Cada camino revela una posibilidad.'
+                  : 'Every path reveals a possibility.'}
+              </p>
               <button className="text-link" onClick={() => setMap(true)}>
                 <Map size={15} />
                 {es ? 'Ver tu camino' : 'View your path'}
@@ -150,15 +153,19 @@ export function JourneyPlayer() {
           <section className="scene-panel">
             <div className="scene-progress-label">
               <span>
-                {es ? 'MOMENTO' : 'MOMENT'} {String(scene.order).padStart(2, '0')}{' '}
-                <span className="muted">/ 15</span>
+                {es ? 'MOMENTO' : 'MOMENT'}{' '}
+                {String(scene.order).padStart(2, '0')}{' '}
+                <span className="muted">/ {session.total_scenes}</span>
               </span>
               <span>
-                {Math.round((session.completed_scenes / 15) * 100)}% {es ? 'del camino recorrido' : 'of the road traveled'}
+                {Math.round(
+                  (session.completed_scenes / session.total_scenes) * 100,
+                )}
+                % {es ? 'del camino recorrido' : 'of the road traveled'}
               </span>
             </div>
             <Progress
-              value={(session.completed_scenes / 15) * 100}
+              value={(session.completed_scenes / session.total_scenes) * 100}
               aria-label={es ? 'Progreso del viaje' : 'Journey progress'}
               className="journey-progress"
             />
@@ -171,11 +178,17 @@ export function JourneyPlayer() {
                 <p>{scene.narrative}</p>
               </div>
               <fieldset className="scene-decisions">
-                <legend>{es ? '¿Cuál sientes que es tu siguiente paso?' : 'What feels like your next step?'}</legend>
+                <legend>
+                  {es
+                    ? '¿Cuál sientes que es tu siguiente paso?'
+                    : 'What feels like your next step?'}
+                </legend>
                 <RadioGroup
                   value={choice}
                   onValueChange={(v) => setChoice(String(v))}
-                  aria-label={es ? 'Elige tu siguiente paso' : 'Choose your next step'}
+                  aria-label={
+                    es ? 'Elige tu siguiente paso' : 'Choose your next step'
+                  }
                   disabled={busy}
                   className="decision-list"
                 >
@@ -201,14 +214,18 @@ export function JourneyPlayer() {
                 {error}
                 <button className="text-link" onClick={load}>
                   <RotateCw size={14} />
-                  {es ? 'Actualizar tu historia guardada' : 'Refresh your saved story'}
+                  {es
+                    ? 'Actualizar tu historia guardada'
+                    : 'Refresh your saved story'}
                 </button>
               </div>
             )}
             <div className="scene-controls">
               <span>
                 <Check size={13} />
-                {es ? 'Tu progreso se guarda con cada elección' : 'Your progress saves with every choice'}
+                {es
+                  ? 'Tu progreso se guarda con cada elección'
+                  : 'Your progress saves with every choice'}
               </span>
               <button
                 className="button button-gold"
@@ -216,27 +233,47 @@ export function JourneyPlayer() {
                 disabled={!choice || busy}
               >
                 {busy
-                  ? (es ? 'Guardando tu elección…' : 'Saving your choice…')
-                  : scene.order === 15
-                    ? (es ? 'Revelar mis arquetipos' : 'Reveal my archetypes')
-                    : (es ? 'Continuar el viaje' : 'Continue the journey')}
+                  ? es
+                    ? 'Guardando tu elección…'
+                    : 'Saving your choice…'
+                  : scene.order === session.total_scenes
+                    ? es
+                      ? 'Revelar mis arquetipos'
+                      : 'Reveal my archetypes'
+                    : es
+                      ? 'Continuar el viaje'
+                      : 'Continue the journey'}
                 <ArrowRight size={17} />
               </button>
             </div>
             <p className="scene-reassurance">
-              {es ? 'El camino continúa. Tu respuesta revela cómo lo enfrentas.' : 'The road continues. Your response reveals how you meet it.'}
+              {es
+                ? 'El camino continúa. Tu respuesta revela cómo lo enfrentas.'
+                : 'The road continues. Your response reveals how you meet it.'}
             </p>
           </section>
         </main>
       ) : (
         <main id="main" className="centered-state">
           <Compass size={42} strokeWidth={1} />
-          <h1>{error ? (es ? 'Tu camino te espera.' : 'Your path awaits.') : (es ? 'Encontrando tu lugar…' : 'Finding your place…')}</h1>
+          <h1>
+            {error
+              ? es
+                ? 'Tu camino te espera.'
+                : 'Your path awaits.'
+              : es
+                ? 'Encontrando tu lugar…'
+                : 'Finding your place…'}
+          </h1>
           {error && (
             <>
               <p role="alert">{error}</p>
-              <Link href="/start" className="button button-gold">
-                {es ? 'Comenzar un viaje' : 'Begin a journey'} <ArrowRight size={16} />
+              <Link
+                href={`/journey/${journeySlug}/start`}
+                className="button button-gold"
+              >
+                {es ? 'Comenzar un viaje' : 'Begin a journey'}{' '}
+                <ArrowRight size={16} />
               </Link>
             </>
           )}
@@ -249,7 +286,9 @@ export function JourneyPlayer() {
             {es ? 'El camino seguirá aquí.' : 'The road will be here.'}
           </DialogTitle>
           <DialogDescription>
-            {es ? 'Tus elecciones completadas se guardan automáticamente. Regresa desde este navegador para continuar desde este momento.' : 'Your completed choices are saved automatically. Return on this browser to continue from this moment.'}
+            {es
+              ? 'Tus elecciones completadas se guardan automáticamente. Regresa desde este navegador para continuar desde este momento.'
+              : 'Your completed choices are saved automatically. Return on this browser to continue from this moment.'}
           </DialogDescription>
           <div className="dialog-actions">
             <Link href="/" className="button button-gold">
@@ -267,10 +306,14 @@ export function JourneyPlayer() {
       <Dialog open={map} onOpenChange={setMap}>
         <DialogContent className="story-dialog">
           <DialogTitle className="dialog-heading">
-            {es ? 'El camino que estás recorriendo' : 'The path you’re traveling'}
+            {es
+              ? 'El camino que estás recorriendo'
+              : 'The path you’re traveling'}
           </DialogTitle>
           <DialogDescription>
-            {es ? 'Siete capítulos. Quince momentos. Una historia que se revela una elección a la vez.' : 'Seven chapters. Fifteen moments. A story that unfolds one choice at a time.'}
+            {es
+              ? `${session?.journey.act_count ?? 0} capítulos. ${session?.total_scenes ?? 0} momentos. Una historia que se revela una elección a la vez.`
+              : `${session?.journey.act_count ?? 0} chapters. ${session?.total_scenes ?? 0} moments. A story that unfolds one choice at a time.`}
           </DialogDescription>
           <ol className="act-map">
             {actNames.map((name, i) => (
@@ -286,10 +329,16 @@ export function JourneyPlayer() {
                   {name}
                   <small>
                     {(scene?.act ?? 1) === i + 1
-                      ? (es ? 'Estás aquí' : 'You are here')
+                      ? es
+                        ? 'Estás aquí'
+                        : 'You are here'
                       : (scene?.act ?? 1) > i + 1
-                        ? (es ? 'Capítulo completado' : 'Chapter completed')
-                        : (es ? 'Más adelante' : 'Still ahead')}
+                        ? es
+                          ? 'Capítulo completado'
+                          : 'Chapter completed'
+                        : es
+                          ? 'Más adelante'
+                          : 'Still ahead'}
                   </small>
                 </div>
               </li>

@@ -8,16 +8,16 @@ No se implementó ninguna función V2, no se ejecutó ninguna migración, no se 
 
 ## Documentos entregados
 
-| Documento | Para qué sirve |
-|---|---|
-| [`V1_BASELINE.md`](./V1_BASELINE.md) | Comportamiento que V2 debe preservar |
-| [`QUESTYPE_V2_AUDIT.md`](./QUESTYPE_V2_AUDIT.md) | Auditoría de rutas, D1, scoring, PDF, sharing, imágenes, seguridad y pruebas |
-| [`PROFILE_MODEL.md`](./PROFILE_MODEL.md) | Doce señales, normalización, agregación, profundidad y snapshots |
-| [`QUESTYPE_V2_ARCHITECTURE.md`](./QUESTYPE_V2_ARCHITECTURE.md) | Módulos, rutas, auth, productos, Stripe y entitlements |
-| [`V2_MIGRATION_PLAN.md`](./V2_MIGRATION_PLAN.md) | Secuencia aditiva de migraciones y rollback |
-| [`QUESTYPE_ASSET_INVENTORY.md`](./QUESTYPE_ASSET_INVENTORY.md) | Los 109 assets actuales, deuda y plan de producción |
-| [`QUESTYPE_VISUAL_BIBLE.md`](./QUESTYPE_VISUAL_BIBLE.md) | Dirección visual y regla obligatoria sin texto en imágenes |
-| [`QUESTYPE_V2_IMPLEMENTATION_PLAN.md`](./QUESTYPE_V2_IMPLEMENTATION_PLAN.md) | Etapas, dependencias y gates antes de un lanzamiento |
+| Documento                                                                    | Para qué sirve                                                               |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`V1_BASELINE.md`](./V1_BASELINE.md)                                         | Comportamiento que V2 debe preservar                                         |
+| [`QUESTYPE_V2_AUDIT.md`](./QUESTYPE_V2_AUDIT.md)                             | Auditoría de rutas, D1, scoring, PDF, sharing, imágenes, seguridad y pruebas |
+| [`PROFILE_MODEL.md`](./PROFILE_MODEL.md)                                     | Doce señales, normalización, agregación, profundidad y snapshots             |
+| [`QUESTYPE_V2_ARCHITECTURE.md`](./QUESTYPE_V2_ARCHITECTURE.md)               | Módulos, rutas, auth, productos, Stripe y entitlements                       |
+| [`V2_MIGRATION_PLAN.md`](./V2_MIGRATION_PLAN.md)                             | Secuencia aditiva de migraciones y rollback                                  |
+| [`QUESTYPE_ASSET_INVENTORY.md`](./QUESTYPE_ASSET_INVENTORY.md)               | Los 109 assets actuales, deuda y plan de producción                          |
+| [`QUESTYPE_VISUAL_BIBLE.md`](./QUESTYPE_VISUAL_BIBLE.md)                     | Dirección visual y regla obligatoria sin texto en imágenes                   |
+| [`QUESTYPE_V2_IMPLEMENTATION_PLAN.md`](./QUESTYPE_V2_IMPLEMENTATION_PLAN.md) | Etapas, dependencias y gates antes de un lanzamiento                         |
 
 ## Decisiones recomendadas
 
@@ -85,4 +85,4 @@ El primer bloque recomendado es **Blindaje de V1 + registro multi-Journey**. Es 
 
 ## Seguimiento
 
-La Fase 0 fue aprobada el 2026-09-10. La Etapa 1 quedó documentada en [`STAGE_1_REPORT.md`](./STAGE_1_REPORT.md).
+La Fase 0 fue aprobada el 2026-09-10. La Etapa 1 quedó documentada en [`STAGE_1_REPORT.md`](./STAGE_1_REPORT.md) y la Etapa 2 en [`STAGE_2_REPORT.md`](./STAGE_2_REPORT.md).

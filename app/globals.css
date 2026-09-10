@@ -2764,3 +2764,41 @@ h2 {
     transform: none;
   }
 }
+
+.journey-catalog {
+  width: min(760px, 100%);
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.journey-catalog-card {
+  display: grid;
+  gap: 14px;
+  padding: clamp(24px, 4vw, 42px);
+  border: 1px solid var(--line);
+  background: rgba(11, 31, 25, 0.78);
+}
+
+.journey-catalog-card h2,
+.journey-catalog-card p {
+  margin: 0;
+}
+
+.journey-catalog-card h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 400;
+}
+
+.journey-catalog-card small {
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.journey-catalog-card .button {
+  justify-self: start;
+  margin-top: 8px;
+}
