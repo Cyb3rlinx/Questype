@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { cookies } from 'next/headers';
 import { I18nProvider, LocalizedSkipLink } from '@/components/i18n-provider';
+import { JourneySoundtrackProvider } from '@/components/journey/soundtrack';
 import { LOCALE_COOKIE, normalizeLocale } from '@/src/i18n/locale';
 export async function generateMetadata(): Promise<Metadata> {
   const locale = normalizeLocale((await cookies()).get(LOCALE_COOKIE)?.value);
@@ -20,8 +21,10 @@ export default async function RootLayout({
     <html lang={locale} className="dark">
       <body>
         <I18nProvider initialLocale={locale}>
-          <LocalizedSkipLink />
-          {children}
+          <JourneySoundtrackProvider>
+            <LocalizedSkipLink />
+            {children}
+          </JourneySoundtrackProvider>
         </I18nProvider>
       </body>
     </html>

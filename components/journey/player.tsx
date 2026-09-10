@@ -18,6 +18,7 @@ import {
   type PublicScene,
 } from '@/lib/client-api';
 import { useLocale } from '../i18n-provider';
+import { SoundtrackControl } from './soundtrack';
 
 function sceneImage(
   scene: PublicScene,
@@ -129,6 +130,7 @@ export function JourneyPlayer() {
               fetchPriority="high"
               alt={es ? `Ilustración de ${scene.title}` : `Illustration for ${scene.title}`}
             />
+            <SoundtrackControl />
             <div className="scene-art-top">
               <span>
                 {es ? 'ACTO' : 'ACT'} {['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'][scene.act - 1]}

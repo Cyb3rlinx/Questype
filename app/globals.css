@@ -1050,6 +1050,34 @@ h2 {
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
+.soundtrack-control {
+  position: absolute;
+  z-index: 3;
+  top: 31px;
+  right: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 8px 12px;
+  border: 1px solid #e4efda55;
+  border-radius: 999px;
+  background: #07110da6;
+  color: #eef1e8;
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.soundtrack-control:hover {
+  border-color: #d7c39a;
+  background: #07110dd9;
+  color: var(--gold);
+}
+.soundtrack-control:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
 .scene-art-bottom {
   position: absolute;
   z-index: 1;
@@ -2209,6 +2237,13 @@ h2 {
   .scene-art-top {
     top: 21px;
     left: 22px;
+  }
+  .soundtrack-control {
+    top: 15px;
+    right: 18px;
+    min-height: 32px;
+    padding: 7px 10px;
+    font-size: 9px;
   }
   .scene-art-bottom {
     left: 24px;
