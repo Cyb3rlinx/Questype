@@ -1,0 +1,530 @@
+{
+  "coverage": {
+    "journeyId": "journey_unwritten_road",
+    "journeyVersion": "1.1",
+    "modelId": "unwritten_road_signals_1_0",
+    "signals": [
+      {
+        "signal": "autonomy",
+        "opportunityScenes": 3,
+        "facets": [
+          "independent_judgment",
+          "social_pressure_resistance"
+        ],
+        "contexts": [
+          "authority",
+          "uncertainty"
+        ],
+        "positiveOptions": 5,
+        "negativeOptions": 0,
+        "zeroOptions": 7,
+        "minimumPossible": 0,
+        "maximumPossible": 1.9
+      },
+      {
+        "signal": "structure",
+        "opportunityScenes": 6,
+        "facets": [
+          "organization",
+          "planning",
+          "preparation",
+          "procedural_thinking"
+        ],
+        "contexts": [
+          "group_coordination",
+          "resource_scarcity",
+          "responsibility",
+          "time_pressure",
+          "uncertainty"
+        ],
+        "positiveOptions": 9,
+        "negativeOptions": 0,
+        "zeroOptions": 15,
+        "minimumPossible": 0,
+        "maximumPossible": 4.25
+      },
+      {
+        "signal": "risk_tolerance",
+        "opportunityScenes": 3,
+        "facets": [
+          "calculated_risk",
+          "commitment_under_uncertainty",
+          "downside_tolerance"
+        ],
+        "contexts": [
+          "physical_risk",
+          "uncertainty"
+        ],
+        "positiveOptions": 4,
+        "negativeOptions": 0,
+        "zeroOptions": 8,
+        "minimumPossible": 0,
+        "maximumPossible": 1.8
+      },
+      {
+        "signal": "openness_to_uncertainty",
+        "opportunityScenes": 5,
+        "facets": [
+          "ambiguity_tolerance",
+          "exploratory_orientation",
+          "incomplete_answer_tolerance"
+        ],
+        "contexts": [
+          "exploration",
+          "knowledge_gap",
+          "uncertainty"
+        ],
+        "positiveOptions": 8,
+        "negativeOptions": 1,
+        "zeroOptions": 11,
+        "minimumPossible": -0.45,
+        "maximumPossible": 3.3
+      },
+      {
+        "signal": "knowledge_orientation",
+        "opportunityScenes": 8,
+        "facets": [
+          "evidence_seeking",
+          "information_prioritization",
+          "investigation",
+          "reflective_analysis"
+        ],
+        "contexts": [
+          "exploration",
+          "knowledge_gap",
+          "negotiation",
+          "uncertainty"
+        ],
+        "positiveOptions": 10,
+        "negativeOptions": 0,
+        "zeroOptions": 22,
+        "minimumPossible": 0,
+        "maximumPossible": 5.95
+      },
+      {
+        "signal": "creation_orientation",
+        "opportunityScenes": 8,
+        "facets": [
+          "constructive_improvisation",
+          "design",
+          "experimentation",
+          "ideation",
+          "making"
+        ],
+        "contexts": [
+          "change",
+          "creative_problem_solving",
+          "uncertainty"
+        ],
+        "positiveOptions": 12,
+        "negativeOptions": 0,
+        "zeroOptions": 20,
+        "minimumPossible": 0,
+        "maximumPossible": 5.65
+      },
+      {
+        "signal": "empathy_cooperation",
+        "opportunityScenes": 11,
+        "facets": [
+          "coalition_building",
+          "perspective_taking",
+          "prosocial_response"
+        ],
+        "contexts": [
+          "caregiving",
+          "group_coordination",
+          "interpersonal_conflict",
+          "negotiation"
+        ],
+        "positiveOptions": 19,
+        "negativeOptions": 0,
+        "zeroOptions": 25,
+        "minimumPossible": 0,
+        "maximumPossible": 8.4
+      },
+      {
+        "signal": "social_confidence",
+        "opportunityScenes": 5,
+        "facets": [
+          "assertive_expression",
+          "interpersonal_visibility",
+          "persuasion_attempt"
+        ],
+        "contexts": [
+          "group_coordination",
+          "public_visibility",
+          "social_risk"
+        ],
+        "positiveOptions": 9,
+        "negativeOptions": 0,
+        "zeroOptions": 11,
+        "minimumPossible": 0,
+        "maximumPossible": 3.05
+      },
+      {
+        "signal": "leadership_initiative",
+        "opportunityScenes": 3,
+        "facets": [
+          "coordination",
+          "decisiveness",
+          "responsibility_assumption"
+        ],
+        "contexts": [
+          "group_coordination",
+          "responsibility",
+          "time_pressure"
+        ],
+        "positiveOptions": 5,
+        "negativeOptions": 0,
+        "zeroOptions": 7,
+        "minimumPossible": 0,
+        "maximumPossible": 2.45
+      },
+      {
+        "signal": "persistence",
+        "opportunityScenes": 2,
+        "facets": [
+          "frustration_tolerance",
+          "sustained_effort"
+        ],
+        "contexts": [
+          "physical_risk",
+          "resource_scarcity",
+          "time_pressure"
+        ],
+        "positiveOptions": 4,
+        "negativeOptions": 0,
+        "zeroOptions": 4,
+        "minimumPossible": 0,
+        "maximumPossible": 1.35
+      },
+      {
+        "signal": "adaptability",
+        "opportunityScenes": 3,
+        "facets": [
+          "feedback_learning",
+          "resource_reallocation",
+          "strategy_revision"
+        ],
+        "contexts": [
+          "change",
+          "creative_problem_solving",
+          "resource_scarcity"
+        ],
+        "positiveOptions": 5,
+        "negativeOptions": 0,
+        "zeroOptions": 7,
+        "minimumPossible": 0,
+        "maximumPossible": 2.25
+      },
+      {
+        "signal": "emotional_regulation",
+        "opportunityScenes": 4,
+        "facets": [
+          "composure_under_pressure",
+          "emotional_awareness",
+          "impulse_regulation"
+        ],
+        "contexts": [
+          "physical_risk",
+          "time_pressure",
+          "uncertainty"
+        ],
+        "positiveOptions": 8,
+        "negativeOptions": 0,
+        "zeroOptions": 8,
+        "minimumPossible": 0,
+        "maximumPossible": 2.85
+      }
+    ],
+    "sceneDensity": [
+      {
+        "sceneId": "scene_01",
+        "signals": 2
+      },
+      {
+        "sceneId": "scene_02",
+        "signals": 3
+      },
+      {
+        "sceneId": "scene_03",
+        "signals": 4
+      },
+      {
+        "sceneId": "scene_04",
+        "signals": 4
+      },
+      {
+        "sceneId": "scene_05",
+        "signals": 4
+      },
+      {
+        "sceneId": "scene_06",
+        "signals": 5
+      },
+      {
+        "sceneId": "scene_07",
+        "signals": 4
+      },
+      {
+        "sceneId": "scene_08",
+        "signals": 4
+      },
+      {
+        "sceneId": "scene_09",
+        "signals": 5
+      },
+      {
+        "sceneId": "scene_10",
+        "signals": 5
+      },
+      {
+        "sceneId": "scene_11",
+        "signals": 4
+      },
+      {
+        "sceneId": "scene_12",
+        "signals": 2
+      },
+      {
+        "sceneId": "scene_13",
+        "signals": 5
+      },
+      {
+        "sceneId": "scene_14",
+        "signals": 5
+      },
+      {
+        "sceneId": "scene_15",
+        "signals": 5
+      }
+    ],
+    "excessiveDensityScenes": []
+  },
+  "simulation": {
+    "journeyId": "journey_unwritten_road",
+    "modelId": "unwritten_road_signals_1_0",
+    "runs": 2000,
+    "seed": 20260911,
+    "signals": [
+      {
+        "signal": "autonomy",
+        "measuredRuns": 752,
+        "mean": 0.7296,
+        "minimum": 0.6316,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 1248,
+          "emerging": 0,
+          "moderate": 752,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "structure",
+        "measuredRuns": 1458,
+        "mean": 0.4599,
+        "minimum": 0.3176,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 542,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 1458
+        }
+      },
+      {
+        "signal": "risk_tolerance",
+        "measuredRuns": 470,
+        "mean": 0.6749,
+        "minimum": 0.5556,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 1530,
+          "emerging": 0,
+          "moderate": 470,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "openness_to_uncertainty",
+        "measuredRuns": 1548,
+        "mean": 0.4299,
+        "minimum": 0.0303,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 452,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 1548
+        }
+      },
+      {
+        "signal": "knowledge_orientation",
+        "measuredRuns": 1533,
+        "mean": 0.3575,
+        "minimum": 0.2101,
+        "maximum": 0.8655,
+        "bands": {
+          "insufficient": 467,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 1533
+        }
+      },
+      {
+        "signal": "creation_orientation",
+        "measuredRuns": 1773,
+        "mean": 0.4068,
+        "minimum": 0.1593,
+        "maximum": 0.9204,
+        "bands": {
+          "insufficient": 227,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 1773
+        }
+      },
+      {
+        "signal": "empathy_cooperation",
+        "measuredRuns": 1972,
+        "mean": 0.4196,
+        "minimum": 0.1548,
+        "maximum": 0.9702,
+        "bands": {
+          "insufficient": 28,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 1972
+        }
+      },
+      {
+        "signal": "social_confidence",
+        "measuredRuns": 1537,
+        "mean": 0.5319,
+        "minimum": 0.3607,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 463,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 1537
+        }
+      },
+      {
+        "signal": "leadership_initiative",
+        "measuredRuns": 723,
+        "mean": 0.7172,
+        "minimum": 0.6327,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 1277,
+          "emerging": 0,
+          "moderate": 723,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "persistence",
+        "measuredRuns": 484,
+        "mean": 0.9616,
+        "minimum": 0.9259,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 1516,
+          "emerging": 0,
+          "moderate": 484,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "adaptability",
+        "measuredRuns": 773,
+        "mean": 0.7082,
+        "minimum": 0.5778,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 1227,
+          "emerging": 0,
+          "moderate": 773,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "emotional_regulation",
+        "measuredRuns": 1419,
+        "mean": 0.6419,
+        "minimum": 0.4561,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 581,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 1419
+        }
+      }
+    ],
+    "choiceCounts": {
+      "scene_01_choice_b": 503,
+      "scene_02_choice_a": 503,
+      "scene_03_choice_a": 482,
+      "scene_04_choice_d": 524,
+      "scene_05_choice_d": 528,
+      "scene_06_choice_d": 494,
+      "scene_07_choice_b": 491,
+      "scene_08_choice_b": 511,
+      "scene_09_choice_c": 520,
+      "scene_10_choice_b": 509,
+      "scene_11_choice_d": 480,
+      "scene_12_choice_a": 496,
+      "scene_13_choice_a": 518,
+      "scene_14_choice_a": 501,
+      "scene_15_choice_c": 481,
+      "scene_02_choice_c": 507,
+      "scene_03_choice_b": 554,
+      "scene_04_choice_c": 470,
+      "scene_05_choice_a": 491,
+      "scene_06_choice_b": 533,
+      "scene_07_choice_c": 501,
+      "scene_09_choice_b": 508,
+      "scene_10_choice_d": 501,
+      "scene_11_choice_b": 499,
+      "scene_12_choice_d": 461,
+      "scene_13_choice_c": 480,
+      "scene_14_choice_c": 538,
+      "scene_01_choice_d": 488,
+      "scene_02_choice_b": 491,
+      "scene_03_choice_c": 466,
+      "scene_07_choice_a": 517,
+      "scene_08_choice_c": 507,
+      "scene_13_choice_b": 534,
+      "scene_14_choice_d": 463,
+      "scene_04_choice_b": 485,
+      "scene_06_choice_c": 489,
+      "scene_08_choice_d": 473,
+      "scene_09_choice_d": 488,
+      "scene_10_choice_c": 502,
+      "scene_11_choice_a": 493,
+      "scene_14_choice_b": 498,
+      "scene_01_choice_c": 509,
+      "scene_06_choice_a": 484,
+      "scene_12_choice_c": 509,
+      "scene_13_choice_d": 468,
+      "scene_15_choice_b": 522,
+      "scene_04_choice_a": 521,
+      "scene_07_choice_d": 491,
+      "scene_09_choice_a": 484,
+      "scene_10_choice_a": 488,
+      "scene_15_choice_d": 504,
+      "scene_01_choice_a": 500,
+      "scene_03_choice_d": 498,
+      "scene_05_choice_b": 493,
+      "scene_15_choice_a": 493,
+      "scene_08_choice_a": 509,
+      "scene_11_choice_c": 528,
+      "scene_12_choice_b": 534,
+      "scene_05_choice_c": 488,
+      "scene_02_choice_d": 499
+    }
+  }
+}

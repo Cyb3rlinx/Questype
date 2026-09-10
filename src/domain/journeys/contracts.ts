@@ -1,6 +1,7 @@
 import type { JourneyContent } from '../types.js';
 import type { ScoringEngine } from '../scoring/engine.js';
 import type { Locale } from '../../i18n/locale.js';
+import type { SignalEngine } from '../signals/engine.js';
 import { z } from 'zod';
 
 export const JOURNEY_STATUSES = ['draft', 'published', 'retired'] as const;
@@ -64,6 +65,7 @@ export interface JourneyPublicManifest {
 export interface JourneyServerModel {
   content: JourneyContent;
   engine: ScoringEngine;
+  signalEngine?: SignalEngine;
   contentHash: string;
   legacyReleaseId: string;
 }
