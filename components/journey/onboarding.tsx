@@ -13,6 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { SiteHeader } from './chrome';
 import { requestJson, type SessionView } from '@/lib/client-api';
 import { useLocale } from '../i18n-provider';
+import { startJourneySoundtrack, stopJourneySoundtrack } from './soundtrack';
 
 export function Onboarding() {
   const { locale } = useLocale();
@@ -36,6 +37,7 @@ export function Onboarding() {
       setError(es ? 'Elige cómo quieres que se represente a tu personaje.' : 'Choose how you would like your character represented.');
       return;
     }
+    startJourneySoundtrack();
     setBusy(true);
     setError('');
     try {
@@ -46,6 +48,7 @@ export function Onboarding() {
       });
       router.push('/journey');
     } catch (e) {
+      stopJourneySoundtrack();
       setError((e as Error).message);
       setBusy(false);
     }
@@ -104,7 +107,7 @@ export function Onboarding() {
               <p>
                 {es ? `Completaste ${existing.completed_scenes} de 15 momentos. Continúa desde donde lo dejaste.` : `You’ve completed ${existing.completed_scenes} of 15 moments. Pick up where you left off.`}
               </p>
-              <Link href="/journey" className="button button-gold">
+              <Link href="/journey" className="button button-gold" onClick={startJourneySoundtrack}>
                 {es ? 'Continuar tu viaje' : 'Continue your journey'} <ArrowRight size={17} />
               </Link>
               <Link href="/start?new=1" className="text-link">
