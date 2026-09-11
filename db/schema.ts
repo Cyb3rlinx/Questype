@@ -204,3 +204,68 @@ export const resultConstructEvidence = sqliteTable(
     index('result_construct_evidence_model').on(t.modelId),
   ],
 );
+
+export const authUsers = sqliteTable(
+  'auth_users',
+  {
+    id: text('id').primaryKey(),
+    email: text('email').notNull(),
+    displayName: text('display_name'),
+    locale: text('locale').notNull().default('en'),
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (t) => [uniqueIndex('auth_users_email').on(t.email)],
+);
+
+export const authMagicLinks = sqliteTable(
+  'auth_magic_links',
+  {
+    id: text('id').primaryKey(),
+    email: text('email').notNull(),
+    tokenHash: text('token_hash').notNull(),
+    expiresAt: integer('expires_at').notNull(),
+    consumedAt: integer('consumed_at'),
+    consumedNonce: text('consumed_nonce'),
+    requestedAt: integer('requested_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('auth_magic_links_token_hash').on(t.tokenHash),
+    uniqueIndex('auth_magic_links_consumed_nonce').on(t.consumedNonce),
+    index('auth_magic_links_email_requested').on(t.email, t.requestedAt),
+    index('auth_magic_links_expiry').on(t.expiresAt),
+  ],
+);
+
+export const authSessions = sqliteTable(
+  'auth_sessions',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => authUsers.id, { onDelete: 'cascade' }),
+    tokenHash: text('token_hash').notNull(),
+    expiresAt: integer('expires_at').notNull(),
+    createdAt: integer('created_at').notNull(),
+    lastSeenAt: integer('last_seen_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('auth_sessions_token_hash').on(t.tokenHash),
+    index('auth_sessions_user_expiry').on(t.userId, t.expiresAt),
+  ],
+);
+
+export const resultClaims = sqliteTable(
+  'result_claims',
+  {
+    resultId: text('result_id')
+      .primaryKey()
+      .references(() => results.id, { onDelete: 'cascade' }),
+    userId: text('user_id')
+      .notNull()
+      .references(() => authUsers.id, { onDelete: 'cascade' }),
+    claimedOwnerHash: text('claimed_owner_hash').notNull(),
+    claimedAt: integer('claimed_at').notNull(),
+  },
+  (t) => [index('result_claims_user_claimed').on(t.userId, t.claimedAt)],
+);

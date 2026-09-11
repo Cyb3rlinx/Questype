@@ -39,6 +39,10 @@ import type {
 } from '../domain/journeys/contracts.js';
 import { stableHash } from '../database/content-hash.js';
 import { SIGNAL_KEYS } from '../domain/signals/contracts.js';
+import { WebError, ownerHash, readJson } from './http.js';
+import { authenticatedUser } from '../auth/service.js';
+
+export { WebError, ownerHash, readJson, guardMutation } from './http.js';
 
 const COOKIE = 'archetype_visitor';
 interface SessionRow {
@@ -54,61 +58,6 @@ interface SessionRow {
   created_at: number;
   updated_at?: number | null;
   result_id?: string | null;
-}
-export class WebError extends Error {
-  constructor(
-    public status: number,
-    message: string,
-  ) {
-    super(message);
-  }
-}
-export function ownerHash(request: Request): string | null {
-  const token = request.headers
-    .get('cookie')
-    ?.split(';')
-    .map((v) => v.trim())
-    .find((v) => v.startsWith(`${COOKIE}=`))
-    ?.slice(COOKIE.length + 1);
-  return token && /^[a-f0-9]{64}$/.test(token)
-    ? createHash('sha256').update(token).digest('hex')
-    : null;
-}
-export function guardMutation(request: Request) {
-  const origin = request.headers.get('origin');
-  if (!origin || origin !== new URL(request.url).origin)
-    throw new WebError(403, 'This request must come from your journey page.');
-  if (request.headers.get('sec-fetch-site') === 'cross-site')
-    throw new WebError(403, 'Cross-site requests are not allowed.');
-}
-export async function readJson(request: Request): Promise<unknown> {
-  if (!request.headers.get('content-type')?.includes('application/json'))
-    throw new WebError(415, 'Expected a JSON request.');
-  const reader = request.body?.getReader();
-  if (!reader) throw new WebError(400, 'The request was empty.');
-  const chunks: Uint8Array[] = [];
-  let length = 0;
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    length += value.length;
-    if (length > 4096) {
-      await reader.cancel();
-      throw new WebError(413, 'The request is too large.');
-    }
-    chunks.push(value);
-  }
-  const bytes = new Uint8Array(length);
-  let at = 0;
-  for (const chunk of chunks) {
-    bytes.set(chunk, at);
-    at += chunk.length;
-  }
-  try {
-    return JSON.parse(new TextDecoder().decode(bytes));
-  } catch {
-    throw new WebError(400, 'The request could not be read.');
-  }
 }
 interface JourneyContext {
   definition: JourneyDefinition;
@@ -651,6 +600,7 @@ export async function completeJourney(db: D1Database, request: Request) {
     signalReady && context.model.signalEngine
       ? context.model.signalEngine.evaluate(saved.answers, { resultId: id })
       : null;
+  const account = await authenticatedUser(db, request);
   const updateSession = multiJourney
     ? db
         .prepare(
@@ -750,6 +700,15 @@ export async function completeJourney(db: D1Database, request: Request) {
       );
     });
   }
+  if (account) {
+    writes.push(
+      db
+        .prepare(
+          'INSERT OR IGNORE INTO result_claims(result_id,user_id,claimed_owner_hash,claimed_at) SELECT ?,?,?,? FROM web_results WHERE id=?',
+        )
+        .bind(id, account.id, owner, Date.now(), id),
+    );
+  }
   writes.push(updateSession);
   await db.batch(writes);
   const final = await findSession(db, owner, { id: row.id });
@@ -761,11 +720,12 @@ export async function completeJourney(db: D1Database, request: Request) {
   return { result_id: final.result_id };
 }
 export async function getResult(db: D1Database, request: Request, id: string) {
+  const account = await authenticatedUser(db, request);
   const row = await db
     .prepare(
-      'SELECT r.profile_json,r.interpretation_json FROM web_results r JOIN web_sessions s ON s.id=r.session_id WHERE r.id=? AND s.owner_hash=?',
+      'SELECT r.profile_json,r.interpretation_json FROM web_results r JOIN web_sessions s ON s.id=r.session_id LEFT JOIN result_claims c ON c.result_id=r.id WHERE r.id=? AND (s.owner_hash=? OR c.user_id=?)',
     )
-    .bind(id, ownerHash(request) ?? '')
+    .bind(id, ownerHash(request) ?? '', account?.id ?? '')
     .first<{ profile_json: string; interpretation_json: string }>();
   if (!row)
     throw new WebError(
@@ -801,11 +761,20 @@ export async function getResult(db: D1Database, request: Request, id: string) {
 }
 export async function deleteData(db: D1Database, request: Request) {
   const owner = ownerHash(request);
-  if (owner)
-    await db
-      .prepare('DELETE FROM web_visitors WHERE owner_hash=?')
-      .bind(owner)
-      .run();
+  if (owner) {
+    await db.batch([
+      db
+        .prepare(
+          'DELETE FROM web_sessions WHERE owner_hash=? AND NOT EXISTS (SELECT 1 FROM web_results r JOIN result_claims c ON c.result_id=r.id WHERE r.session_id=web_sessions.id)',
+        )
+        .bind(owner),
+      db
+        .prepare(
+          'DELETE FROM web_visitors WHERE owner_hash=? AND NOT EXISTS (SELECT 1 FROM web_sessions WHERE owner_hash=?)',
+        )
+        .bind(owner, owner),
+    ]);
+  }
   return { deleted: true };
 }
 export const clearCookie = `${COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;

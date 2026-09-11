@@ -4,7 +4,10 @@ import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { renderReportPdf } from '../lib/pdf-renderer.js';
 import type { ReportData } from '../src/reports/data.js';
 const base = process.env.TEST_APP_URL ?? 'http://localhost:3000';
-let cookie = '';
+const cookieJar = new Map<string, string>();
+function storedCookies() {
+  return [...cookieJar].map(([name, value]) => `${name}=${value}`).join('; ');
+}
 async function call(
   path: string,
   method = 'GET',
@@ -15,14 +18,21 @@ async function call(
     method,
     headers: {
       Origin: base,
-      Cookie: cookie,
+      Cookie: storedCookies(),
       ...(body ? { 'Content-Type': 'application/json' } : {}),
       ...overrides,
     },
     body: body ? JSON.stringify(body) : undefined,
   });
   const c = r.headers.get('set-cookie');
-  if (c) cookie = c.split(';')[0]!;
+  if (c) {
+    const pair = c.split(';')[0]!;
+    const separator = pair.indexOf('=');
+    const name = pair.slice(0, separator);
+    const value = pair.slice(separator + 1);
+    if (c.toLowerCase().includes('max-age=0')) cookieJar.delete(name);
+    else cookieJar.set(name, value);
+  }
   const contentType = r.headers.get('content-type');
   const data = contentType?.includes('application/json')
     ? ((await r.json()) as any)
@@ -152,6 +162,60 @@ assert.equal(
     .status,
   404,
 );
+const magicLink = await call('/api/auth/request-link', 'POST', {
+  email: 'qa-traveler@example.test',
+});
+assert.equal(magicLink.status, 200, JSON.stringify(magicLink.data));
+assert.ok(magicLink.data.development_verify_url);
+const magicToken = new URL(
+  magicLink.data.development_verify_url,
+).searchParams.get('token');
+assert.ok(magicToken);
+assert.equal(
+  (await call('/api/auth/verify', 'POST', { token: magicToken })).status,
+  200,
+);
+assert.ok(cookieJar.has('questype_auth'));
+assert.equal(
+  (await call('/api/auth/verify', 'POST', { token: magicToken })).status,
+  409,
+);
+const claimed = await call('/api/account/claim', 'POST', {});
+assert.equal(claimed.status, 200);
+assert.equal(claimed.data.claimed, 1);
+const duplicateClaim = await call('/api/account/claim', 'POST', {});
+assert.equal(duplicateClaim.status, 200);
+assert.equal(duplicateClaim.data.claimed, 0);
+assert.equal(duplicateClaim.data.already_owned, 1);
+const account = await call('/api/account');
+assert.equal(account.status, 200);
+assert.equal(account.data.results, 1);
+const authOnly = `questype_auth=${cookieJar.get('questype_auth')}`;
+assert.equal(
+  (
+    await call(`/api/results/${resultId}`, 'GET', undefined, {
+      Cookie: authOnly,
+    })
+  ).status,
+  200,
+);
+assert.equal(
+  (await call('/api/account/claim', 'POST', { resultId }, { Cookie: authOnly }))
+    .status,
+  409,
+);
+const mergeLink = await call('/api/auth/request-link', 'POST', {
+  email: 'qa-traveler@example.test',
+});
+const mergeToken = new URL(
+  mergeLink.data.development_verify_url,
+).searchParams.get('token');
+assert.ok(mergeToken);
+assert.equal(
+  (await call('/api/auth/verify', 'POST', { token: mergeToken })).status,
+  200,
+);
+assert.equal((await call('/api/account')).data.results, 1);
 const report = (await call(`/api/results/${resultId}/report`))
   .data as ReportData;
 const pdf = await renderReportPdf(report, {
@@ -199,7 +263,10 @@ assert.equal(newJourney.status, 200);
 assert.notEqual(newJourney.data.id, id);
 assert.equal((await call(`/api/results/${resultId}`)).status, 200);
 assert.equal((await call('/api/session', 'DELETE')).status, 200);
+assert.equal((await call(`/api/results/${resultId}`)).status, 200);
+assert.equal((await call('/api/account', 'DELETE')).status, 200);
 assert.equal((await call(`/api/results/${resultId}`)).status, 404);
+assert.equal((await call('/api/account')).status, 401);
 const summary = {
   passed: true,
   checks: [
@@ -220,6 +287,10 @@ const summary = {
     'exact score total',
     'private parallel signal persistence',
     'private result ownership',
+    'passwordless local sign-in and replay protection',
+    'secure anonymous-result claim and idempotent merge',
+    'account-only cross-browser result access',
+    'account deletion cascade',
     'PDF export',
     'selected-field share',
     'share revocation',

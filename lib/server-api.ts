@@ -1,6 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { ZodError } from 'zod';
-import { WebError, guardMutation } from '@/src/application/web-service';
+import { WebError, guardMutation } from '@/src/application/http';
 export function database() {
   if (!env.DB)
     throw new WebError(
