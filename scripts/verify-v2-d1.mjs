@@ -65,6 +65,7 @@ INSERT INTO web_shares(id,result_id,projection_json,created_at) VALUES ('legacy-
   );
   await run(d1Args('--file', seedPath));
   await run(d1Args('--file', 'drizzle/0001_multi_journey.sql'));
+  await run(d1Args('--file', 'drizzle/0002_signal_evidence.sql'));
   const verification = await run(
     d1Args(
       '--command',
@@ -76,6 +77,10 @@ INSERT INTO web_shares(id,result_id,projection_json,created_at) VALUES ('legacy-
         (SELECT COUNT(*) FROM web_answers) AS answers,
         (SELECT COUNT(*) FROM web_results) AS results,
         (SELECT COUNT(*) FROM web_shares) AS shares,
+        (SELECT COUNT(*) FROM journey_signal_models) AS signal_models,
+        (SELECT COUNT(*) FROM result_signal_assessments) AS signal_assessments,
+        (SELECT COUNT(*) FROM result_construct_scores) AS construct_scores,
+        (SELECT COUNT(*) FROM result_construct_evidence) AS construct_evidence,
         (SELECT projection_json FROM web_shares WHERE id='legacy-share') AS preserved_projection;
        PRAGMA foreign_key_check;`,
     ),
@@ -92,6 +97,10 @@ INSERT INTO web_shares(id,result_id,projection_json,created_at) VALUES ('legacy-
     answers: 1,
     results: 1,
     shares: 1,
+    signal_models: 0,
+    signal_assessments: 0,
+    construct_scores: 0,
+    construct_evidence: 0,
     preserved_projection: '{"title":"legacy"}',
   });
   assert.deepEqual(results[1].results, []);
@@ -103,6 +112,7 @@ INSERT INTO web_shares(id,result_id,projection_json,created_at) VALUES ('legacy-
     migrated_sessions: 1,
     historical_results: 1,
     historical_shares: 1,
+    historical_signal_assessments: 0,
     foreign_key_errors: 0,
   });
 } finally {

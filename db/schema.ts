@@ -3,6 +3,7 @@ import {
   text,
   integer,
   index,
+  primaryKey,
   uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
 export const visitors = sqliteTable('web_visitors', {
@@ -112,4 +113,94 @@ export const shares = sqliteTable(
     createdAt: integer('created_at').notNull(),
   },
   (t) => [uniqueIndex('web_share_result').on(t.resultId)],
+);
+
+export const journeySignalModels = sqliteTable(
+  'journey_signal_models',
+  {
+    id: text('id').primaryKey(),
+    journeyVersionId: text('journey_version_id')
+      .notNull()
+      .references(() => journeyVersions.id),
+    schemaVersion: text('schema_version').notNull(),
+    modelHash: text('model_hash').notNull(),
+    snapshot: text('snapshot').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('journey_signal_models_version_hash').on(
+      t.journeyVersionId,
+      t.modelHash,
+    ),
+  ],
+);
+
+export const resultSignalAssessments = sqliteTable(
+  'result_signal_assessments',
+  {
+    resultId: text('result_id')
+      .primaryKey()
+      .references(() => results.id, { onDelete: 'cascade' }),
+    modelId: text('model_id')
+      .notNull()
+      .references(() => journeySignalModels.id),
+    fingerprint: text('fingerprint').notNull().unique(),
+    decisionsAnalyzed: integer('decisions_analyzed').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [index('result_signal_assessments_model').on(t.modelId)],
+);
+
+export const resultConstructScores = sqliteTable(
+  'result_construct_scores',
+  {
+    resultId: text('result_id')
+      .notNull()
+      .references(() => resultSignalAssessments.resultId, {
+        onDelete: 'cascade',
+      }),
+    signalId: text('signal_id').notNull(),
+    valueMilli: integer('value_milli'),
+    band: text('band').notNull(),
+    observations: integer('observations').notNull(),
+    contributingObservations: integer('contributing_observations').notNull(),
+    sceneCount: integer('scene_count').notNull(),
+    contextCount: integer('context_count').notNull(),
+    journeyCount: integer('journey_count').notNull(),
+    sceneIdsJson: text('scene_ids_json').notNull(),
+    contextIdsJson: text('context_ids_json').notNull(),
+    opportunityCoverageMilli: integer('opportunity_coverage_milli').notNull(),
+    directionalConsistencyMilli: integer(
+      'directional_consistency_milli',
+    ).notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.resultId, t.signalId] })],
+);
+
+export const resultConstructEvidence = sqliteTable(
+  'result_construct_evidence',
+  {
+    id: text('id').primaryKey(),
+    resultId: text('result_id')
+      .notNull()
+      .references(() => resultSignalAssessments.resultId, {
+        onDelete: 'cascade',
+      }),
+    modelId: text('model_id')
+      .notNull()
+      .references(() => journeySignalModels.id),
+    sceneId: text('scene_id').notNull(),
+    choiceId: text('choice_id').notNull(),
+    signalId: text('signal_id').notNull(),
+    facetId: text('facet_id').notNull(),
+    contextId: text('context_id').notNull(),
+    direction: integer('direction').notNull(),
+    weightMilli: integer('weight_milli').notNull(),
+    signedContributionMilli: integer('signed_contribution_milli').notNull(),
+    observationType: text('observation_type').notNull(),
+  },
+  (t) => [
+    index('result_construct_evidence_result_signal').on(t.resultId, t.signalId),
+    index('result_construct_evidence_model').on(t.modelId),
+  ],
 );

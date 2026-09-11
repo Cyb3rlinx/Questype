@@ -137,6 +137,9 @@ assert.equal(
 );
 const result = await call(`/api/results/${resultId}`);
 assert.equal(result.status, 200);
+assert.equal(result.data.signal_assessment_available, true);
+assert.ok(!JSON.stringify(result.data).includes('choiceEvidence'));
+assert.ok(!JSON.stringify(result.data).includes('signedContribution'));
 assert.equal(
   result.data.profile.archetypes.all.reduce(
     (n: number, a: any) => n + a.normalized_percentage,
@@ -215,6 +218,7 @@ const summary = {
     '15-scene completion',
     'idempotent result generation',
     'exact score total',
+    'private parallel signal persistence',
     'private result ownership',
     'PDF export',
     'selected-field share',

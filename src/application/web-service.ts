@@ -37,6 +37,8 @@ import type {
   JourneyServerModel,
   VisualAsset,
 } from '../domain/journeys/contracts.js';
+import { stableHash } from '../database/content-hash.js';
+import { SIGNAL_KEYS } from '../domain/signals/contracts.js';
 
 const COOKIE = 'archetype_visitor';
 interface SessionRow {
@@ -133,6 +135,53 @@ async function hasMultiJourneySchema(db: D1Database): Promise<boolean> {
   return row?.name === 'journey_versions';
 }
 
+async function hasSignalSchema(db: D1Database): Promise<boolean> {
+  const row = await db
+    .prepare(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='result_signal_assessments'",
+    )
+    .first<{ name: string }>();
+  return row?.name === 'result_signal_assessments';
+}
+
+async function ensureSignalModel(
+  db: D1Database,
+  context: JourneyContext,
+): Promise<boolean> {
+  const signalEngine = context.model.signalEngine;
+  if (!signalEngine || !(await hasSignalSchema(db))) return false;
+  const model = signalEngine.model;
+  const modelHash = stableHash(model);
+  await db
+    .prepare(
+      'INSERT INTO journey_signal_models(id,journey_version_id,schema_version,model_hash,snapshot,created_at) VALUES (?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING',
+    )
+    .bind(
+      model.id,
+      context.model.legacyReleaseId,
+      model.schemaVersion,
+      modelHash,
+      JSON.stringify(model),
+      Date.now(),
+    )
+    .run();
+  const stored = await db
+    .prepare(
+      'SELECT journey_version_id,model_hash FROM journey_signal_models WHERE id=?',
+    )
+    .bind(model.id)
+    .first<{ journey_version_id: string; model_hash: string }>();
+  if (
+    stored?.journey_version_id !== context.model.legacyReleaseId ||
+    stored.model_hash !== modelHash
+  )
+    throw new WebError(
+      409,
+      'This psychological evidence model has changed and cannot overwrite its released version.',
+    );
+  return true;
+}
+
 function requestedJourneySlug(request: Request): string {
   return (
     new URL(request.url).searchParams.get('journey_slug') ??
@@ -219,6 +268,7 @@ async function release(db: D1Database, context: JourneyContext) {
       409,
       'This story release has changed. Your previous progress remains saved.',
     );
+  await ensureSignalModel(db, context);
   return true;
 }
 
@@ -596,6 +646,11 @@ export async function completeJourney(db: D1Database, request: Request) {
   const interpretation = deterministicInterpretation(profile);
   const completed = markSessionCompleted(context.model.content, saved, now);
   const multiJourney = await hasMultiJourneySchema(db);
+  const signalReady = await ensureSignalModel(db, context);
+  const signalAssessment =
+    signalReady && context.model.signalEngine
+      ? context.model.signalEngine.evaluate(saved.answers, { resultId: id })
+      : null;
   const updateSession = multiJourney
     ? db
         .prepare(
@@ -614,7 +669,7 @@ export async function completeJourney(db: D1Database, request: Request) {
           "UPDATE web_sessions SET state_json=?,status='completed',revision=revision+1 WHERE id=? AND owner_hash=? AND revision=? AND EXISTS(SELECT 1 FROM web_results WHERE session_id=?)",
         )
         .bind(JSON.stringify(completed), row.id, owner, row.revision, row.id);
-  await db.batch([
+  const writes = [
     db
       .prepare(
         'INSERT INTO web_results(id,session_id,profile_json,interpretation_json,created_at) SELECT ?,id,?,?,? FROM web_sessions WHERE id=? AND owner_hash=? AND revision=? ON CONFLICT(session_id) DO NOTHING',
@@ -628,8 +683,75 @@ export async function completeJourney(db: D1Database, request: Request) {
         owner,
         row.revision,
       ),
-    updateSession,
-  ]);
+  ];
+  if (signalAssessment) {
+    writes.push(
+      db
+        .prepare(
+          'INSERT INTO result_signal_assessments(result_id,model_id,fingerprint,decisions_analyzed,created_at) SELECT ?,?,?,?,? FROM web_results WHERE id=? ON CONFLICT(result_id) DO NOTHING',
+        )
+        .bind(
+          id,
+          signalAssessment.signalModelId,
+          signalAssessment.fingerprint,
+          signalAssessment.decisionsAnalyzed,
+          Date.now(),
+          id,
+        ),
+    );
+    for (const signal of SIGNAL_KEYS) {
+      const measurement = signalAssessment.signals[signal];
+      writes.push(
+        db
+          .prepare(
+            'INSERT INTO result_construct_scores(result_id,signal_id,value_milli,band,observations,contributing_observations,scene_count,context_count,journey_count,scene_ids_json,context_ids_json,opportunity_coverage_milli,directional_consistency_milli) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,? FROM result_signal_assessments WHERE result_id=? ON CONFLICT(result_id,signal_id) DO NOTHING',
+          )
+          .bind(
+            id,
+            signal,
+            measurement.value === null
+              ? null
+              : Math.round(measurement.value * 1000),
+            measurement.band,
+            measurement.observations,
+            measurement.contributingObservations,
+            measurement.scenes,
+            measurement.contexts,
+            measurement.journeys,
+            JSON.stringify(measurement.sceneIds),
+            JSON.stringify(measurement.contextIds),
+            Math.round(measurement.opportunityCoverage * 1000),
+            Math.round(measurement.directionalConsistency * 1000),
+            id,
+          ),
+      );
+    }
+    signalAssessment.evidence.forEach((evidence, index) => {
+      writes.push(
+        db
+          .prepare(
+            'INSERT INTO result_construct_evidence(id,result_id,model_id,scene_id,choice_id,signal_id,facet_id,context_id,direction,weight_milli,signed_contribution_milli,observation_type) SELECT ?,?,?,?,?,?,?,?,?,?,?,? FROM result_signal_assessments WHERE result_id=? ON CONFLICT(id) DO NOTHING',
+          )
+          .bind(
+            stableHash({ resultId: id, index, evidence }).slice(0, 40),
+            id,
+            signalAssessment.signalModelId,
+            evidence.sceneId,
+            evidence.choiceId,
+            evidence.signal,
+            evidence.facet,
+            evidence.context,
+            evidence.direction,
+            Math.round(evidence.weight * 1000),
+            Math.round(evidence.signedContribution * 1000),
+            evidence.observationType,
+            id,
+          ),
+      );
+    });
+  }
+  writes.push(updateSession);
+  await db.batch(writes);
   const final = await findSession(db, owner, { id: row.id });
   if (!final.result_id)
     throw new WebError(
@@ -659,11 +781,22 @@ export async function getResult(db: D1Database, request: Request, id: string) {
   const locale = localeFromRequest(request);
   const localized =
     locale === 'es' ? deterministicInterpretation(profile, locale) : stored;
+  const signalAssessmentAvailable =
+    (await hasSignalSchema(db)) &&
+    Boolean(
+      await db
+        .prepare(
+          'SELECT result_id FROM result_signal_assessments WHERE result_id=?',
+        )
+        .bind(id)
+        .first(),
+    );
   return {
     profile,
     interpretation: validateInterpretation(localized.interpretation, profile),
     interpretation_provider: localized.provider,
     locale,
+    signal_assessment_available: signalAssessmentAvailable,
   };
 }
 export async function deleteData(db: D1Database, request: Request) {
