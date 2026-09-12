@@ -269,3 +269,53 @@ export const resultClaims = sqliteTable(
   },
   (t) => [index('result_claims_user_claimed').on(t.userId, t.claimedAt)],
 );
+
+export const profileSnapshots = sqliteTable(
+  'profile_snapshots',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => authUsers.id, { onDelete: 'cascade' }),
+    sequence: integer('sequence').notNull(),
+    version: text('version').notNull(),
+    aggregationVersion: text('aggregation_version').notNull(),
+    sourceCount: integer('source_count').notNull(),
+    journeyCount: integer('journey_count').notNull(),
+    decisionsAnalyzed: integer('decisions_analyzed').notNull(),
+    profileDepth: text('profile_depth').notNull(),
+    fingerprint: text('fingerprint').notNull(),
+    profileJson: text('profile_json').notNull(),
+    coverageJson: text('coverage_json').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [
+    uniqueIndex('profile_snapshots_user_sequence').on(t.userId, t.sequence),
+    uniqueIndex('profile_snapshots_user_fingerprint').on(
+      t.userId,
+      t.fingerprint,
+    ),
+    index('profile_snapshots_user_created').on(t.userId, t.createdAt),
+  ],
+);
+
+export const profileSnapshotSources = sqliteTable(
+  'profile_snapshot_sources',
+  {
+    snapshotId: text('snapshot_id')
+      .notNull()
+      .references(() => profileSnapshots.id, { onDelete: 'cascade' }),
+    resultId: text('result_id')
+      .notNull()
+      .references(() => results.id, { onDelete: 'cascade' }),
+    journeyId: text('journey_id').notNull(),
+    journeyVersion: text('journey_version').notNull(),
+    scoringVersion: text('scoring_version').notNull(),
+    signalModelId: text('signal_model_id').notNull(),
+    resultCreatedAt: integer('result_created_at').notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.snapshotId, t.resultId] }),
+    index('profile_snapshot_sources_result').on(t.resultId),
+  ],
+);

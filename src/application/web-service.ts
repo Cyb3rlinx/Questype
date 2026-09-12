@@ -41,6 +41,7 @@ import { stableHash } from '../database/content-hash.js';
 import { SIGNAL_KEYS } from '../domain/signals/contracts.js';
 import { WebError, ownerHash, readJson } from './http.js';
 import { authenticatedUser } from '../auth/service.js';
+import { createProfileSnapshot } from '../profile/service.js';
 
 export { WebError, ownerHash, readJson, guardMutation } from './http.js';
 
@@ -711,6 +712,7 @@ export async function completeJourney(db: D1Database, request: Request) {
   }
   writes.push(updateSession);
   await db.batch(writes);
+  if (account) await createProfileSnapshot(db, account.id);
   const final = await findSession(db, owner, { id: row.id });
   if (!final.result_id)
     throw new WebError(

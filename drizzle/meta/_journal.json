@@ -29,6 +29,13 @@
       "when": 1789113073099,
       "tag": "0003_optional_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1789113758985,
+      "tag": "0004_accumulated_profiles",
+      "breakpoints": true
     }
   ]
 }

@@ -67,6 +67,7 @@ INSERT INTO web_shares(id,result_id,projection_json,created_at) VALUES ('legacy-
   await run(d1Args('--file', 'drizzle/0001_multi_journey.sql'));
   await run(d1Args('--file', 'drizzle/0002_signal_evidence.sql'));
   await run(d1Args('--file', 'drizzle/0003_optional_accounts.sql'));
+  await run(d1Args('--file', 'drizzle/0004_accumulated_profiles.sql'));
   const verification = await run(
     d1Args(
       '--command',
@@ -85,6 +86,8 @@ INSERT INTO web_shares(id,result_id,projection_json,created_at) VALUES ('legacy-
         (SELECT COUNT(*) FROM auth_users) AS auth_users,
         (SELECT COUNT(*) FROM auth_sessions) AS auth_sessions,
         (SELECT COUNT(*) FROM result_claims) AS result_claims,
+        (SELECT COUNT(*) FROM profile_snapshots) AS profile_snapshots,
+        (SELECT COUNT(*) FROM profile_snapshot_sources) AS profile_snapshot_sources,
         (SELECT projection_json FROM web_shares WHERE id='legacy-share') AS preserved_projection;
        PRAGMA foreign_key_check;`,
     ),
@@ -108,6 +111,8 @@ INSERT INTO web_shares(id,result_id,projection_json,created_at) VALUES ('legacy-
     auth_users: 0,
     auth_sessions: 0,
     result_claims: 0,
+    profile_snapshots: 0,
+    profile_snapshot_sources: 0,
     preserved_projection: '{"title":"legacy"}',
   });
   assert.deepEqual(results[1].results, []);

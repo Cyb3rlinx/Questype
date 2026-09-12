@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { renderReportPdf } from '../lib/pdf-renderer.js';
+import { renderProfileReportPdf } from '../lib/profile-pdf-renderer.js';
 import type { ReportData } from '../src/reports/data.js';
+import type { ProfileReportData } from '../src/profile/report.js';
 const base = process.env.TEST_APP_URL ?? 'http://localhost:3000';
 const cookieJar = new Map<string, string>();
 function storedCookies() {
@@ -190,6 +192,32 @@ assert.equal(duplicateClaim.data.already_owned, 1);
 const account = await call('/api/account');
 assert.equal(account.status, 200);
 assert.equal(account.data.results, 1);
+const accumulated = await call('/api/profile');
+assert.equal(accumulated.status, 200, JSON.stringify(accumulated.data));
+assert.equal(accumulated.data.snapshot.journeysCompleted, 1);
+assert.equal(accumulated.data.snapshot.decisionsAnalyzed, 15);
+assert.equal(accumulated.data.snapshot.profileDepth, 'initial');
+assert.ok(
+  accumulated.data.snapshot.signals.some(
+    (signal: any) => signal.status === 'unexplored',
+  ),
+);
+assert.ok(!JSON.stringify(accumulated.data).includes('choiceEvidence'));
+const snapshotId = accumulated.data.snapshot.id;
+assert.equal((await call('/api/profile')).data.snapshot.id, snapshotId);
+const profileReport = (await call('/api/profile/report'))
+  .data as ProfileReportData;
+assert.equal(profileReport.snapshotId, snapshotId);
+assert.ok(!JSON.stringify(profileReport).includes('scientifically proven'));
+const profilePdf = await renderProfileReportPdf(profileReport, {
+  bodyFont: new Uint8Array(await readFile('public/fonts/body.woff')),
+  headingFont: new Uint8Array(await readFile('public/fonts/heading.woff')),
+});
+await mkdir('artifacts/browser-qa', { recursive: true });
+await writeFile(
+  'artifacts/browser-qa/sample-accumulated-profile.pdf',
+  profilePdf,
+);
 const authOnly = `questype_auth=${cookieJar.get('questype_auth')}`;
 assert.equal(
   (
@@ -291,6 +319,9 @@ const summary = {
     'secure anonymous-result claim and idempotent merge',
     'account-only cross-browser result access',
     'account deletion cascade',
+    'immutable accumulated profile snapshot',
+    'honest missing-signal rendering',
+    'accumulated profile PDF',
     'PDF export',
     'selected-field share',
     'share revocation',

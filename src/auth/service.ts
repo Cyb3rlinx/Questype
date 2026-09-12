@@ -11,6 +11,7 @@ import {
 } from '../application/http.js';
 import { localeFromRequest, type Locale } from '../i18n/locale.js';
 import type { MagicLinkEmailProvider } from './email-provider.js';
+import { createProfileSnapshot } from '../profile/service.js';
 
 export const AUTH_COOKIE = 'questype_auth';
 const MAGIC_LINK_TTL_MS = 15 * 60 * 1000;
@@ -280,6 +281,7 @@ export async function claimAnonymousResults(db: D1Database, request: Request) {
     )
     .bind(user.id, owner, Date.now(), owner)
     .run();
+  await createProfileSnapshot(db, user.id);
   return {
     claimed: inserted.meta.changes ?? 0,
     already_owned: before?.already_owned ?? 0,

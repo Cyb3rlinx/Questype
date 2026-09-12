@@ -1,4 +1,5 @@
 import type { ReportData } from '@/src/reports/data';
+import type { ProfileReportData } from '@/src/profile/report';
 import { CARD_FORMATS, type SocialCardData } from '@/src/sharing/contracts';
 function save(bytes: BlobPart, type: string, name: string) {
   const url = URL.createObjectURL(new Blob([bytes], { type }));
@@ -13,22 +14,46 @@ function save(bytes: BlobPart, type: string, name: string) {
 async function bytes(url: string, es = false) {
   const response = await fetch(url);
   if (!response.ok)
-    throw new Error(es ? 'No se pudo cargar un recurso del informe. Inténtalo de nuevo.' : 'A report asset could not be loaded. Please try again.');
+    throw new Error(
+      es
+        ? 'No se pudo cargar un recurso del informe. Inténtalo de nuevo.'
+        : 'A report asset could not be loaded. Please try again.',
+    );
   return new Uint8Array(await response.arrayBuffer());
 }
 async function pngBytes(url: string, es = false) {
   const image = new Image();
   image.src = url;
-  try { await image.decode(); } catch { throw new Error(es ? 'No se pudo cargar la imagen de tu arquetipo.' : 'Your archetype image could not be loaded.'); }
+  try {
+    await image.decode();
+  } catch {
+    throw new Error(
+      es
+        ? 'No se pudo cargar la imagen de tu arquetipo.'
+        : 'Your archetype image could not be loaded.',
+    );
+  }
   const scale = Math.min(1, 900 / image.naturalWidth);
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(image.naturalWidth * scale);
   canvas.height = Math.round(image.naturalHeight * scale);
   const context = canvas.getContext('2d');
-  if (!context) throw new Error(es ? 'Tu navegador no pudo preparar la imagen del informe.' : 'Your browser could not prepare the report image.');
+  if (!context)
+    throw new Error(
+      es
+        ? 'Tu navegador no pudo preparar la imagen del informe.'
+        : 'Your browser could not prepare the report image.',
+    );
   context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
-  if (!blob) throw new Error(es ? 'No se pudo preparar la imagen del informe.' : 'The report image could not be prepared.');
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, 'image/png'),
+  );
+  if (!blob)
+    throw new Error(
+      es
+        ? 'No se pudo preparar la imagen del informe.'
+        : 'The report image could not be prepared.',
+    );
   return new Uint8Array(await blob.arrayBuffer());
 }
 export async function downloadReport(report: ReportData) {
@@ -37,7 +62,10 @@ export async function downloadReport(report: ReportData) {
   const [bodyFont, headingFont, landscape] = await Promise.all([
     bytes('/fonts/body.woff', es),
     bytes('/fonts/heading.woff', es),
-    pngBytes(report.cover.character_image_url ?? '/images/valley-wide.webp', es),
+    pngBytes(
+      report.cover.character_image_url ?? '/images/valley-wide.webp',
+      es,
+    ),
   ]);
   await document.fonts.ready;
   let nameImage: Uint8Array | undefined;
@@ -49,7 +77,9 @@ export async function downloadReport(report: ReportData) {
     const context = canvas.getContext('2d');
     if (!context)
       throw new Error(
-        es ? 'Tu navegador no pudo generar el informe. Inténtalo de nuevo.' : 'Your browser could not render the report. Please try again.',
+        es
+          ? 'Tu navegador no pudo generar el informe. Inténtalo de nuevo.'
+          : 'Your browser could not render the report. Please try again.',
       );
     context.font = '36px "DM Sans", sans-serif';
     context.fillStyle = '#c4d1ba';
@@ -66,7 +96,27 @@ export async function downloadReport(report: ReportData) {
     landscape,
     nameImage,
   });
-  save(new Uint8Array(file), 'application/pdf', report.locale === 'es' ? 'mi-viaje-arquetipico.pdf' : 'my-archetype-journey.pdf');
+  save(
+    new Uint8Array(file),
+    'application/pdf',
+    report.locale === 'es'
+      ? 'mi-viaje-arquetipico.pdf'
+      : 'my-archetype-journey.pdf',
+  );
+}
+export async function downloadProfileReport(report: ProfileReportData) {
+  const { renderProfileReportPdf } = await import('./profile-pdf-renderer');
+  const es = report.locale === 'es';
+  const [bodyFont, headingFont] = await Promise.all([
+    bytes('/fonts/body.woff', es),
+    bytes('/fonts/heading.woff', es),
+  ]);
+  const file = await renderProfileReportPdf(report, { bodyFont, headingFont });
+  save(
+    new Uint8Array(file),
+    'application/pdf',
+    es ? 'mi-perfil-questype.pdf' : 'my-questype-profile.pdf',
+  );
 }
 export async function downloadSocialCard(card: SocialCardData) {
   const es = card.result.locale === 'es';
@@ -77,7 +127,11 @@ export async function downloadSocialCard(card: SocialCardData) {
   canvas.height = format.height;
   const context = canvas.getContext('2d');
   if (!context)
-    throw new Error(es ? 'La exportación de imágenes no está disponible en este navegador.' : 'Image export is not available in this browser.');
+    throw new Error(
+      es
+        ? 'La exportación de imágenes no está disponible en este navegador.'
+        : 'Image export is not available in this browser.',
+    );
   const image = new Image();
   image.src = card.result.image_url ?? '/images/valley-wide.webp';
   await image.decode();
@@ -230,6 +284,14 @@ export async function downloadSocialCard(card: SocialCardData) {
     canvas.toBlob(resolve, 'image/png'),
   );
   if (!blob)
-    throw new Error(es ? 'No fue posible crear la tarjeta. Inténtalo de nuevo.' : 'The card could not be created. Please try again.');
-  save(blob, 'image/png', `${es ? 'mi-arquetipo' : 'my-archetype'}-${card.format}.png`);
+    throw new Error(
+      es
+        ? 'No fue posible crear la tarjeta. Inténtalo de nuevo.'
+        : 'The card could not be created. Please try again.',
+    );
+  save(
+    blob,
+    'image/png',
+    `${es ? 'mi-arquetipo' : 'my-archetype'}-${card.format}.png`,
+  );
 }
