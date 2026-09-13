@@ -96,6 +96,15 @@ async function hasSignalSchema(db: D1Database): Promise<boolean> {
   return row?.name === 'result_signal_assessments';
 }
 
+async function hasResultClaimsSchema(db: D1Database): Promise<boolean> {
+  const row = await db
+    .prepare(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='result_claims'",
+    )
+    .first<{ name: string }>();
+  return row?.name === 'result_claims';
+}
+
 async function ensureSignalModel(
   db: D1Database,
   context: JourneyContext,
@@ -725,12 +734,20 @@ export async function completeJourney(db: D1Database, request: Request) {
 }
 export async function getResult(db: D1Database, request: Request, id: string) {
   const account = await authenticatedUser(db, request);
-  const row = await db
-    .prepare(
-      'SELECT r.profile_json,r.interpretation_json FROM web_results r JOIN web_sessions s ON s.id=r.session_id LEFT JOIN result_claims c ON c.result_id=r.id WHERE r.id=? AND (s.owner_hash=? OR c.user_id=?)',
-    )
-    .bind(id, ownerHash(request) ?? '', account?.id ?? '')
-    .first<{ profile_json: string; interpretation_json: string }>();
+  const owner = ownerHash(request) ?? '';
+  const row = (await hasResultClaimsSchema(db))
+    ? await db
+        .prepare(
+          'SELECT r.profile_json,r.interpretation_json FROM web_results r JOIN web_sessions s ON s.id=r.session_id LEFT JOIN result_claims c ON c.result_id=r.id WHERE r.id=? AND (s.owner_hash=? OR c.user_id=?)',
+        )
+        .bind(id, owner, account?.id ?? '')
+        .first<{ profile_json: string; interpretation_json: string }>()
+    : await db
+        .prepare(
+          'SELECT r.profile_json,r.interpretation_json FROM web_results r JOIN web_sessions s ON s.id=r.session_id WHERE r.id=? AND s.owner_hash=?',
+        )
+        .bind(id, owner)
+        .first<{ profile_json: string; interpretation_json: string }>();
   if (!row)
     throw new WebError(
       404,
@@ -766,12 +783,15 @@ export async function getResult(db: D1Database, request: Request, id: string) {
 export async function deleteData(db: D1Database, request: Request) {
   const owner = ownerHash(request);
   if (owner) {
+    const sessions = (await hasResultClaimsSchema(db))
+      ? db
+          .prepare(
+            'DELETE FROM web_sessions WHERE owner_hash=? AND NOT EXISTS (SELECT 1 FROM web_results r JOIN result_claims c ON c.result_id=r.id WHERE r.session_id=web_sessions.id)',
+          )
+          .bind(owner)
+      : db.prepare('DELETE FROM web_sessions WHERE owner_hash=?').bind(owner);
     await db.batch([
-      db
-        .prepare(
-          'DELETE FROM web_sessions WHERE owner_hash=? AND NOT EXISTS (SELECT 1 FROM web_results r JOIN result_claims c ON c.result_id=r.id WHERE r.session_id=web_sessions.id)',
-        )
-        .bind(owner),
+      sessions,
       db
         .prepare(
           'DELETE FROM web_visitors WHERE owner_hash=? AND NOT EXISTS (SELECT 1 FROM web_sessions WHERE owner_hash=?)',
