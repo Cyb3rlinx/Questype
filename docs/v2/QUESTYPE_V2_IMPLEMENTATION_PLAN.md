@@ -1,5 +1,11 @@
 # Plan detallado de implementación Questype V2
 
+## Estado de ejecución al 13 de septiembre de 2026
+
+Las Etapas 1 a 5 y los Gates 6 a 10 del MVP Continuation se implementaron y validaron en la rama local `codex/questype-v2`. La base incluye: protección dorada de V1, registro multi-Journey, doce señales auditables, persistencia paralela, cuentas opcionales con claim seguro, perfil acumulativo inmutable, landing y catálogo multi-Journey, Council of Realms y Stormbound Passage en estado `draft`, y contratos/PDF de resultados basados en señales.
+
+Council of Realms y Stormbound Passage no están publicados y todavía requieren revisión psicológica, editorial y visual. Comercio, pricing, Stripe, paywalls, proveedor de email de producción, imágenes finales y deploy continúan aplazados. El estado verificable completo se encuentra en `docs/v2/MVP_CONTINUATION_REPORT.md`.
+
 ## Condición de inicio
 
 Este plan comienza solo después de aprobar `PHASE_0_REVIEW.md`. Todo trabajo se realiza primero en local, con D1 local, Stripe Test Mode y assets no publicados. Ningún paso implica deploy automático.
@@ -156,14 +162,14 @@ La creación masiva de imágenes comienza después de aprobar storyboards y señ
 
 ## Estimación de alcance
 
-| Bloque | Complejidad | Riesgo principal |
-|---|---|---|
-| Blindaje + multi-Journey | Media | romper compatibilidad histórica |
-| Señales + perfil | Alta | confundir presentación con medición |
-| Cuenta + claim | Media/alta | propiedad y replay de tokens |
-| Stripe + entitlements | Media/alta | idempotencia y acceso prematuro |
-| Dos Journeys completos | Alta | calidad de contenido y 72 masters |
-| PDF/share/responsive | Media | combinaciones de idioma y formato |
+| Bloque                   | Complejidad | Riesgo principal                    |
+| ------------------------ | ----------- | ----------------------------------- |
+| Blindaje + multi-Journey | Media       | romper compatibilidad histórica     |
+| Señales + perfil         | Alta        | confundir presentación con medición |
+| Cuenta + claim           | Media/alta  | propiedad y replay de tokens        |
+| Stripe + entitlements    | Media/alta  | idempotencia y acceso prematuro     |
+| Dos Journeys completos   | Alta        | calidad de contenido y 72 masters   |
+| PDF/share/responsive     | Media       | combinaciones de idioma y formato   |
 
 La implementación debe aprobarse por gates, no como un cambio monolítico.
 
