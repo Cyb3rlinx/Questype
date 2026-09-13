@@ -468,7 +468,7 @@ h2 {
   height: 100%;
   width: 100%;
   object-fit: cover;
-  object-position: 50% 83%;
+  object-position: 50% 56%;
 }
 .threshold-copy {
   padding: 75px max(40px, calc((100vw - 1280px) /2)) 75px 70px;

@@ -217,15 +217,15 @@ export default function Home() {
       <section className="threshold-section" id="how-it-works">
         <div className="threshold-image">
           <img
-            src="/images/forest-waystation.webp"
-            srcSet="/images/forest-waystation-sm.webp 900w, /images/forest-waystation.webp 1672w"
+            src="/images/many-possibilities.webp"
+            srcSet="/images/many-possibilities-sm.webp 900w, /images/many-possibilities.webp 1672w"
             sizes="(max-width: 680px) 100vw, 50vw"
             width={1672}
             height={941}
             alt={
               es
-                ? 'Un sendero de piedra cubierto de musgo conduce a una estación en un bosque antiguo'
-                : 'A mossy stone path leading to a waystation in an ancient forest'
+                ? 'Dos viajeros contemplan una antigua ciudad entre árboles monumentales y cascadas'
+                : 'Two travelers look toward an ancient city among monumental trees and waterfalls'
             }
             loading="lazy"
             decoding="async"
