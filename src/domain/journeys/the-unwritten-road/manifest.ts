@@ -150,6 +150,14 @@ export const unwrittenRoadManifest: JourneyPublicManifest =
       en: 'Follow a mysterious invitation toward the Lighthouse of Vigil and discover the archetypal patterns in the way you travel.',
       es: 'Sigue una invitación misteriosa hacia el Faro de la Vigilia y descubre los patrones arquetípicos presentes en tu manera de avanzar.',
     },
+    assessmentFocus: {
+      en: 'Archetypes & Identity',
+      es: 'Arquetipos e identidad',
+    },
+    tags: {
+      en: ['Archetypes', 'Identity', 'Motivations', 'Decision Style'],
+      es: ['Arquetipos', 'Identidad', 'Motivaciones', 'Estilo de decisión'],
+    },
     actNames: {
       en: [
         'The Call',

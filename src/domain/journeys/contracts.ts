@@ -2,6 +2,7 @@ import type { JourneyContent } from '../types.js';
 import type { ScoringEngine } from '../scoring/engine.js';
 import type { Locale } from '../../i18n/locale.js';
 import type { SignalEngine } from '../signals/engine.js';
+import type { DraftJourneyServerModel } from './draft-contracts.js';
 import { z } from 'zod';
 
 export const JOURNEY_STATUSES = ['draft', 'published', 'retired'] as const;
@@ -52,6 +53,8 @@ export interface JourneyPublicManifest {
   scoringVersion: string;
   title: LocalizedText;
   shortDescription: LocalizedText;
+  assessmentFocus: LocalizedText;
+  tags: { en: readonly string[]; es: readonly string[] };
   actNames: { en: readonly string[]; es: readonly string[] };
   focus: readonly string[];
   locales: readonly Locale[];
@@ -72,7 +75,8 @@ export interface JourneyServerModel {
 
 export interface JourneyDefinition {
   manifest: JourneyPublicManifest;
-  loadServerModel(): Promise<JourneyServerModel>;
+  loadServerModel?: () => Promise<JourneyServerModel>;
+  loadDraftModel?: () => Promise<DraftJourneyServerModel>;
 }
 
 export interface PublicJourneySummary {
@@ -83,9 +87,25 @@ export interface PublicJourneySummary {
   currentVersion: string;
   title: string;
   shortDescription: string;
+  assessmentFocus: string;
+  tags: readonly string[];
   sceneCount: number;
   actCount: number;
   estimatedMinutes: number;
+}
+
+export interface JourneyCardData {
+  id: string;
+  slug: string;
+  status: JourneyStatus;
+  access: JourneyAccessTier;
+  title: LocalizedText;
+  shortDescription: LocalizedText;
+  assessmentFocus: LocalizedText;
+  tags: { en: readonly string[]; es: readonly string[] };
+  sceneCount: number;
+  estimatedMinutes: number;
+  image: VisualAsset;
 }
 
 const localizedTextSchema = z.strictObject({
@@ -124,6 +144,11 @@ export const journeyPublicManifestSchema = z
     scoringVersion: z.string().regex(/^\d+\.\d+(?:\.\d+)?$/),
     title: localizedTextSchema,
     shortDescription: localizedTextSchema,
+    assessmentFocus: localizedTextSchema,
+    tags: z.strictObject({
+      en: z.array(z.string().min(2)).min(2).max(8),
+      es: z.array(z.string().min(2)).min(2).max(8),
+    }),
     actNames: z.strictObject({
       en: z.array(z.string().min(2)).min(1).max(24),
       es: z.array(z.string().min(2)).min(1).max(24),

@@ -1,12 +1,17 @@
-import type { Locale } from '../../i18n/locale.js';
 import type {
   JourneyDefinition,
   JourneyPublicManifest,
-  PublicJourneySummary,
 } from './contracts.js';
 import { unwrittenRoadManifest } from './the-unwritten-road/manifest.js';
-
-export const DEFAULT_JOURNEY_SLUG = unwrittenRoadManifest.slug;
+import { councilOfRealmsManifest } from './council-of-realms/manifest.js';
+import { stormboundPassageManifest } from './stormbound-passage/manifest.js';
+import type { DraftJourneyServerModel } from './draft-contracts.js';
+export {
+  DEFAULT_JOURNEY_SLUG,
+  listJourneyCards,
+  listJourneyManifests,
+  listPublicJourneys,
+} from './public-registry.js';
 
 const definitions: readonly JourneyDefinition[] = [
   {
@@ -14,6 +19,18 @@ const definitions: readonly JourneyDefinition[] = [
     loadServerModel: async () =>
       (await import('./the-unwritten-road/scoring.server.js'))
         .unwrittenRoadServerModel,
+  },
+  {
+    manifest: councilOfRealmsManifest,
+    loadDraftModel: async () =>
+      (await import('./council-of-realms/signals.server.js'))
+        .councilOfRealmsServerModel,
+  },
+  {
+    manifest: stormboundPassageManifest,
+    loadDraftModel: async () =>
+      (await import('./stormbound-passage/signals.server.js'))
+        .stormboundPassageServerModel,
   },
 ];
 
@@ -48,23 +65,9 @@ export function getJourneyManifest(slug: string): JourneyPublicManifest | null {
   return getJourneyDefinition(slug)?.manifest ?? null;
 }
 
-export function listJourneyManifests(): readonly JourneyPublicManifest[] {
-  return definitions.map((definition) => definition.manifest);
-}
-
-export function listPublicJourneys(locale: Locale): PublicJourneySummary[] {
-  return definitions
-    .map(({ manifest }) => ({
-      id: manifest.id,
-      slug: manifest.slug,
-      status: manifest.status,
-      access: manifest.access,
-      currentVersion: manifest.currentVersion,
-      title: manifest.title[locale],
-      shortDescription: manifest.shortDescription[locale],
-      sceneCount: manifest.sceneCount,
-      actCount: manifest.actCount,
-      estimatedMinutes: manifest.estimatedMinutes,
-    }))
-    .filter((journey) => journey.status !== 'retired');
+export async function loadDraftJourneyModel(
+  slug: string,
+): Promise<DraftJourneyServerModel | null> {
+  const definition = getJourneyDefinition(slug);
+  return definition?.loadDraftModel ? definition.loadDraftModel() : null;
 }

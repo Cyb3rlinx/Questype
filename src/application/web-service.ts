@@ -69,6 +69,8 @@ interface JourneyContext {
 async function contextForDefinition(
   definition: JourneyDefinition,
 ): Promise<JourneyContext> {
+  if (!definition.loadServerModel)
+    throw new WebError(404, 'This journey is not currently available.');
   return {
     definition,
     manifest: definition.manifest,

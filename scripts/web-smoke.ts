@@ -47,7 +47,24 @@ assert.ok(
   legacyStart.url.endsWith('/journey/the-unwritten-road/start?new=1'),
   legacyStart.url,
 );
-assert.equal((await call('/journeys')).status, 200);
+const journeyCatalog = await call('/journeys');
+assert.equal(journeyCatalog.status, 200);
+assert.ok(journeyCatalog.data.includes('The Unwritten Road'));
+assert.ok(journeyCatalog.data.includes('Council of Realms'));
+assert.ok(journeyCatalog.data.includes('Stormbound Passage'));
+assert.ok(journeyCatalog.data.includes('Coming soon'));
+assert.ok(
+  !journeyCatalog.data.includes('href="/journey/council-of-realms/start"'),
+);
+assert.ok(
+  !journeyCatalog.data.includes('href="/journey/stormbound-passage/start"'),
+);
+assert.equal((await call('/journey/council-of-realms/start')).status, 404);
+assert.equal((await call('/journey/stormbound-passage/play')).status, 404);
+assert.equal(
+  (await call('/api/session?journey_slug=council-of-realms')).status,
+  404,
+);
 assert.equal((await call('/journey/not-a-real-journey/start')).status, 404);
 assert.equal(
   (await call('/api/session?journey_slug=not-a-real-journey')).status,

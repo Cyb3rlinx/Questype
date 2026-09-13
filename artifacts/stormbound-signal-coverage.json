@@ -1,0 +1,492 @@
+{
+  "journeyId": "journey_stormbound_passage",
+  "contentHash": "c06a5f7220a872e5088fe2f546a66d95fdf27d9eebe07c1bf157d8a1056caba3",
+  "coverage": {
+    "journeyId": "journey_stormbound_passage",
+    "journeyVersion": "0.1",
+    "modelId": "stormbound_passage_signals_0_1",
+    "signals": [
+      {
+        "signal": "autonomy",
+        "opportunityScenes": 2,
+        "facets": ["independent_judgment", "self_directed_action"],
+        "contexts": ["exploration", "uncertainty"],
+        "positiveOptions": 4,
+        "negativeOptions": 4,
+        "zeroOptions": 0,
+        "minimumPossible": -1.4,
+        "maximumPossible": 1.4
+      },
+      {
+        "signal": "structure",
+        "opportunityScenes": 4,
+        "facets": ["organization", "planning", "preparation", "prioritization"],
+        "contexts": ["time_pressure", "uncertainty"],
+        "positiveOptions": 8,
+        "negativeOptions": 8,
+        "zeroOptions": 0,
+        "minimumPossible": -2.8,
+        "maximumPossible": 2.8
+      },
+      {
+        "signal": "risk_tolerance",
+        "opportunityScenes": 5,
+        "facets": [
+          "calculated_risk",
+          "commitment_under_uncertainty",
+          "downside_tolerance"
+        ],
+        "contexts": ["physical_risk", "uncertainty"],
+        "positiveOptions": 10,
+        "negativeOptions": 10,
+        "zeroOptions": 0,
+        "minimumPossible": -3.5,
+        "maximumPossible": 3.5
+      },
+      {
+        "signal": "openness_to_uncertainty",
+        "opportunityScenes": 3,
+        "facets": [
+          "ambiguity_tolerance",
+          "incomplete_answer_tolerance",
+          "possibility_holding"
+        ],
+        "contexts": ["loss", "uncertainty"],
+        "positiveOptions": 6,
+        "negativeOptions": 6,
+        "zeroOptions": 0,
+        "minimumPossible": -2.1,
+        "maximumPossible": 2.1
+      },
+      {
+        "signal": "knowledge_orientation",
+        "opportunityScenes": 2,
+        "facets": ["information_prioritization", "reflective_analysis"],
+        "contexts": ["knowledge_gap"],
+        "positiveOptions": 4,
+        "negativeOptions": 4,
+        "zeroOptions": 0,
+        "minimumPossible": -1.4,
+        "maximumPossible": 1.4
+      },
+      {
+        "signal": "creation_orientation",
+        "opportunityScenes": 0,
+        "facets": [],
+        "contexts": [],
+        "positiveOptions": 0,
+        "negativeOptions": 0,
+        "zeroOptions": 0,
+        "minimumPossible": 0,
+        "maximumPossible": 0
+      },
+      {
+        "signal": "empathy_cooperation",
+        "opportunityScenes": 3,
+        "facets": [
+          "interpersonal_concern",
+          "perspective_taking",
+          "prosocial_response"
+        ],
+        "contexts": ["caregiving", "group_coordination"],
+        "positiveOptions": 6,
+        "negativeOptions": 6,
+        "zeroOptions": 0,
+        "minimumPossible": -2.1,
+        "maximumPossible": 2.1
+      },
+      {
+        "signal": "social_confidence",
+        "opportunityScenes": 1,
+        "facets": ["disagreement_tolerance"],
+        "contexts": ["interpersonal_conflict"],
+        "positiveOptions": 2,
+        "negativeOptions": 2,
+        "zeroOptions": 0,
+        "minimumPossible": -0.7,
+        "maximumPossible": 0.7
+      },
+      {
+        "signal": "leadership_initiative",
+        "opportunityScenes": 3,
+        "facets": ["coordination", "delegation", "mobilization"],
+        "contexts": ["resource_scarcity", "responsibility", "time_pressure"],
+        "positiveOptions": 6,
+        "negativeOptions": 6,
+        "zeroOptions": 0,
+        "minimumPossible": -2.1,
+        "maximumPossible": 2.1
+      },
+      {
+        "signal": "persistence",
+        "opportunityScenes": 4,
+        "facets": [
+          "frustration_tolerance",
+          "goal_commitment",
+          "sustained_effort"
+        ],
+        "contexts": ["physical_risk", "responsibility", "time_pressure"],
+        "positiveOptions": 8,
+        "negativeOptions": 8,
+        "zeroOptions": 0,
+        "minimumPossible": -2.8,
+        "maximumPossible": 2.8
+      },
+      {
+        "signal": "adaptability",
+        "opportunityScenes": 4,
+        "facets": [
+          "contextual_switching",
+          "feedback_learning",
+          "resource_reallocation",
+          "strategy_revision"
+        ],
+        "contexts": ["change"],
+        "positiveOptions": 8,
+        "negativeOptions": 8,
+        "zeroOptions": 0,
+        "minimumPossible": -2.8,
+        "maximumPossible": 2.8
+      },
+      {
+        "signal": "emotional_regulation",
+        "opportunityScenes": 5,
+        "facets": [
+          "affect_tolerance",
+          "composure_under_pressure",
+          "emotional_awareness",
+          "impulse_regulation",
+          "recovery"
+        ],
+        "contexts": ["interpersonal_conflict", "social_risk", "time_pressure"],
+        "positiveOptions": 10,
+        "negativeOptions": 10,
+        "zeroOptions": 0,
+        "minimumPossible": -3.5,
+        "maximumPossible": 3.5
+      }
+    ],
+    "sceneDensity": [
+      {
+        "sceneId": "stormbound_passage_01",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_02",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_03",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_04",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_05",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_06",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_07",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_08",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_09",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_10",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_11",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_12",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_13",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_14",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_15",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_16",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_17",
+        "signals": 2
+      },
+      {
+        "sceneId": "stormbound_passage_18",
+        "signals": 2
+      }
+    ],
+    "excessiveDensityScenes": []
+  },
+  "simulation": {
+    "journeyId": "journey_stormbound_passage",
+    "modelId": "stormbound_passage_signals_0_1",
+    "runs": 3000,
+    "seed": 20260914,
+    "signals": [
+      {
+        "signal": "autonomy",
+        "measuredRuns": 3000,
+        "mean": -0.0003,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 1509,
+          "moderate": 1491,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "structure",
+        "measuredRuns": 3000,
+        "mean": 0.0233,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 0,
+          "moderate": 3000,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "risk_tolerance",
+        "measuredRuns": 3000,
+        "mean": -0.0024,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 0,
+          "moderate": 1850,
+          "strong": 1150
+        }
+      },
+      {
+        "signal": "openness_to_uncertainty",
+        "measuredRuns": 3000,
+        "mean": -0.0064,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 0,
+          "moderate": 3000,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "knowledge_orientation",
+        "measuredRuns": 3000,
+        "mean": 0.012,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 3000,
+          "moderate": 0,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "creation_orientation",
+        "measuredRuns": 0,
+        "mean": null,
+        "minimum": null,
+        "maximum": null,
+        "bands": {
+          "insufficient": 3000,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "empathy_cooperation",
+        "measuredRuns": 3000,
+        "mean": -0.0231,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 0,
+          "moderate": 3000,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "social_confidence",
+        "measuredRuns": 0,
+        "mean": null,
+        "minimum": null,
+        "maximum": null,
+        "bands": {
+          "insufficient": 3000,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "leadership_initiative",
+        "measuredRuns": 3000,
+        "mean": -0.0167,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 0,
+          "moderate": 3000,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "persistence",
+        "measuredRuns": 3000,
+        "mean": -0.0007,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 0,
+          "moderate": 2627,
+          "strong": 373
+        }
+      },
+      {
+        "signal": "adaptability",
+        "measuredRuns": 3000,
+        "mean": -0.011,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 0,
+          "moderate": 3000,
+          "strong": 0
+        }
+      },
+      {
+        "signal": "emotional_regulation",
+        "measuredRuns": 3000,
+        "mean": 0.0012,
+        "minimum": -1,
+        "maximum": 1,
+        "bands": {
+          "insufficient": 0,
+          "emerging": 0,
+          "moderate": 0,
+          "strong": 3000
+        }
+      }
+    ],
+    "choiceCounts": {
+      "stormbound_passage_01_choice_b": 777,
+      "stormbound_passage_02_choice_b": 762,
+      "stormbound_passage_03_choice_a": 715,
+      "stormbound_passage_04_choice_a": 728,
+      "stormbound_passage_05_choice_d": 732,
+      "stormbound_passage_06_choice_a": 739,
+      "stormbound_passage_07_choice_c": 698,
+      "stormbound_passage_08_choice_a": 736,
+      "stormbound_passage_09_choice_a": 737,
+      "stormbound_passage_10_choice_c": 785,
+      "stormbound_passage_11_choice_a": 719,
+      "stormbound_passage_12_choice_a": 727,
+      "stormbound_passage_13_choice_a": 728,
+      "stormbound_passage_14_choice_d": 766,
+      "stormbound_passage_15_choice_a": 708,
+      "stormbound_passage_16_choice_d": 724,
+      "stormbound_passage_17_choice_a": 756,
+      "stormbound_passage_18_choice_c": 724,
+      "stormbound_passage_02_choice_c": 716,
+      "stormbound_passage_03_choice_b": 766,
+      "stormbound_passage_05_choice_b": 736,
+      "stormbound_passage_06_choice_c": 732,
+      "stormbound_passage_07_choice_a": 783,
+      "stormbound_passage_08_choice_c": 753,
+      "stormbound_passage_09_choice_c": 756,
+      "stormbound_passage_10_choice_d": 755,
+      "stormbound_passage_12_choice_c": 723,
+      "stormbound_passage_13_choice_c": 724,
+      "stormbound_passage_15_choice_b": 810,
+      "stormbound_passage_16_choice_c": 798,
+      "stormbound_passage_01_choice_c": 724,
+      "stormbound_passage_02_choice_a": 793,
+      "stormbound_passage_04_choice_b": 775,
+      "stormbound_passage_05_choice_a": 767,
+      "stormbound_passage_08_choice_b": 757,
+      "stormbound_passage_09_choice_b": 715,
+      "stormbound_passage_10_choice_b": 727,
+      "stormbound_passage_11_choice_c": 735,
+      "stormbound_passage_12_choice_b": 755,
+      "stormbound_passage_13_choice_b": 773,
+      "stormbound_passage_14_choice_a": 718,
+      "stormbound_passage_17_choice_d": 767,
+      "stormbound_passage_18_choice_a": 807,
+      "stormbound_passage_01_choice_a": 770,
+      "stormbound_passage_03_choice_d": 777,
+      "stormbound_passage_04_choice_d": 719,
+      "stormbound_passage_07_choice_b": 752,
+      "stormbound_passage_11_choice_d": 767,
+      "stormbound_passage_15_choice_c": 738,
+      "stormbound_passage_16_choice_b": 719,
+      "stormbound_passage_17_choice_b": 737,
+      "stormbound_passage_01_choice_d": 729,
+      "stormbound_passage_04_choice_c": 778,
+      "stormbound_passage_06_choice_d": 744,
+      "stormbound_passage_10_choice_a": 733,
+      "stormbound_passage_12_choice_d": 795,
+      "stormbound_passage_15_choice_d": 744,
+      "stormbound_passage_17_choice_c": 740,
+      "stormbound_passage_18_choice_d": 749,
+      "stormbound_passage_14_choice_c": 755,
+      "stormbound_passage_16_choice_a": 759,
+      "stormbound_passage_07_choice_d": 767,
+      "stormbound_passage_03_choice_c": 742,
+      "stormbound_passage_08_choice_d": 754,
+      "stormbound_passage_13_choice_d": 775,
+      "stormbound_passage_09_choice_d": 792,
+      "stormbound_passage_02_choice_d": 729,
+      "stormbound_passage_14_choice_b": 761,
+      "stormbound_passage_11_choice_b": 779,
+      "stormbound_passage_05_choice_c": 765,
+      "stormbound_passage_06_choice_b": 785,
+      "stormbound_passage_18_choice_b": 720
+    }
+  },
+  "contentQa": {
+    "scenes": 18,
+    "choices": 72,
+    "fixedSequentialOrder": true,
+    "bilingualFieldsComplete": true,
+    "exactDuplicateLocalizedChoices": [],
+    "maximumChoiceSelectionDeviation": 0.08,
+    "excessiveDensityScenes": []
+  }
+}

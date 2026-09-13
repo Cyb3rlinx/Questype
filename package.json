@@ -33,7 +33,8 @@
     "check:full": "node scripts/check-full.mjs",
     "db:local": "wrangler d1 migrations apply questype-db --local --config wrangler.jsonc",
     "verify:d1-v2": "node scripts/verify-v2-d1.mjs",
-    "signals:report": "tsx scripts/generate-signal-reports.ts"
+    "signals:report": "tsx scripts/generate-signal-reports.ts",
+    "journeys:v2:report": "tsx scripts/generate-v2-journey-reports.ts"
   },
   "dependencies": {
     "@base-ui/react": "1.7.0",

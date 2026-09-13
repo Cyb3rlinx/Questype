@@ -1,5 +1,6 @@
 import type { ReportData } from '@/src/reports/data';
 import type { ProfileReportData } from '@/src/profile/report';
+import type { SignalJourneyReportData } from '@/src/domain/results/contracts';
 import { CARD_FORMATS, type SocialCardData } from '@/src/sharing/contracts';
 function save(bytes: BlobPart, type: string, name: string) {
   const url = URL.createObjectURL(new Blob([bytes], { type }));
@@ -116,6 +117,26 @@ export async function downloadProfileReport(report: ProfileReportData) {
     new Uint8Array(file),
     'application/pdf',
     es ? 'mi-perfil-questype.pdf' : 'my-questype-profile.pdf',
+  );
+}
+export async function downloadSignalJourneyReport(
+  report: SignalJourneyReportData,
+) {
+  const { renderSignalJourneyReportPdf } =
+    await import('./signal-journey-pdf-renderer');
+  const es = report.locale === 'es';
+  const [bodyFont, headingFont] = await Promise.all([
+    bytes('/fonts/body.woff', es),
+    bytes('/fonts/heading.woff', es),
+  ]);
+  const file = await renderSignalJourneyReportPdf(report, {
+    bodyFont,
+    headingFont,
+  });
+  save(
+    new Uint8Array(file),
+    'application/pdf',
+    `${report.journeyId}-${es ? 'informe' : 'report'}.pdf`,
   );
 }
 export async function downloadSocialCard(card: SocialCardData) {

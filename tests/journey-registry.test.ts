@@ -22,7 +22,7 @@ test('the registry resolves the current Journey through slug, stable id and lega
   assert.equal(getJourneyDefinitionById('archetype-journey'), bySlug);
   assert.equal(getJourneyDefinition('unknown-road'), null);
 
-  const model = await bySlug.loadServerModel();
+  const model = await bySlug.loadServerModel!();
   assert.equal(model.content, journeyV1);
   assert.equal(model.contentHash, contentHash(journeyV1));
   assert.equal(model.content.scenes.length, bySlug.manifest.sceneCount);
@@ -32,12 +32,20 @@ test('the registry resolves the current Journey through slug, stable id and lega
 
 test('the public registry exposes localized metadata without score maps', () => {
   const manifests = listJourneyManifests();
-  assert.equal(manifests.length, 1);
+  assert.equal(manifests.length, 3);
   const english = listPublicJourneys('en')[0]!;
   const spanish = listPublicJourneys('es')[0]!;
   assert.equal(english.title, 'The Unwritten Road');
   assert.equal(spanish.title, 'El camino no escrito');
   assert.equal(english.sceneCount, 15);
+  assert.deepEqual(
+    listPublicJourneys('en').map((journey) => [journey.slug, journey.status]),
+    [
+      ['the-unwritten-road', 'published'],
+      ['council-of-realms', 'draft'],
+      ['stormbound-passage', 'draft'],
+    ],
+  );
   assert.ok(!JSON.stringify(manifests).includes('decision_styles'));
   assert.ok(!JSON.stringify(manifests).includes('scores'));
 });

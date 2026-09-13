@@ -54,7 +54,7 @@ export function SiteHeader({
   overlay?: boolean;
   compact?: boolean;
 }) {
-  const { locale, setLocale } = useLocale();
+  const { locale } = useLocale();
   const es = locale === 'es';
   return (
     <header className={`site-header ${overlay ? 'overlay-header' : ''}`}>
@@ -66,7 +66,6 @@ export function SiteHeader({
               {es ? 'La experiencia' : 'The experience'}
             </Link>
             <Link href="/journeys">Journeys</Link>
-            <Link href="/profile">{es ? 'Mi perfil' : 'My profile'}</Link>
           </nav>
         )}
         <LanguageSwitch />
@@ -90,27 +89,58 @@ export function SiteFooter() {
   const { locale } = useLocale();
   const es = locale === 'es';
   return (
-    <footer className="site-footer page-width">
-      <div>
-        <Brand />
-        <p>
-          {es
-            ? 'Una aventura de autodescubrimiento.'
-            : 'An adventure in self-discovery.'}
-        </p>
+    <footer id="site-footer" className="site-footer">
+      <div className="footer-media" aria-hidden="true">
+        <video
+          className="footer-bg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/4f690bd1-881a-4192-82f2-d714d34c8fb9.png"
+        >
+          <source
+            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260901_122529_931c22c8-8d2d-47c0-ad51-b97f56a91e42.mp4"
+            type="video/mp4"
+          />
+        </video>
       </div>
-      <p className="footer-notice">
-        {es
-          ? 'Para la reflexión personal y el entretenimiento.'
-          : 'For self-reflection and entertainment.'}
-        <br />
-        {es
-          ? 'Esta experiencia no ofrece diagnósticos psicológicos ni médicos.'
-          : 'This experience does not provide psychological or medical diagnosis.'}
-      </p>
-      <Link href="/privacy">
-        {es ? 'Privacidad y tus decisiones' : 'Privacy & your choices'}
-      </Link>
+      <div className="footer-shade" aria-hidden="true" />
+      <div className="footer-inner page-width">
+        <div className="footer-ornament" aria-hidden="true">
+          <span />
+          <Compass size={22} strokeWidth={1} />
+          <span />
+        </div>
+
+        <div className="footer-grid">
+          <div className="footer-brand">
+            <Brand />
+            <p>
+              {es
+                ? 'Una aventura de autodescubrimiento.'
+                : 'An adventure in self-discovery.'}
+            </p>
+          </div>
+
+          <div className="footer-reflection">
+            <p className="footer-notice">
+              {es
+                ? 'Para la reflexión personal y el entretenimiento.'
+                : 'For self-reflection and entertainment.'}
+              <br />
+              {es
+                ? 'Esta experiencia no ofrece diagnósticos psicológicos ni médicos.'
+                : 'This experience does not provide psychological or medical diagnosis.'}
+            </p>
+            <Link href="/privacy" className="footer-privacy-link">
+              {es ? 'Privacidad y tus decisiones' : 'Privacy & your choices'}
+              <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 }

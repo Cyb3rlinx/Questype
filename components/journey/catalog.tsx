@@ -1,22 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-import { ArrowRight, Compass } from 'lucide-react';
+import { Compass } from 'lucide-react';
 import { useLocale } from '../i18n-provider';
 import { SiteHeader } from './chrome';
+import { JourneyCardGrid } from './cards';
+import type { JourneyCardData } from '@/src/domain/journeys/contracts';
 
-interface CatalogJourney {
-  id: string;
-  slug: string;
-  status: 'draft' | 'published' | 'retired';
-  access: 'free' | 'entitlement';
-  title: { en: string; es: string };
-  shortDescription: { en: string; es: string };
-  sceneCount: number;
-  estimatedMinutes: number;
-}
-
-export function JourneyCatalog({ journeys }: { journeys: CatalogJourney[] }) {
+export function JourneyCatalog({ journeys }: { journeys: JourneyCardData[] }) {
   const { locale } = useLocale();
   const es = locale === 'es';
   return (
@@ -28,34 +18,12 @@ export function JourneyCatalog({ journeys }: { journeys: CatalogJourney[] }) {
           {es ? 'HISTORIAS PARA RECORRER' : 'STORIES TO TRAVEL'}
         </span>
         <h1>{es ? 'Elige tu próximo camino.' : 'Choose your next road.'}</h1>
-        <div className="journey-catalog">
-          {journeys.map((journey) => (
-            <article className="journey-catalog-card" key={journey.id}>
-              <span className="eyebrow">
-                {journey.access === 'free'
-                  ? es
-                    ? 'VIAJE GRATUITO'
-                    : 'FREE JOURNEY'
-                  : es
-                    ? 'VIAJE PREMIUM'
-                    : 'PREMIUM JOURNEY'}
-              </span>
-              <h2>{journey.title[locale]}</h2>
-              <p>{journey.shortDescription[locale]}</p>
-              <small>
-                {journey.sceneCount} {es ? 'momentos' : 'moments'} ·{' '}
-                {journey.estimatedMinutes} min
-              </small>
-              <Link
-                className="button button-gold"
-                href={`/journey/${journey.slug}/start`}
-              >
-                {es ? 'Entrar en la historia' : 'Enter the story'}{' '}
-                <ArrowRight size={16} />
-              </Link>
-            </article>
-          ))}
-        </div>
+        <p className="catalog-intro">
+          {es
+            ? 'Cada historia te sitúa ante un tipo diferente de decisión y explora otra parte de la manera en que piensas, actúas y te relacionas.'
+            : 'Each story places you inside a different kind of decision and explores another part of how you think, act and relate.'}
+        </p>
+        <JourneyCardGrid journeys={journeys} />
       </main>
     </div>
   );
